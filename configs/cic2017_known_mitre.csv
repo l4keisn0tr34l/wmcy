@@ -1,0 +1,4 @@
+episode_id,start_time,end_time,actor,target,technique_id,technique,tactic,confidence,evidence
+cic2017_tue_ftp,2017-07-04T09:20:00,2017-07-04T10:20:00,205.174.165.73,192.168.10.50,T1110.001,Password Guessing,Credential Access,high,Official CIC scenario: FTP-Patator brute force
+cic2017_tue_ssh,2017-07-04T14:00:00,2017-07-04T15:00:00,205.174.165.73,192.168.10.50,T1110.001,Password Guessing,Credential Access,high,Official CIC scenario: SSH-Patator brute force
+cic2017_fri_portscan,2017-07-07T13:55:00,2017-07-07T15:29:00,205.174.165.73,192.168.10.50,T1046,Network Service Discovery,Discovery,high,Official CIC scenario: Nmap/port scan schedule

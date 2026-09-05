@@ -1,0 +1,5 @@
+episode_id,start_time,end_time,actor,target,technique_id,technique,tactic
+lab_001,2026-09-05T19:04:38+05:30,2026-09-05T19:05:05+05:30,ws1,internal_subnet,T1046,Network Service Discovery,Discovery
+lab_001,2026-09-05T19:05:15+05:30,2026-09-05T19:05:24+05:30,ws1,srv1,T1110.001,Password Guessing,Credential Access
+lab_001,2026-09-05T19:05:34+05:30,2026-09-05T19:05:34+05:30,ws1,srv1,T1021.004,SSH,Lateral Movement
+lab_001,2026-09-05T19:05:44+05:30,2026-09-05T19:05:45+05:30,srv1,srv2,T1021.004,SSH,Lateral Movement

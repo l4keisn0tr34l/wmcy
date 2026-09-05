@@ -1,0 +1,30 @@
+services:
+  ws1:
+    build: .
+    hostname: ws1
+    networks:
+      labnet:
+        ipv4_address: 10.77.0.20
+
+  srv1:
+    build: .
+    hostname: srv1
+    networks:
+      labnet:
+        ipv4_address: 10.77.0.30
+
+  srv2:
+    build: .
+    hostname: srv2
+    networks:
+      labnet:
+        ipv4_address: 10.77.0.40
+
+networks:
+  labnet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: cyberwm0
+    ipam:
+      config:
+        - subnet: 10.77.0.0/24
