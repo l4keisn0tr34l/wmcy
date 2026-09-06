@@ -43,10 +43,32 @@ def main():
     errors="coerce",
     utc=True
     )
+    events = events.dropna(subset=["start_time", "end_time"]).copy()
+
+    reversed_events = events["end_time"] < events["start_time"]
+    if reversed_events.any():
+        raise ValueError(f"{int(reversed_events.sum())} ground-truth event(s) end before they start")
+
+    # Intervals use half-open overlap. Zero-duration events are points and align
+    # to the one half-open state window containing their timestamp. This avoids
+    # inventing timestamp precision or an artificial event duration.
+    point_events = events["end_time"] == events["start_time"]
 
     rows = []
+    covered_event_indexes = set()
     for s in states.itertuples(index=False):
-        overlap = events[(events.start_time < s.window_end) & (events.end_time > s.window_start)]
+        interval_overlap = (
+            ~point_events
+            & (events.start_time < s.window_end)
+            & (events.end_time > s.window_start)
+        )
+        point_overlap = (
+            point_events
+            & (events.start_time >= s.window_start)
+            & (events.start_time < s.window_end)
+        )
+        overlap = events[interval_overlap | point_overlap]
+        covered_event_indexes.update(overlap.index.tolist())
         rows.append({
             "state_id": s.state_id,
             "window_start": s.window_start,
@@ -61,6 +83,12 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(out, index=False)
     print(f"aligned {len(rows):,} state windows -> {out}")
+
+    unaligned = events.loc[~events.index.isin(covered_event_indexes)]
+    if len(unaligned):
+        print("WARNING: ground-truth events with no overlapping state window:")
+        for e in unaligned.itertuples():
+            print(f"  {e.start_time}..{e.end_time} {e.technique_id} actor={getattr(e, 'actor', '')} target={getattr(e, 'target', '')}")
 
 
 if __name__ == "__main__":

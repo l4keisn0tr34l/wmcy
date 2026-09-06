@@ -1,62 +1,95 @@
-# Controlled lateral-movement data generator
+# Controlled cyber world-model lab
 
-This private Docker network gives us exact telemetry + exact ATT&CK ground truth.
+This Docker lab generates real packets plus separate exact action/ATT&CK truth on the owned private subnet `10.77.0.0/24`.
 
-## Why we need it
-
-CICIDS2017 is useful for generic network dynamics but does not provide clean, precise, successful lateral-movement trajectories. This lab creates the missing data without inventing feature vectors.
-
-## Run
-
-```bash
-cd lab
-docker compose up -d --build
-./run_episode.sh lab_001
-```
-
-The episode deliberately performs, only inside `10.77.0.0/24`:
-
-1. benign traffic;
-2. `T1046` Network Service Discovery;
-3. `T1110.001` Password Guessing;
-4. `T1021.004` SSH lateral movement from `ws1` to `srv1`;
-5. a second `T1021.004` hop from `srv1` to `srv2`.
-
-It produces:
+## Topology
 
 ```text
-episodes/lab_001/network.pcap
-episodes/lab_001/ground_truth.csv
+ws1  10.77.0.20
+srv1 10.77.0.30
+srv2 10.77.0.40
 ```
 
-Then convert the packet capture to exact-time canonical events:
+All three containers run SSH and the tools needed by the controlled scenarios. Do not change targets to external networks.
+
+## Start
+
+From `lab/`:
 
 ```bash
-python ../scripts/06_pcap_to_canonical.py \
-  episodes/lab_001/network.pcap \
-  --bucket-seconds 1 \
-  --dataset-id lab_001 \
-  --out episodes/lab_001/observations.csv.gz
+docker compose up -d --build
+docker compose ps
 ```
 
-Build five-second graph states:
+## Generate one episode
+
+Use an opaque ID; keep the scenario name only in separate metadata:
 
 ```bash
-python ../scripts/03_build_graph_states.py \
-  episodes/lab_001/observations.csv.gz \
-  --window 5s \
-  --internal-cidr 10.77.0.0/24 \
-  --out-dir episodes/lab_001/states
+./run_episode.sh lab_003 --scenario two_hop --seed 2003
 ```
 
-Align ATT&CK truth to those state windows:
+Supported scenarios:
+
+```text
+benign_ping
+legitimate_ssh
+scan_only
+failed_guessing
+one_hop
+two_hop
+```
+
+The runner asks for sudo because host `tcpdump` captures the private bridge. It refuses to overwrite existing raw episodes and writes:
+
+```text
+episodes/<id>/network.pcap
+episodes/<id>/ground_truth.csv
+episodes/<id>/episode_metadata.csv
+```
+
+`ground_truth.csv` and `episode_metadata.csv` are targets/audit information, never model input.
+
+## Process and validate one episode
+
+From repository root:
 
 ```bash
-python ../scripts/05_align_ground_truth.py \
-  episodes/lab_001/states/global_states.csv \
-  episodes/lab_001/ground_truth.csv \
-  --window-seconds 5 \
-  --out episodes/lab_001/state_ground_truth.csv
+.venv/bin/python scripts/08_process_lab_episode.py lab/episodes/lab_003
 ```
 
-At this point we have a real world-model episode: chronological graph states + future states + exact ATT&CK/lateral-movement truth.
+Use `--force` only to rebuild derived files; raw files remain unchanged:
+
+```bash
+.venv/bin/python scripts/08_process_lab_episode.py lab/episodes/lab_003 --force
+```
+
+Derived output:
+
+```text
+observations.csv.gz
+states/global_states.csv
+states/node_states.csv.gz
+states/edge_states.csv.gz
+state_ground_truth.csv
+```
+
+Validate independently:
+
+```bash
+.venv/bin/python scripts/07_validate_episode.py lab/episodes/lab_003 --window-seconds 5
+```
+
+## Generate the MVP corpus
+
+From repository root:
+
+```bash
+./lab/generate_mvp_corpus.sh
+```
+
+This reads `configs/mvp_episode_plan.csv`, keeps sudo authorization alive, runs each episode, immediately processes/validates it, and stops at the first failure.
+
+## Data policy
+
+`lab/episodes/` is Git-ignored. Raw captures and manifests stay local and immutable. Publish only explicitly selected, reviewed demo artifacts later.

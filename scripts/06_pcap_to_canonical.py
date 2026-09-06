@@ -59,10 +59,9 @@ def main():
             rec["last_ts"] = ts if rec["last_ts"] is None else max(rec["last_ts"], ts)
 
     rows = []
-    for event_id, (key, rec) in enumerate(sorted(agg.items(), key=lambda kv: kv[0])):
+    for key, rec in agg.items():
         bucket, src, sport, dst, dport, proto = key
         rows.append({
-            "event_id": event_id,
             "dataset_id": args.dataset_id,
             "source_file": Path(args.pcap).name,
             "timestamp": pd.to_datetime(rec["first_ts"], unit="s", utc=True),
@@ -83,10 +82,29 @@ def main():
             "flow_duration": max(0.0, rec["last_ts"] - rec["first_ts"]),
         })
 
+    columns = [
+        "event_id", "dataset_id", "source_file", "timestamp", "timestamp_resolution_sec",
+        "source_ip", "source_port", "destination_ip", "destination_port", "protocol",
+        "total_fwd_packets", "total_backward_packets", "total_length_of_fwd_packets",
+        "total_length_of_bwd_packets", "syn_flag_count", "ack_flag_count", "rst_flag_count",
+        "fin_flag_count", "flow_duration",
+    ]
+    canonical = pd.DataFrame(rows)
+    if canonical.empty:
+        canonical = pd.DataFrame(columns=columns)
+    else:
+        canonical = canonical.sort_values("timestamp", kind="stable").reset_index(drop=True)
+        canonical.insert(0, "event_id", canonical.index.astype("int64"))
+        # Explicit ISO 8601 UTC offsets prevent downstream tools from interpreting
+        # timestamps in the machine's local timezone. Timestamp.isoformat retains
+        # nanosecond precision when present.
+        canonical["timestamp"] = canonical["timestamp"].map(lambda value: value.isoformat())
+        canonical = canonical[columns]
+
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(out, index=False, compression="gzip" if str(out).endswith(".gz") else None)
-    print(f"wrote {len(rows):,} exact-time canonical flow events -> {out}")
+    canonical.to_csv(out, index=False, compression="gzip" if str(out).endswith(".gz") else None)
+    print(f"wrote {len(canonical):,} exact-time canonical flow events -> {out}")
 
 
 if __name__ == "__main__":

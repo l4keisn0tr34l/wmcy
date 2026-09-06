@@ -1,0 +1,24 @@
+# Local Python environments and interpreter caches
+.venv/
+__pycache__/
+*.py[cod]
+
+# Raw and generated datasets stay local
+outputs/
+lab/episodes/
+data/
+*.pcap
+*.pcapng
+
+# Model and experiment artifacts (publish selected small demo artifacts explicitly later)
+models/
+checkpoints/
+runs/
+
+# Temporary pipeline output
+.processing-*/
+
+# Editor / OS files
+.DS_Store
+*.swp
+*.tmp

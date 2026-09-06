@@ -42,6 +42,8 @@ def main():
     ap.add_argument("observations")
     ap.add_argument("--window", default="60s")
     ap.add_argument("--internal-cidr", default="192.168.10.0/24")
+    ap.add_argument("--capture-start", help="inclusive capture start; requires --capture-end")
+    ap.add_argument("--capture-end", help="exclusive capture end; requires --capture-start")
     ap.add_argument("--out-dir", required=True)
     args = ap.parse_args()
 
@@ -56,6 +58,41 @@ def main():
     df = df.dropna(subset=["timestamp", "source_ip", "destination_ip"]).copy()
     df = df.sort_values("timestamp", kind="stable")
     df["window_start"] = df["timestamp"].dt.floor(args.window)
+
+    if df.empty:
+        raise ValueError("no valid observations after timestamp/source/destination filtering")
+
+    window_delta = pd.to_timedelta(args.window)
+    if window_delta <= pd.Timedelta(0):
+        raise ValueError("--window must be a positive duration")
+    if bool(args.capture_start) != bool(args.capture_end):
+        raise ValueError("--capture-start and --capture-end must be provided together")
+
+    # Dense fixed-time state grid. Empty traffic windows are still states, because
+    # a world model needs state_id + 1 to mean exactly one configured time step.
+    # With capture bounds, retain only fully observed windows: ceil(start) through
+    # floor(end), excluding the end. This avoids treating partial boundary windows
+    # as if they represented a complete interval.
+    if args.capture_start:
+        capture_start = pd.to_datetime(args.capture_start, errors="raise", utc=True)
+        capture_end = pd.to_datetime(args.capture_end, errors="raise", utc=True)
+        if capture_end <= capture_start:
+            raise ValueError("--capture-end must be after --capture-start")
+        first_window = capture_start.ceil(args.window)
+        grid_end = capture_end.floor(args.window)
+        if grid_end <= first_window:
+            raise ValueError("capture interval contains no complete state window")
+        outside_complete_grid = (df["timestamp"] < first_window) | (df["timestamp"] >= grid_end)
+        if outside_complete_grid.any():
+            examples = df.loc[outside_complete_grid, "timestamp"].head(3).tolist()
+            raise ValueError(
+                f"{int(outside_complete_grid.sum())} observation(s) fall in partial capture-boundary "
+                f"windows; examples={examples}"
+            )
+    else:
+        first_window = df["window_start"].min()
+        grid_end = df["window_start"].max() + window_delta
+    all_windows = pd.date_range(start=first_window, end=grid_end, freq=window_delta, inclusive="left")
 
     # Normalize useful primitive flow quantities while retaining the canonical events separately.
     df["fwd_packets_x"] = pick(df, ["total_fwd_packets"])
@@ -129,7 +166,30 @@ def main():
 
     # -------------------- GLOBAL STATE --------------------
     global_rows = []
-    for w, g in df.groupby("window_start", sort=True):
+    grouped = {w: g for w, g in df.groupby("window_start", sort=True)}
+    for w in all_windows:
+        g = grouped.get(w)
+        if g is None:
+            global_rows.append({
+                "window_start": w,
+                "flow_count": 0,
+                "unique_hosts": 0,
+                "unique_src_hosts": 0,
+                "unique_dst_hosts": 0,
+                "unique_edges": 0,
+                "new_edges": 0,
+                "internal_edges": 0,
+                "total_bytes": 0.0,
+                "total_packets": 0.0,
+                "syn_count": 0.0,
+                "rst_count": 0.0,
+                "fin_count": 0.0,
+                "max_out_fanout": 0.0,
+                "mean_out_fanout": 0.0,
+                "dst_port_entropy": 0.0,
+            })
+            continue
+
         hosts = pd.unique(pd.concat([g["source_ip"], g["destination_ip"]], ignore_index=True))
         ew = edges[edges["window_start"] == w]
         nw = nodes[nodes["window_start"] == w]

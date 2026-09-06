@@ -8,6 +8,14 @@ P(S_{t+1:t+H} \mid S_{t-L:t})
 
 The first supervised security tasks (MITRE technique/tactic prediction and lateral-movement forecasting) are auxiliary heads attached to the learned dynamics. They do not replace next-state prediction.
 
+For the current verified MVP checkpoint, implementation status, file map, dataset inventory, hardware assessment, limitations, and next steps, read:
+
+```text
+docs/MVP_STATUS.md
+```
+
+**Current status:** the dense capture-bounded data/validation pipeline works on a fresh controlled episode; no world model has been trained yet.
+
 ## Permanent data flow
 
 1. **Raw telemetry** — CIC/UNSW/Zeek/PCAP-derived flows.

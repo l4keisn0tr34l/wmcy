@@ -1,0 +1,71 @@
+# Output Locations — Quick Reference
+
+Generated data is local and Git-ignored.
+
+## Controlled lab episode
+
+For `lab/episodes/<episode_id>/`:
+
+### Raw immutable evidence/truth
+
+```text
+network.pcap                 captured packet evidence
+ground_truth.csv             exact scenario action/ATT&CK truth
+episode_metadata.csv         scenario seed, roles, and capture bounds
+INVALID_EPISODE.txt          present only when an episode is quarantined
+```
+
+### Derived model/evaluation data
+
+```text
+observations.csv.gz          canonical observable directed conversations
+states/global_states.csv     dense fixed-time whole-network states
+states/node_states.csv.gz    per-active-host state rows
+states/edge_states.csv.gz    per-directed-host-pair state rows
+state_ground_truth.csv       state-aligned ATT&CK/lateral targets
+```
+
+Current status:
+
+```text
+lab_001  legacy regression episode; rebuilt and validates without metadata bounds
+lab_002  invalid/quarantined; never use for training/evaluation
+lab_003  current valid capture-bounded smoke test
+```
+
+## Public CIC example
+
+```text
+outputs/cic_profile.json
+outputs/friday/observations.csv.gz
+outputs/friday/row_ground_truth.csv.gz
+outputs/friday/states/global_states.csv
+outputs/friday/states/node_states.csv.gz
+outputs/friday/states/edge_states.csv.gz
+outputs/friday/sequence_index.csv
+outputs/friday/state_ground_truth.csv
+```
+
+## Configuration
+
+```text
+configs/cic2017_known_mitre.csv
+configs/mvp_episode_plan.csv
+```
+
+## Status and methodology
+
+```text
+docs/MVP_STATUS.md
+docs/CURRENT_STATE.md
+docs/DATA_PIPELINE.md
+```
+
+## External raw datasets
+
+```text
+/home/paprika/Documents/153/ds/cicids2017
+/home/paprika/Documents/153/ds/cicids2018
+/home/paprika/Documents/153/ds/un
+/home/paprika/Documents/153/ds/Friday-WorkingHours.pcap
+```
