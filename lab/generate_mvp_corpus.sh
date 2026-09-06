@@ -54,10 +54,40 @@ completed=0
 for row in "${PLAN_ROWS[@]}"; do
   IFS=$'\t' read -r episode_id scenario seed <<< "$row"
   completed=$((completed + 1))
+  episode_dir="$SCRIPT_DIR/episodes/$episode_id"
   echo
   echo "===== MVP episode $completed/$total: $episode_id ====="
+
+  if [[ -f "$episode_dir/network.pcap" && -f "$episode_dir/ground_truth.csv" && -f "$episode_dir/episode_metadata.csv" ]]; then
+    # Resume only when existing raw data exactly matches this plan row.
+    "$PYTHON" - "$episode_dir/episode_metadata.csv" "$episode_id" "$scenario" "$seed" <<'PY'
+import csv
+import sys
+with open(sys.argv[1], newline="", encoding="utf-8") as handle:
+    rows = list(csv.DictReader(handle))
+if len(rows) != 1:
+    raise SystemExit(f"cannot resume: invalid metadata row count in {sys.argv[1]}")
+expected = {"episode_id": sys.argv[2], "scenario": sys.argv[3], "seed": sys.argv[4]}
+actual = {key: rows[0].get(key) for key in expected}
+if actual != expected:
+    raise SystemExit(f"cannot resume: metadata {actual} does not match plan {expected}")
+PY
+    if [[ -f "$episode_dir/observations.csv.gz" && -d "$episode_dir/states" && -f "$episode_dir/state_ground_truth.csv" ]] \
+       && "$PYTHON" "$ROOT/scripts/07_validate_episode.py" "$episode_dir" --window-seconds 5; then
+      echo "resume: existing episode already passes; skipping capture"
+      continue
+    fi
+    echo "resume: raw episode exists; rebuilding derived files without recapture"
+    "$PYTHON" "$ROOT/scripts/08_process_lab_episode.py" "$episode_dir" --force
+    continue
+  fi
+
+  if [[ -e "$episode_dir" ]]; then
+    echo "cannot resume partial raw episode directory: $episode_dir" >&2
+    exit 1
+  fi
   "$SCRIPT_DIR/run_episode.sh" "$episode_id" --scenario "$scenario" --seed "$seed"
-  "$PYTHON" "$ROOT/scripts/08_process_lab_episode.py" "$SCRIPT_DIR/episodes/$episode_id"
+  "$PYTHON" "$ROOT/scripts/08_process_lab_episode.py" "$episode_dir"
 done
 
 echo

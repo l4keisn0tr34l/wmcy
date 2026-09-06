@@ -120,7 +120,7 @@ It randomizes actor/pivot/target roles, action pauses, baseline length, and pass
 
 All six actor/pivot/target permutations occur at least three times. `lab/generate_mvp_corpus.sh` generates, processes, and validates each episode, stopping on the first failure.
 
-The bulk plan has not yet been executed.
+The first bulk attempt stopped safely on a partial-boundary policy error in `lab_004`. No invalid derived output was installed. Boundary handling, traffic alignment, minimum duration, and safe resume behavior were corrected; the remaining/replacement plan has not yet been executed.
 
 ## 4. Current episode status
 
@@ -147,6 +147,12 @@ Limitations: old whole-second truth timestamps and no explicit capture metadata.
 Location: `lab/episodes/lab_002/`
 
 The host locale caused `date --iso-8601=ns` to use a comma as the fractional separator, corrupting CSV width. Original files were preserved and `INVALID_EPISODE.txt` explicitly excludes it from training/evaluation. The timestamp writer and schema checks were fixed afterward.
+
+### `lab_004` — valid but excluded from MVP sequences
+
+The first bulk attempt produced a valid benign capture, but controlled traffic began inside the partially captured opening window. Complete-window processing deliberately excluded five boundary observations, leaving only two complete states. The raw/derived episode passes integrity validation but is marked `EXCLUDE_FROM_MVP.txt` because it is too short for the planned context/future sequence. Its plan slot was replaced by `lab_024`.
+
+Future captures align traffic to a five-second boundary and retain a longer future tail.
 
 ### `lab_003` — current valid smoke test
 
@@ -366,7 +372,7 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Run `./lab/generate_mvp_corpus.sh` interactively; it needs one sudo authorization for host packet capture.
+1. Resume `./lab/generate_mvp_corpus.sh` interactively; it needs one sudo authorization for host packet capture. The runner safely skips/reprocesses matching existing raw episodes and never overwrites them.
 2. Inspect and validate every generated episode.
 3. Create `episode_manifest.csv` and an episode-level split manifest.
 4. Build the model-facing tensor/sequence exporter with a 5-second step and short context/horizon suitable for the small episodes.

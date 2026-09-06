@@ -85,6 +85,7 @@ def main() -> int:
     episode = Path(args.episode_dir)
     states_dir = episode / "states"
     invalid_marker = episode / "INVALID_EPISODE.txt"
+    exclusion_marker = episode / "EXCLUDE_FROM_MVP.txt"
     metadata_path = episode / "episode_metadata.csv"
     paths = {
         "global": states_dir / "global_states.csv",
@@ -100,6 +101,8 @@ def main() -> int:
     warnings: list[str] = []
     if invalid_marker.exists():
         errors.append(f"episode is explicitly quarantined by {invalid_marker}")
+    if exclusion_marker.exists():
+        warnings.append(f"episode is valid but explicitly excluded from MVP use by {exclusion_marker}")
     for name, path in paths.items():
         if not path.is_file():
             errors.append(f"missing {name} file: {path}")
@@ -301,14 +304,26 @@ def main() -> int:
     if not observations.empty and not global_states.empty:
         first_state = global_times.iloc[0]
         final_state_end = state_ends.iloc[-1]
-        if observation_times.min() < first_state or observation_times.max() >= final_state_end:
-            errors.append("observation timestamps fall outside the complete global state coverage")
+        outside_complete_states = (observation_times < first_state) | (observation_times >= final_state_end)
         if metadata is None:
+            if outside_complete_states.any():
+                errors.append("observation timestamps fall outside global state coverage")
             warnings.append(
                 f"state coverage {first_state.isoformat()} through {final_state_end.isoformat()} "
                 "is derived from observed traffic, not an explicit capture manifest"
             )
         else:
+            outside_raw_capture = (observation_times < capture_start) | (observation_times >= capture_end)
+            if outside_raw_capture.any():
+                errors.append(
+                    f"{paths['observations']}: {int(outside_raw_capture.sum())} observation(s) "
+                    "fall outside raw metadata capture bounds"
+                )
+            if outside_complete_states.any():
+                warnings.append(
+                    f"{int(outside_complete_states.sum())} canonical observation(s) lie in "
+                    "partial capture-boundary windows and are deliberately excluded from states"
+                )
             warnings.append(
                 f"state coverage uses complete windows inside metadata capture bounds: "
                 f"{first_state.isoformat()} through {final_state_end.isoformat()}"

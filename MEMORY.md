@@ -164,12 +164,13 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 1. `lab_003` is the first current, capture-bounded episode to pass the complete atomic pipeline and validator. It has 14 complete five-second states, 4/4 aligned events, and both lateral hops.
 2. `lab_001` passes after rebuilding but is legacy: whole-second truth and no capture metadata.
 3. `lab_002` is quarantined because locale-dependent commas corrupted its timestamp CSV fields; raw files remain unchanged.
-4. A balanced 20-episode MVP plan exists but has not yet been captured.
-5. Only the two-hop branch has been live-capture tested so far.
-6. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
-7. Silent hosts have no node rows; the future model loader must provide a causal known-host roster with zero activity and masks.
-8. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
-9. The world-model architecture and training pipeline have not been implemented.
+4. A balanced 20-episode MVP plan exists. Its first bulk attempt stopped safely on `lab_004`; that valid benign capture is excluded from MVP sequences because partial-boundary removal leaves only two complete states. Replacement `lab_024` is planned.
+5. Future captures align controlled traffic to a five-second boundary and retain at least 31 seconds after the final action; the bulk runner can resume without overwriting raw files.
+6. Only the two-hop and benign-ping branches have been live-capture tested so far.
+7. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
+8. Silent hosts have no node rows; the future model loader must provide a causal known-host roster with zero activity and masks.
+9. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
+10. The world-model architecture and training pipeline have not been implemented.
 
 ---
 

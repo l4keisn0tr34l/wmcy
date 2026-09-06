@@ -18,6 +18,8 @@
   - no ground-truth columns in observations.
 - [x] Record explicit capture bounds and retain only complete fixed-time windows.
 - [x] Add atomic processing so invalid temporary outputs cannot replace prior derived files.
+- [x] Retain canonical boundary observations for audit while excluding/reporting partial windows from graph states.
+- [x] Align generated controlled traffic to a five-second boundary and enforce enough episode duration for MVP sequences.
 
 ## NEXT — build a real episode corpus
 

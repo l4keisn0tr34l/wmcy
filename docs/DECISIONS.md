@@ -92,7 +92,7 @@ No random split of overlapping windows from the same timeline.
 
 **Status:** Accepted and implemented for current generated episodes.
 
-New episode metadata records capture start/end. State construction retains only complete fixed-time windows inside those bounds, including fully captured quiet tail windows. This prevents packet-derived episode boundaries from silently removing elapsed time.
+New episode metadata records capture start/end. State construction retains only complete fixed-time windows inside those bounds, including fully captured quiet tail windows. Canonical observations in partial boundary windows remain available for audit but are excluded from state aggregation and reported. Controlled traffic is aligned just after a five-second boundary. This prevents packet-derived boundaries or partial capture windows from silently distorting elapsed time.
 
 ---
 

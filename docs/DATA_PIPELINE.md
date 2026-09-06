@@ -406,7 +406,7 @@ Any future rewrite must preserve that causal interpretation.
 
 ## Dense-window behavior
 
-The script builds a dense fixed-time grid. For current generated episodes, explicit capture start/end metadata is supplied and only complete windows inside those bounds are retained. For legacy inputs without capture metadata, it falls back to the first through last observed window.
+The script builds a dense fixed-time grid. For current generated episodes, explicit capture start/end metadata is supplied and only complete windows inside those bounds are retained. Canonical observations from partial opening/closing windows remain in the audit observation file but are deliberately excluded from graph aggregation and reported. Observations outside the raw capture bounds are errors. For legacy inputs without capture metadata, the builder falls back to the first through last observed window.
 
 An empty complete five-second interval is still emitted in `global_states.csv` with zero-valued observable features.
 

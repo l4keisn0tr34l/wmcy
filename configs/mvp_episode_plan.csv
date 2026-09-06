@@ -1,5 +1,5 @@
 episode_id,scenario,seed
-lab_004,benign_ping,3003
+lab_024,benign_ping,3003
 lab_005,two_hop,3007
 lab_006,scan_only,3014
 lab_007,legitimate_ssh,3010

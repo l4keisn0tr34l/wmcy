@@ -78,16 +78,27 @@ def main():
         capture_end = pd.to_datetime(args.capture_end, errors="raise", utc=True)
         if capture_end <= capture_start:
             raise ValueError("--capture-end must be after --capture-start")
+        outside_capture = (df["timestamp"] < capture_start) | (df["timestamp"] >= capture_end)
+        if outside_capture.any():
+            examples = df.loc[outside_capture, "timestamp"].head(3).tolist()
+            raise ValueError(
+                f"{int(outside_capture.sum())} observation(s) fall outside raw capture bounds; "
+                f"examples={examples}"
+            )
         first_window = capture_start.ceil(args.window)
         grid_end = capture_end.floor(args.window)
         if grid_end <= first_window:
             raise ValueError("capture interval contains no complete state window")
         outside_complete_grid = (df["timestamp"] < first_window) | (df["timestamp"] >= grid_end)
-        if outside_complete_grid.any():
-            examples = df.loc[outside_complete_grid, "timestamp"].head(3).tolist()
-            raise ValueError(
-                f"{int(outside_complete_grid.sum())} observation(s) fall in partial capture-boundary "
-                f"windows; examples={examples}"
+        excluded_boundary_observations = int(outside_complete_grid.sum())
+        # Keep every canonical observation for audit, but states represent only
+        # complete windows. Boundary observations are deliberately excluded from
+        # graph aggregation rather than treating partial windows as full states.
+        df = df.loc[~outside_complete_grid].copy()
+        if excluded_boundary_observations:
+            print(
+                f"excluded {excluded_boundary_observations:,} observation(s) from partial "
+                "capture-boundary windows"
             )
     else:
         first_window = df["window_start"].min()

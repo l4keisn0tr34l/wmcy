@@ -94,7 +94,7 @@ The randomized path was `srv1 -> srv2 -> ws1`. Atomic processing and validation 
 - one-hop movement;
 - two-hop movement.
 
-All six actor/pivot/target role permutations are represented. `lab/generate_mvp_corpus.sh` has been syntax/plan checked but has not yet been run.
+All six actor/pivot/target role permutations are represented. The first bulk attempt created `lab_004` and stopped safely when observations occurred in a partial opening window. Boundary observations are now retained canonically but excluded from complete graph states; future traffic starts just after a five-second boundary; short scenarios retain a longer future tail; and the bulk runner resumes without overwriting matching raw episodes. `lab_004` is valid but explicitly excluded from MVP sequences because only two complete states remain, and replacement ID `lab_024` is in the plan.
 
 ## Public data currently present
 

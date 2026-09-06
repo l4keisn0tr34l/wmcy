@@ -173,9 +173,19 @@ echo 'episode_id,start_time,end_time,actor,target,technique_id,technique,tactic'
 CAPTURE_START="$(iso_now)"
 sudo -n tcpdump -i cyberwm0 -n -s 0 -w "$PCAP" 'net 10.77.0.0/24' >/dev/null 2>&1 &
 TCPDUMP_PID=$!
-sleep 2
+sleep 1
 
-BASELINE_ROUNDS="$(random_delay 5 8)"
+# Begin controlled traffic just after a wall-clock five-second boundary. This
+# keeps the baseline out of the partially captured opening state window.
+ALIGN_DELAY="$(python3 - <<'PY'
+import time
+step = 5.0
+print(f"{step - (time.time() % step) + 0.2:.6f}")
+PY
+)"
+sleep "$ALIGN_DELAY"
+
+BASELINE_ROUNDS="$(random_delay 8 10)"
 echo "[baseline] $BASELINE_ROUNDS benign pings: $ACTOR -> $TARGET"
 for ((i=1; i<=BASELINE_ROUNDS; i++)); do
   compose_exec "$ACTOR" ping -c 1 "$TARGET_IP" >/dev/null
@@ -217,8 +227,9 @@ case "$SCENARIO" in
     ;;
 esac
 
-# Retain a quiet tail so the final action is not also the end of state coverage.
-sleep 6
+# Retain enough fully captured future time for an MVP sequence with 15 seconds
+# of context and up to 30 seconds of forecast horizon, including benign episodes.
+sleep 31
 CAPTURE_END="$(iso_now)"
 cleanup
 trap - EXIT
