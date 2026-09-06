@@ -32,8 +32,8 @@
 - [ ] Add richer benign background traffic.
 - [x] Record episode metadata separately from observable telemetry.
 - [x] Create a balanced 20-episode MVP capture plan and bulk runner.
-- [ ] Run and validate the planned MVP corpus.
-- [ ] Produce at least 20–50 varied episodes for pipeline/model smoke tests, then scale substantially.
+- [x] Run and validate the planned 20-episode MVP corpus.
+- [x] Produce 20 varied episodes for pipeline/model smoke tests; scale substantially after the MVP.
 
 ## DATA CONTRACT
 
@@ -46,40 +46,40 @@
 
 ## SPLITS
 
-- [ ] Create train/validation/test manifest at the **episode/scenario level**.
-- [ ] Ensure split happens before sequence generation.
+- [x] Create train/validation/test manifest at the **episode/scenario level**.
+- [x] Ensure split happens before sequence generation.
 - [ ] Hold out complete scenario/playbook variants.
 - [ ] Add an unseen-path/unseen-implementation test split.
 
 ## FIRST WORLD MODEL
 
-- [ ] Create graph tensor loader.
-- [ ] Implement a graph/state encoder producing `z_t`.
-- [ ] Implement a temporal dynamics model over `z_(t-L+1:t)`.
-- [ ] Predict next latent state first.
-- [ ] Add multi-step rollout.
-- [ ] Add future global-state decoder.
-- [ ] Add future-edge decoder.
+- [x] Create the MVP fixed-shape graph-state/sequence exporter with persistent known hosts and activity/presence masks.
+- [x] Implement an interpretable PCA baseline state encoder producing `z_t`.
+- [x] Implement a direct six-step Ridge latent trajectory baseline over `z_(t-L+1:t)`.
+- [ ] Implement a learned graph encoder and recurrent next-latent dynamics model.
+- [ ] Add autoregressive multi-step rollout.
+- [x] Add baseline future-state reconstruction.
+- [x] Evaluate baseline future-edge presence decoded from predicted future state.
 - [ ] Add uncertainty/probabilistic output where appropriate.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
 ## SECURITY HEADS
 
-- [ ] Future ATT&CK technique multi-label head.
-- [ ] Tactic head only where useful; do not force a linear kill chain.
-- [ ] Lateral-movement-within-horizon head.
-- [ ] Source-target lateral-movement edge head.
+- [x] Add baseline future ATT&CK technique multi-label interpretation from predicted future latent states.
+- [ ] Add tactic head only if useful; do not force a linear kill chain.
+- [x] Add baseline lateral-movement-within-horizon interpretation.
+- [x] Add baseline source-target lateral-movement ranking; improve current weak top-1 result.
 - [ ] Optional future compromise-state head.
 
 ## EVALUATION
 
-- [ ] Next-state error by feature group.
-- [ ] Rollout degradation vs horizon.
-- [ ] Future-edge PR-AUC/ranking.
-- [ ] MITRE multi-label metrics.
-- [ ] LM event recall and false positives.
-- [ ] LM target-host top-k.
-- [ ] Forecast lead time.
+- [x] Measure direct multi-horizon state error by global/node/edge feature group.
+- [ ] Measure autoregressive rollout degradation vs horizon.
+- [x] Measure baseline future-edge average precision/ranking.
+- [x] Measure baseline MITRE multi-label metrics.
+- [x] Measure sample-level LM recall and false positives.
+- [x] Measure baseline LM source-target top-1; improve/qualify it.
+- [ ] Measure episode-level forecast lead time and alert behavior.
 - [ ] Probability calibration.
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.

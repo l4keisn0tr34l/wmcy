@@ -51,7 +51,24 @@ outputs/friday/state_ground_truth.csv
 ```text
 configs/cic2017_known_mitre.csv
 configs/mvp_episode_plan.csv
+configs/mvp_split_assignments.csv
 ```
+
+## MVP manifests, sequences, and model
+
+```text
+outputs/mvp/episode_manifest.csv
+outputs/mvp/split_manifest.csv
+outputs/mvp/sequences/train.npz
+outputs/mvp/sequences/validation.npz
+outputs/mvp/sequences/test.npz
+outputs/mvp/sequences/sample_manifest.csv
+outputs/mvp/sequences/feature_metadata.json
+outputs/mvp/model/baseline_metrics.json
+models/mvp_baseline.joblib
+```
+
+These are generated locally and Git-ignored. Reproducible scripts/configuration are tracked.
 
 ## Status and methodology
 

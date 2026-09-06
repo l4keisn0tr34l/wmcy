@@ -164,13 +164,14 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 1. `lab_003` is the first current, capture-bounded episode to pass the complete atomic pipeline and validator. It has 14 complete five-second states, 4/4 aligned events, and both lateral hops.
 2. `lab_001` passes after rebuilding but is legacy: whole-second truth and no capture metadata.
 3. `lab_002` is quarantined because locale-dependent commas corrupted its timestamp CSV fields; raw files remain unchanged.
-4. A balanced 20-episode MVP plan exists. Its first bulk attempt stopped safely on `lab_004`; that valid benign capture is excluded from MVP sequences because partial-boundary removal leaves only two complete states. Replacement `lab_024` is planned.
-5. Future captures align controlled traffic to a five-second boundary and retain at least 31 seconds after the final action; the bulk runner can resume without overwriting raw files.
-6. Only the two-hop and benign-ping branches have been live-capture tested so far.
-7. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
-8. Silent hosts have no node rows; the future model loader must provide a causal known-host roster with zero activity and masks.
-9. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
-10. The world-model architecture and training pipeline have not been implemented.
+4. The replacement 20-episode MVP corpus completed: 297 complete five-second states, 1,122 canonical observations, 34 ATT&CK events, and 12 lateral-movement events. All episodes pass validation and all 12 LM events have the intended directed edge in the same state.
+5. Whole-episode splits are 12 train / 4 validation / 4 test. The 15-second-context/30-second-horizon exporter produces 73 / 33 / 31 sequences with only observable context features.
+6. The first CPU latent baseline is trained: train-only scaling, 32-component PCA, direct six-step Ridge latent trajectory, state reconstruction, and future semantic/pair heads.
+7. On the tiny controlled test split, normalized state MAE is 0.612 versus 0.728 persistence; future-LM F1 is 0.875; pre-first-LM F1 is 0.857; edge AP is 0.414 at 0.176 prevalence; LM-pair top-1 is weak at 0.429. These overlapping samples are correlated and not enterprise evidence.
+8. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
+9. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
+10. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
+11. A neural graph/recurrent probabilistic world model and judge replay are not implemented yet.
 
 ---
 

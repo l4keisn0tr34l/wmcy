@@ -120,7 +120,7 @@ It randomizes actor/pivot/target roles, action pauses, baseline length, and pass
 
 All six actor/pivot/target permutations occur at least three times. `lab/generate_mvp_corpus.sh` generates, processes, and validates each episode, stopping on the first failure.
 
-The first bulk attempt stopped safely on a partial-boundary policy error in `lab_004`. No invalid derived output was installed. Boundary handling, traffic alignment, minimum duration, and safe resume behavior were corrected; the remaining/replacement plan has not yet been executed.
+The first bulk attempt stopped safely on a partial-boundary policy error in `lab_004`. After boundary handling, traffic alignment, minimum duration, and safe resume were corrected, the replacement 20-episode plan completed. All 20 planned episodes pass validation.
 
 ## 4. Current episode status
 
@@ -306,34 +306,82 @@ lab/episodes/                           local lab data (Git-ignored)
 
 This is Ha and Schmidhuber's 15-page *Recurrent World Models Facilitate Policy Evolution*. It supports learned compressed state, predictive recurrent dynamics, probabilistic futures, and rollout, but its image/RL architecture will not be copied literally.
 
-## 7. What is not implemented
+## 7. Current MVP dataset and baseline model
 
-There is currently no trained world model. Missing pieces are:
+The completed 20-episode corpus contains:
 
-- final episode manifest and train/validation/test split;
-- model-facing fixed-shape graph tensors;
-- persistent silent-host representation/activity masks in the loader;
-- latent state encoder;
-- learned temporal transition;
-- multi-step rollout;
-- future global/node/edge decoders;
-- future ATT&CK/lateral-movement heads;
-- trained model checkpoint;
-- evaluation report;
-- judge-facing replay/dashboard.
+```text
+297 complete five-second states
+1,122 canonical observations
+34 ATT&CK events
+12 lateral-movement events
+```
+
+All 12 lateral events have the intended actor-to-target directed edge in the same state.
+
+Whole-episode split:
+
+```text
+train       12 episodes / 169 states / 6 LM events
+validation   4 episodes /  65 states / 3 LM events
+test         4 episodes /  63 states / 3 LM events
+```
+
+`scripts/10_build_mvp_sequences.py` creates 141-feature observable graph-state vectors with three persistent known-host slots, six directed internal host-pair slots, and activity/presence masks. It creates sequences independently inside each split:
+
+```text
+15-second context -> 30-second future
+train:      73 sequences / 28 future-LM positives
+validation: 33 sequences / 14 future-LM positives
+test:       31 sequences / 14 future-LM positives
+```
+
+`scripts/11_train_mvp_baseline.py` trains a train-only StandardScaler + PCA state encoder, Ridge six-step latent trajectory predictor, future-state reconstruction, and future semantic/pair heads. Validation selected 32 PCA components and Ridge alpha 100.
+
+Observed untouched-test results:
+
+```text
+normalized future-state MAE                 0.612
+persistence baseline MAE                    0.728
+future-LM precision / recall / F1            0.778 / 1.000 / 0.875
+pre-first-LM precision / recall / F1         0.750 / 1.000 / 0.857
+future-edge presence average precision       0.414 (positive prevalence 0.176)
+future LM source-target top-1 accuracy       0.429
+```
+
+These results are correlated-window metrics from only four held-out controlled episodes. They support an MVP demonstration but do not establish enterprise, unseen-playbook, or cross-domain generalization. Exact LM pair prediction is currently weak.
+
+Generated local artifacts:
+
+```text
+outputs/mvp/episode_manifest.csv
+outputs/mvp/split_manifest.csv
+outputs/mvp/sequences/
+outputs/mvp/model/baseline_metrics.json
+models/mvp_baseline.joblib
+```
+
+Still missing:
+
+- an inference/replay interface;
+- episode-level alert/lead-time summary beyond overlapping sample metrics;
+- an autoregressive probabilistic rollout model;
+- a learned graph message-passing encoder;
+- robust exact source-target ranking;
+- cross-dataset and unseen-playbook evaluation.
 
 ## 8. Current limitations and risks
 
-1. Only `lab_003` is fully current and capture-bounded.
-2. The 20 planned episodes have not been generated.
-3. Only the `two_hop` scenario branch has been live-capture tested.
-4. Twenty episodes are enough for an MVP smoke test, not strong generalization evidence.
+1. Twenty planned current-format episodes are complete and validated; `lab_003` remains the separate smoke test.
+2. All six generator branches have now run successfully in the planned corpus.
+3. Twenty episodes are enough for an MVP smoke test, not strong generalization evidence.
+4. Overlapping windows within held-out episodes are correlated, so sample-level metrics must not be described as 31 independent incidents.
 5. Topology, SSH port, and credentials remain simple even though host roles vary.
 6. Edge rows aggregate by host pair. Password guessing and successful SSH may use the same pair, so the first movement is not necessarily a new pair; the second hop often is.
-7. Silent hosts currently have no node row. The model loader must insert known hosts with zero activity plus a mask rather than interpreting silence as nonexistence.
+7. Source state tables omit silent-host rows; the MVP sequence exporter now inserts the causally known three-host inventory with zero activity and an activity mask.
 8. Public datasets are not yet integrated into one combined training contract.
-9. No model performance claim exists yet.
-10. Documentation and metrics must distinguish controlled-lab proof of concept from enterprise generalization.
+9. The current baseline improves aggregate future-state MAE and LM forecasting on the tiny held-out controlled split, but exact LM pair ranking is weak.
+10. Documentation and metrics must distinguish this controlled-lab proof of concept from enterprise generalization.
 
 ## 9. Hardware and dependency assessment
 
@@ -354,17 +402,15 @@ The MVP does not require a remote GPU. A compact PCA/Ridge/MLP baseline can run 
 
 ### Judge-facing MVP
 
-After corpus capture succeeds, the remaining path is:
+Corpus capture, whole-episode splits, fixed-shape arrays, and the first latent multi-horizon baseline are complete. The remaining judge-facing path is:
 
-1. inspect corpus distributions and failures;
-2. create whole-episode train/validation/test splits;
-3. create fixed-shape past/future arrays;
-4. train a simple latent next-state/rollout baseline;
-5. add future-edge and lateral-movement outputs;
-6. evaluate against a persistence/no-history baseline;
-7. build a held-out episode replay.
+1. add an inference/replay command for one held-out episode;
+2. show observed graph history, predicted future state, future edges, ATT&CK/LM probability, and actual outcome;
+3. add episode-level warning lead-time and false-alert summaries;
+4. improve or clearly qualify exact source-target ranking;
+5. freeze a reproducible demo command and screenshots.
 
-A narrow controlled-lab MVP is approximately 1.5–2 focused development days away if the planned episodes are learnable and no major pipeline defect appears.
+A narrow controlled-lab MVP is now roughly one focused development day from a presentable replay, assuming no inference/UI defect appears.
 
 ### Full research system
 
@@ -372,9 +418,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Resume `./lab/generate_mvp_corpus.sh` interactively; it needs one sudo authorization for host packet capture. The runner safely skips/reprocesses matching existing raw episodes and never overwrites them.
-2. Inspect and validate every generated episode.
-3. Create `episode_manifest.csv` and an episode-level split manifest.
-4. Build the model-facing tensor/sequence exporter with a 5-second step and short context/horizon suitable for the small episodes.
-5. Train an interpretable CPU baseline first; install PyTorch only after the complete baseline works.
-6. Build a narrow held-out replay for judges and state limitations honestly.
+1. Build a deterministic inference/replay script around `models/mvp_baseline.joblib`.
+2. Compute episode-level warning lead time and false-alert behavior on validation/test episodes.
+3. Produce a judge-facing held-out replay, initially for `lab_023` or `lab_022`.
+4. Add a small neural recurrent model only if it can be completed without destabilizing the working baseline.
+5. State the controlled-lab scope, correlated-window limitation, and weak exact-pair ranking honestly.

@@ -45,6 +45,8 @@ Every ground-truth event is either aligned to at least one state or explicitly r
 
 # Phase 1 — Turn the one demo script into a dataset generator
 
+**Status (2026-09-06):** MVP smoke corpus complete: 20 validated planned episodes across six scenario types with randomized roles/timing. This is sufficient for pipeline/model smoke testing, not final-scale training.
+
 One fixed script is not training data.
 
 Create multiple scenario classes.
@@ -142,6 +144,8 @@ Prefer Parquet / efficient binary tensors for scale, while retaining human-reada
 
 # Phase 3 — Build dataset manifests and splits
 
+**Status (2026-09-06):** MVP episode and split manifests implemented: 12 train / 4 validation / 4 test whole episodes. Training contains all six scenarios and all six host-role permutations.
+
 Create:
 
 ```text
@@ -195,6 +199,8 @@ Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground tru
 ---
 
 # Phase 5 — First real latent world model
+
+**Status (2026-09-06):** An interpretable CPU baseline now performs train-only PCA encoding plus direct six-step Ridge latent trajectory prediction, future-state reconstruction, and security interpretation. It beats persistence on aggregate held-out normalized state MAE. A learned graph encoder and autoregressive probabilistic dynamics model remain open.
 
 ## Provisional architecture
 

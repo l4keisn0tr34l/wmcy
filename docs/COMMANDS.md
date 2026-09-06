@@ -122,6 +122,29 @@ The uploaded CICIDS2017 CSV timestamps have only minute precision; never build f
 
 Split whole episodes/days before sequence generation for training experiments.
 
+## Build MVP manifests and sequences
+
+```bash
+.venv/bin/python scripts/09_build_episode_manifests.py
+.venv/bin/python scripts/10_build_mvp_sequences.py \
+  --context 3 --horizon 6
+```
+
+This means 15 seconds of observable context predicts 30 seconds of future. Splits come from `configs/mvp_split_assignments.csv` and are applied before sequence creation.
+
+## Train the CPU latent-dynamics baseline
+
+```bash
+.venv/bin/python scripts/11_train_mvp_baseline.py
+```
+
+Local outputs:
+
+```text
+models/mvp_baseline.joblib
+outputs/mvp/model/baseline_metrics.json
+```
+
 ## Git checkpoint
 
 Generated data and `.venv` are ignored:

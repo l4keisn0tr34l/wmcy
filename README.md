@@ -14,7 +14,7 @@ For the current verified MVP checkpoint, implementation status, file map, datase
 docs/MVP_STATUS.md
 ```
 
-**Current status:** the dense capture-bounded data/validation pipeline works on a fresh controlled episode; no world model has been trained yet.
+**Current status:** 20 controlled episodes pass the dense capture-bounded pipeline; the first PCA/Ridge latent six-step world-dynamics baseline is trained and evaluated. It is a narrow controlled-lab MVP, not evidence of enterprise generalization. See `docs/MVP_STATUS.md` for verified metrics and limitations.
 
 ## Permanent data flow
 

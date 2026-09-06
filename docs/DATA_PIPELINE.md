@@ -592,7 +592,23 @@ Runs PCAP conversion, capture-bounded state construction, truth alignment, and v
 
 ---
 
-# 12. Where each datapoint resides
+# 12. `09_build_episode_manifests.py`
+
+Revalidates every planned episode, verifies metadata against the capture plan, and writes audited episode/split summaries. Scenario, role, and ATT&CK fields remain manifest metadata and are never model input.
+
+# 13. `10_build_mvp_sequences.py`
+
+Creates fixed-shape observable state vectors for the three known lab hosts and six directed internal host pairs. Silent known hosts and absent pairs receive zeros plus activity/presence masks. It then creates 15-second context and 30-second future arrays separately inside train, validation, and test episode splits. Future state, edge, ATT&CK, LM, and LM-pair targets are separate arrays.
+
+# 14. `11_train_mvp_baseline.py`
+
+Fits preprocessing only on train episodes, encodes states through PCA, predicts six future latent states with Ridge regression, reconstructs future observable states, and interprets predicted futures with security heads. Validation chooses PCA/Ridge settings and the LM threshold; test is used only after selection.
+
+This is a direct multi-horizon baseline, not yet an autoregressive probabilistic neural rollout.
+
+---
+
+# 15. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -662,7 +678,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 13. What will actually be fed to the model
+# 16. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -698,7 +714,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 14. How this becomes a world model
+# 17. How this becomes a world model
 
 After the state layer is correct:
 

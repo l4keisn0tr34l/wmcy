@@ -117,3 +117,19 @@ Raw datasets, lab episodes, generated outputs, model artifacts, Python environme
 **Status:** Open.
 
 For the time-limited MVP, start with an interpretable latent-transition baseline; only then consider a small recurrent/graph model. Do not treat any research paper's architecture as final.
+
+---
+
+## D014 — Fixed-shape MVP graph contract uses known-host masks
+
+**Status:** Accepted for the controlled three-host MVP only.
+
+Raw IP addresses select one of three stable known-inventory slots but are not scalar model features. Missing host and directed-pair rows are represented with zero activity plus explicit activity/presence masks. All six host-role permutations occur in training. This is not yet a general enterprise graph contract.
+
+---
+
+## D015 — First baseline is a direct latent trajectory model
+
+**Status:** Accepted and implemented as an MVP baseline.
+
+Train-only scaling and PCA encode observable states; Ridge predicts six future latent states directly from three context latents; inverse PCA reconstructs future states; separate heads interpret predicted futures. This validates the end-to-end world-model objective quickly but is not an autoregressive probabilistic rollout and does not replace the planned neural graph dynamics model.

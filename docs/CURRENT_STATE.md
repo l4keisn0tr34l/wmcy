@@ -94,7 +94,18 @@ The randomized path was `srv1 -> srv2 -> ws1`. Atomic processing and validation 
 - one-hop movement;
 - two-hop movement.
 
-All six actor/pivot/target role permutations are represented. The first bulk attempt created `lab_004` and stopped safely when observations occurred in a partial opening window. Boundary observations are now retained canonically but excluded from complete graph states; future traffic starts just after a five-second boundary; short scenarios retain a longer future tail; and the bulk runner resumes without overwriting matching raw episodes. `lab_004` is valid but explicitly excluded from MVP sequences because only two complete states remain, and replacement ID `lab_024` is in the plan.
+All six actor/pivot/target role permutations are represented. The replacement 20-episode plan completed and all episodes pass validation. `lab_004` remains valid but explicitly excluded because only two complete states remained after partial-boundary removal; replacement `lab_024` is part of the completed corpus.
+
+Verified corpus totals:
+
+```text
+297 complete five-second states
+1,122 canonical observations
+34 ATT&CK events
+12 lateral-movement events
+```
+
+All 12 lateral events have their intended actor-to-target directed traffic edge in the same state.
 
 ## Public data currently present
 
@@ -109,25 +120,44 @@ Existing processed Friday CIC output has 286,467 observations and 150 exact one-
 
 ## World-model status
 
-No trained world model exists yet.
+The first interpretable latent multi-horizon baseline is implemented and trained:
+
+```text
+observable graph-state vector
+  -> train-only scaling
+  -> 32-component PCA latent state
+  -> Ridge six-step latent trajectory
+  -> reconstructed future states
+  -> future ATT&CK / LM / pair interpretation
+```
+
+Whole-episode split is 12 train / 4 validation / 4 test. Fifteen seconds of context predicts thirty seconds of future. Sequence counts are 73 / 33 / 31.
+
+Observed controlled test results:
+
+```text
+future-state normalized MAE: 0.612 (persistence: 0.728)
+future-LM F1: 0.875
+pre-first-LM F1: 0.857
+future-edge AP: 0.414 (prevalence: 0.176)
+LM pair top-1: 0.429
+```
+
+These are correlated samples from four held-out controlled episodes. They are not enterprise/generalization evidence. Exact source-target ranking remains weak.
 
 Not yet implemented:
 
-- episode-level split manifest;
-- fixed-shape graph/sequence loader;
-- latent state encoder;
-- learned future-state transition;
-- multi-step rollout;
-- future-state and future-edge decoders;
-- future ATT&CK/lateral-movement heads;
-- evaluation report and judge replay.
+- judge-facing inference/replay;
+- episode-level alert/lead-time report;
+- autoregressive probabilistic rollout;
+- learned graph message-passing encoder;
+- cross-domain evaluation.
 
 ## Immediate next milestone
 
-1. Generate and validate the planned 20-episode corpus.
-2. Inspect class, role, timing, state-count, and event-count distributions.
-3. Split whole episodes before creating sequences.
-4. Build model-facing arrays with persistent known-host rows and activity masks.
-5. Train an interpretable CPU baseline before adding a small neural dynamics model.
+1. Build deterministic inference and held-out episode replay.
+2. Compute episode-level warning lead time and false alerts.
+3. Show predicted future state/edges alongside actual future and ATT&CK interpretation.
+4. Improve or clearly qualify exact source-target ranking.
 
-Do not claim model performance until held-out episode results exist.
+See `docs/MVP_STATUS.md` for full details.
