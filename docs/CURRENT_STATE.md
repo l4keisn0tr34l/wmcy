@@ -145,19 +145,21 @@ LM pair top-1: 0.429
 
 These are correlated samples from four held-out controlled episodes. They are not enterprise/generalization evidence. Exact source-target ranking remains weak.
 
+Episode-level evaluation detects 2/2 progressing validation and 2/2 progressing test episodes before first LM, with mean exact leads of 27.9 and 27.0 seconds. One of two non-progressing episodes in each split produces at least one false alert. Benign ping and legitimate SSH do not alert; failed-guessing and scan-only each produce false alerts in one held-out split.
+
+A deterministic self-contained HTML/JSON replay exists for held-out `lab_023` at context state 8. The first actual LM event occurs 22.8 seconds after prediction availability; LM probability is 65.3%, T1021.004 is 94.8%, and the correct `srv1 -> srv2` pair ranks first for that selected replay.
+
 Not yet implemented:
 
-- judge-facing inference/replay;
-- episode-level alert/lead-time report;
 - autoregressive probabilistic rollout;
 - learned graph message-passing encoder;
 - cross-domain evaluation.
 
 ## Immediate next milestone
 
-1. Build deterministic inference and held-out episode replay.
-2. Compute episode-level warning lead time and false alerts.
-3. Show predicted future state/edges alongside actual future and ATT&CK interpretation.
-4. Improve or clearly qualify exact source-target ranking.
+1. Visually inspect/polish and freeze the held-out HTML replay.
+2. Prepare a concise judge narrative explaining inputs, transformations, outputs, leakage prevention, and limitations.
+3. Improve or clearly qualify exact source-target ranking and technique false positives.
+4. Add a neural recurrent baseline only if it cannot destabilize the working CPU MVP.
 
 See `docs/MVP_STATUS.md` for full details.

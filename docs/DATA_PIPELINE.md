@@ -606,9 +606,17 @@ Fits preprocessing only on train episodes, encodes states through PCA, predicts 
 
 This is a direct multi-horizon baseline, not yet an autoregressive probabilistic neural rollout.
 
+# 15. `12_replay_mvp.py`
+
+Loads one fixed held-out sequence, performs prediction without reading future truth, then joins actual future truth only for evaluation/display. It writes self-contained JSON and HTML with context, predicted/actual future features, LM/ATT&CK scores, pair ranking, exact event lead time, and explicit limitations.
+
+# 16. `13_evaluate_episode_alerts.py`
+
+Aggregates horizon-window predictions into episode-level detection, exact warning lead time, and non-progressing false-alert summaries for validation/test episodes.
+
 ---
 
-# 15. Where each datapoint resides
+# 17. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -678,7 +686,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 16. What will actually be fed to the model
+# 18. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -714,7 +722,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 17. How this becomes a world model
+# 19. How this becomes a world model
 
 After the state layer is correct:
 

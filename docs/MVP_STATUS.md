@@ -271,6 +271,11 @@ scripts/05_align_ground_truth.py       state-level truth alignment
 scripts/06_pcap_to_canonical.py        PCAP conversion
 scripts/07_validate_episode.py         correctness/leakage validator
 scripts/08_process_lab_episode.py      atomic lab pipeline
+scripts/09_build_episode_manifests.py  audited corpus/split manifests
+scripts/10_build_mvp_sequences.py      fixed-shape graph sequences/targets
+scripts/11_train_mvp_baseline.py       latent trajectory baseline/evaluation
+scripts/12_replay_mvp.py               held-out JSON/HTML replay
+scripts/13_evaluate_episode_alerts.py  episode alert/lead-time report
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -289,6 +294,7 @@ lab/episodes/<id>/                     local raw/derived episodes (Git-ignored)
 ```text
 configs/cic2017_known_mitre.csv         supported public ATT&CK mappings
 configs/mvp_episode_plan.csv            reproducible MVP capture plan
+configs/mvp_split_assignments.csv       fixed whole-episode split
 ```
 
 ### Generated data
@@ -351,6 +357,17 @@ future LM source-target top-1 accuracy       0.429
 
 These results are correlated-window metrics from only four held-out controlled episodes. They support an MVP demonstration but do not establish enterprise, unseen-playbook, or cross-domain generalization. Exact LM pair prediction is currently weak.
 
+Episode-level horizon alert behavior:
+
+```text
+validation: 2/2 progressing detected before first LM; mean exact lead 27.9 s
+            1/2 non-progressing episodes produced at least one false alert
+test:       2/2 progressing detected before first LM; mean exact lead 27.0 s
+            1/2 non-progressing episodes produced at least one false alert
+```
+
+The false-alert episodes were failed-guessing-only on validation and scan-only on test. Benign ping and legitimate administrative SSH did not alert.
+
 Generated local artifacts:
 
 ```text
@@ -358,13 +375,23 @@ outputs/mvp/episode_manifest.csv
 outputs/mvp/split_manifest.csv
 outputs/mvp/sequences/
 outputs/mvp/model/baseline_metrics.json
+outputs/mvp/model/episode_alerts.csv
+outputs/mvp/model/episode_alert_summary.json
+outputs/mvp/replays/lab_023_context_8.json
+outputs/mvp/replays/lab_023_context_8.html
 models/mvp_baseline.joblib
 ```
 
+Implemented judge replay:
+
+```text
+scripts/12_replay_mvp.py
+```
+
+The fixed held-out `lab_023`, context-state-8 replay observes 15 seconds ending before any LM, predicts 65.3% LM risk within 30 seconds, predicts T1021.004 at 94.8%, ranks the correct `srv1 -> srv2` pair first at 98.4%, and is followed by the exact first LM event 22.8 seconds after prediction availability. This is one transparent selected replay; aggregate pair ranking remains weak.
+
 Still missing:
 
-- an inference/replay interface;
-- episode-level alert/lead-time summary beyond overlapping sample metrics;
 - an autoregressive probabilistic rollout model;
 - a learned graph message-passing encoder;
 - robust exact source-target ranking;
@@ -402,15 +429,14 @@ The MVP does not require a remote GPU. A compact PCA/Ridge/MLP baseline can run 
 
 ### Judge-facing MVP
 
-Corpus capture, whole-episode splits, fixed-shape arrays, and the first latent multi-horizon baseline are complete. The remaining judge-facing path is:
+Corpus capture, whole-episode splits, fixed-shape arrays, the first latent multi-horizon baseline, episode-level alert report, and a self-contained held-out HTML replay are complete. The remaining judge-facing work is:
 
-1. add an inference/replay command for one held-out episode;
-2. show observed graph history, predicted future state, future edges, ATT&CK/LM probability, and actual outcome;
-3. add episode-level warning lead-time and false-alert summaries;
-4. improve or clearly qualify exact source-target ranking;
-5. freeze a reproducible demo command and screenshots.
+1. inspect/polish the replay visually and freeze its command;
+2. add a concise architecture/methodology panel or presentation narrative;
+3. improve or clearly qualify exact source-target and technique behavior;
+4. optionally add a small neural baseline only if it cannot destabilize the working MVP.
 
-A narrow controlled-lab MVP is now roughly one focused development day from a presentable replay, assuming no inference/UI defect appears.
+A narrow controlled-lab MVP now exists. Remaining work is presentation hardening and, where time permits, model improvement—not creation of the first end-to-end path.
 
 ### Full research system
 
@@ -418,8 +444,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Build a deterministic inference/replay script around `models/mvp_baseline.joblib`.
-2. Compute episode-level warning lead time and false-alert behavior on validation/test episodes.
-3. Produce a judge-facing held-out replay, initially for `lab_023` or `lab_022`.
-4. Add a small neural recurrent model only if it can be completed without destabilizing the working baseline.
-5. State the controlled-lab scope, correlated-window limitation, and weak exact-pair ranking honestly.
+1. Open and visually inspect `outputs/mvp/replays/lab_023_context_8.html`.
+2. Freeze a one-command demo flow and prepare the judge explanation.
+3. Add a small neural recurrent model only if it can be completed without destabilizing the working baseline.
+4. Improve technique false positives and exact pair ranking if time permits.
+5. State the controlled-lab scope, correlated-window limitation, and non-progressing false alerts honestly.

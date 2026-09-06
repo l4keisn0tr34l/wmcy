@@ -79,7 +79,7 @@
 - [x] Measure baseline MITRE multi-label metrics.
 - [x] Measure sample-level LM recall and false positives.
 - [x] Measure baseline LM source-target top-1; improve/qualify it.
-- [ ] Measure episode-level forecast lead time and alert behavior.
+- [x] Measure episode-level forecast lead time and alert behavior on validation/test episodes.
 - [ ] Probability calibration.
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.
@@ -88,10 +88,11 @@
 ## EXPLAINABILITY / DEMO
 
 - [ ] Feature/subgraph attribution for forecast.
-- [ ] Show observed history and predicted future graph.
-- [ ] Show likely new host-host edge(s).
-- [ ] Show MITRE interpretation derived from predicted future.
-- [ ] Show uncertainty and forecast horizon.
+- [x] Generate a self-contained held-out replay showing observed history and predicted/actual future state.
+- [x] Show ranked future lateral host-host pair(s), while disclosing weak aggregate pair ranking.
+- [x] Show ATT&CK interpretation derived from predicted future latent states.
+- [x] Show model score, validation-selected threshold, forecast horizon, and non-calibration warning.
+- [ ] Visually inspect/polish and freeze the judge-facing HTML replay.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 

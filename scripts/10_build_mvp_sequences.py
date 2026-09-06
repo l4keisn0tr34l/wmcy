@@ -189,10 +189,11 @@ def main() -> int:
                 "context_last_state": context_end,
                 "future_first_state": context_end + 1,
                 "future_last_state": context_end + H,
-                "context_end_time": times.iloc[context_end],
+                "context_last_window_start": times.iloc[context_end],
+                "prediction_available_time": times.iloc[context_end] + pd.Timedelta(seconds=episode_row.window_seconds),
                 "lateral_movement_within_horizon": int(len(future_lm_offsets) > 0),
-                "first_lateral_movement_lead_seconds": (
-                    int((future_lm_offsets[0] + 1) * episode_row.window_seconds)
+                "first_lateral_movement_state_lead_seconds": (
+                    int(future_lm_offsets[0] * episode_row.window_seconds)
                     if len(future_lm_offsets) else ""
                 ),
                 "lateral_movement_already_observed": int(lm[: context_end + 1].any()),

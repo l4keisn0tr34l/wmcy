@@ -168,10 +168,12 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 5. Whole-episode splits are 12 train / 4 validation / 4 test. The 15-second-context/30-second-horizon exporter produces 73 / 33 / 31 sequences with only observable context features.
 6. The first CPU latent baseline is trained: train-only scaling, 32-component PCA, direct six-step Ridge latent trajectory, state reconstruction, and future semantic/pair heads.
 7. On the tiny controlled test split, normalized state MAE is 0.612 versus 0.728 persistence; future-LM F1 is 0.875; pre-first-LM F1 is 0.857; edge AP is 0.414 at 0.176 prevalence; LM-pair top-1 is weak at 0.429. These overlapping samples are correlated and not enterprise evidence.
-8. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
-9. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
-10. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
-11. A neural graph/recurrent probabilistic world model and judge replay are not implemented yet.
+8. Episode-level evaluation detects both progressing episodes in validation and test before first LM (mean exact lead 27.9/27.0 s), but one of two non-progressing episodes in each split has a false alert. Benign ping and legitimate SSH do not alert; failed guessing and scan-only do.
+9. A held-out `lab_023` replay at context state 8 is coherent: no prior LM, exact event 22.8 s later, LM score 65.3%, T1021.004 94.8%, and correct `srv1->srv2` pair ranked first. It is a selected example; aggregate pair ranking remains weak.
+10. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
+11. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
+12. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
+13. A neural graph/recurrent probabilistic world model is not implemented; the current model is a direct PCA/Ridge latent trajectory baseline.
 
 ---
 

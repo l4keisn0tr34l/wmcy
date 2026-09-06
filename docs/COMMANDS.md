@@ -145,6 +145,29 @@ models/mvp_baseline.joblib
 outputs/mvp/model/baseline_metrics.json
 ```
 
+## Episode alerts and held-out replay
+
+```bash
+.venv/bin/python scripts/13_evaluate_episode_alerts.py
+.venv/bin/python scripts/12_replay_mvp.py \
+  --episode lab_023 \
+  --context-end-state 8
+```
+
+Open directly:
+
+```text
+outputs/mvp/replays/lab_023_context_8.html
+```
+
+Or serve locally:
+
+```bash
+python3 -m http.server 8000 --directory outputs/mvp/replays
+```
+
+Then open `http://localhost:8000/lab_023_context_8.html`.
+
 ## Git checkpoint
 
 Generated data and `.venv` are ignored:
