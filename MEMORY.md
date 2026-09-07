@@ -181,6 +181,7 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 18. V2 removes the dominant shortcut: forbidden state-index AP is 0.153 at target prevalence 0.156 (old AP 1.000), actor-only AP 0.132, slot masks AP 0.278 versus invariant masks 0.281. Host-relabeling sensitivity remains.
 19. Honest V2 Ridge test results: state MAE 0.354 vs 0.384 persistence; active-state 1.089 vs 1.137; quiet-state 0.207 vs 0.233; LM F1 0.645; pre-first F1 0.640; edge AP 0.230; pair top-1 0.000. Global-only direct AP 0.770 exceeds latent LM AP 0.581.
 20. A compact RSSM is now the next candidate: GRU deterministic state, diagonal-Gaussian stochastic prior/posterior, future state/edge decoder, and auxiliary semantic heads. Ridge remains the benchmark.
+21. The senior's separate CICIDS2018 implementation is unavailable because they judged its results too poor to continue. Treat its verbal description as motivation only; do not depend on, integrate with, or claim empirical comparison against it.
 
 ---
 

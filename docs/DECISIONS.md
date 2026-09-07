@@ -151,3 +151,5 @@ V2 uses 120-second captures for `lab_025`-`lab_048`, balances all six training r
 **Status:** Accepted design direction; not yet implemented.
 
 Keep PCA/Ridge as the interpretable benchmark. After V2 passes shortcut checks, implement a compact recurrent state-space model with a deterministic GRU state, diagonal-Gaussian stochastic prior/posterior, observable future-state/edge decoder, and future semantic heads. Accept RSSM only if it improves multi-step forecasting and uncertainty without increasing identity/timing shortcut sensitivity.
+
+The senior's separate CICIDS2018 model is unavailable because its results were deemed too poor to continue. Its verbal description is motivation, not a verified baseline; this project will implement and evaluate RSSM independently.

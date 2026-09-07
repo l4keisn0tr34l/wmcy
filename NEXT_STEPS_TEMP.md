@@ -58,4 +58,4 @@ Honest V2 Ridge test results:
 
 RSSM is retained only if multi-step state/edge forecasting or uncertainty improves without increasing shortcut sensitivity. Do not select architecture on test. Ridge remains the baseline. The old F1 0.963 is superseded and must not be cited as valid V2 performance.
 
-Senior implementation remains unavailable/unverified. Action-conditioned firewall imagination is not part of this immediate model.
+The senior's implementation is permanently unavailable because they judged its results too poor to continue. Do not wait for it, depend on it, claim comparison with it, or plan repository integration. Their description is architectural motivation only. Action-conditioned firewall imagination is not part of this immediate model.
