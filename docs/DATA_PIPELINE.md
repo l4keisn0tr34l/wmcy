@@ -626,9 +626,13 @@ Trains a compact recurrent state-space model with deterministic GRU memory and a
 
 Loads saved RSSM Monte Carlo predictions rather than rerunning or selecting the model, joins held-out truth only for display, and renders a self-contained V2 JSON/HTML replay. The output includes prediction uncertainty, ATT&CK scores, pair ranking, actual future states/events, exact lead time, aggregate metrics, and explicit selected-example limitations.
 
+# 20. `17_build_rssm_report.py`
+
+Builds one standalone senior-facing HTML report from verified V2 manifests, Ridge/RSSM metrics, shortcut audits, and replay JSON. CSS, pipeline/RSSM SVG diagrams, charts, tables, disclosures, and limitations are inline; no external assets or runtime network access are required.
+
 ---
 
-# 20. Where each datapoint resides
+# 21. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -698,7 +702,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 21. What will actually be fed to the model
+# 22. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -734,7 +738,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 22. How this becomes a world model
+# 23. How this becomes a world model
 
 After the state layer is correct:
 

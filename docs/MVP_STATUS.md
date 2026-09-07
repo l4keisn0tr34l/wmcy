@@ -279,6 +279,7 @@ scripts/13_evaluate_episode_alerts.py  episode alert/lead-time report
 scripts/14_audit_mvp_shortcuts.py     identity/timing shortcut audit
 scripts/15_train_rssm.py              stochastic recurrent world model
 scripts/16_replay_rssm.py             V2 RSSM JSON/HTML replay
+scripts/17_build_rssm_report.py        standalone EOD HTML report
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -474,7 +475,7 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. visually inspect and freeze the generated V2 replay;
+1. visually inspect and send the standalone RSSM HTML report;
 2. improve future edge/pair ranking and false-alert behavior;
 3. run pure self-supervised versus joint semantic-loss ablation;
 4. prepare the concise EOD architecture/results narrative;
@@ -488,7 +489,7 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Open and visually inspect `outputs/mvp_v2/replays/lab_048_context_6_rssm.html`.
+1. Open/send `outputs/mvp_v2/report/rssm_eod_report.html`.
 2. Improve edge and exact LM-pair decoding.
 3. Reduce scan-only/failed-guessing false alerts.
 4. Run pure self-supervised/two-stage versus joint-loss RSSM ablation.

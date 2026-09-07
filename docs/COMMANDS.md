@@ -228,6 +228,18 @@ Open:
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 ```
 
+Build the standalone senior-facing HTML report with inline diagrams:
+
+```bash
+.venv/bin/python scripts/17_build_rssm_report.py
+```
+
+Send/open:
+
+```text
+outputs/mvp_v2/report/rssm_eod_report.html
+```
+
 ## Shortcut/leakage audit
 
 ```bash

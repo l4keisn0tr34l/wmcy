@@ -103,7 +103,8 @@
 - [x] Show ATT&CK interpretation derived from predicted future latent states.
 - [x] Show model score, validation-selected threshold, forecast horizon, and non-calibration warning.
 - [x] Generate a selected held-out V2 RSSM HTML/JSON replay with uncertainty and explicit selection disclosure.
-- [ ] Visually inspect/polish and freeze the judge-facing HTML replay.
+- [x] Generate a standalone senior-facing HTML report with inline pipeline/RSSM diagrams and verified metrics.
+- [ ] Visually inspect/polish and freeze the judge-facing HTML replay/report.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 

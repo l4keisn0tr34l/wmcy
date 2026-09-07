@@ -204,4 +204,5 @@ outputs/mvp_v2/rssm/sample_predictions.csv
 outputs/mvp_v2/rssm/episode_alerts.csv
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
+outputs/mvp_v2/report/rssm_eod_report.html
 ```
