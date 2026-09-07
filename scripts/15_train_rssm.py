@@ -473,11 +473,87 @@ def state_metrics(predicted: np.ndarray, target: np.ndarray, context: np.ndarray
     return result
 
 
+def episode_alert_report(sample_manifest: pd.DataFrame, probabilities: dict[str, np.ndarray],
+                         labels: dict[str, np.ndarray], threshold: float,
+                         episodes_dir: Path) -> tuple[pd.DataFrame, dict[str, Any], pd.DataFrame]:
+    episode_rows: list[dict[str, Any]] = []
+    sample_rows: list[pd.DataFrame] = []
+    for split in ["validation", "test"]:
+        audit = sample_manifest[sample_manifest.split.eq(split)].reset_index(drop=True).copy()
+        if len(audit) != len(probabilities[split]):
+            raise ValueError(f"sample prediction count mismatch for {split}")
+        audit["lm_probability"] = probabilities[split]
+        audit["lm_probability_threshold"] = threshold
+        audit["alert"] = probabilities[split] >= threshold
+        audit["actual_lm_within_horizon"] = labels[split].astype(int)
+        audit["prediction_available_time"] = pd.to_datetime(audit.prediction_available_time, utc=True)
+        sample_rows.append(audit)
+        for episode_id, samples in audit.groupby("episode_id", sort=False):
+            samples = samples.sort_values("prediction_available_time")
+            truth = pd.read_csv(episodes_dir / episode_id / "ground_truth.csv")
+            if len(truth):
+                truth["start_time"] = pd.to_datetime(truth.start_time, utc=True)
+                lm_events = truth[truth.tactic.astype(str).eq("Lateral Movement")]
+            else:
+                lm_events = truth
+            first_lm_time = lm_events.start_time.min() if len(lm_events) else None
+            true_alerts = samples[
+                samples.alert & samples.actual_lm_within_horizon.eq(1)
+                & samples.lateral_movement_already_observed.eq(0)
+            ]
+            first_alert_time = true_alerts.prediction_available_time.min() if len(true_alerts) else None
+            exact_lead = (
+                float((first_lm_time - first_alert_time).total_seconds())
+                if first_lm_time is not None and first_alert_time is not None else None
+            )
+            false_alerts = samples[samples.alert & samples.actual_lm_within_horizon.eq(0)]
+            episode_rows.append({
+                "split": split, "episode_id": episode_id, "scenario": samples.scenario.iloc[0],
+                "has_lateral_movement": int(first_lm_time is not None),
+                "num_samples": len(samples),
+                "num_actual_positive_windows": int(samples.actual_lm_within_horizon.sum()),
+                "num_alert_windows": int(samples.alert.sum()),
+                "num_false_alert_windows_for_30s_target": len(false_alerts),
+                "max_probability": float(samples.lm_probability.max()),
+                "detected_lm_within_horizon_before_first_lm": int(len(true_alerts) > 0),
+                "first_lm_time": first_lm_time, "first_pre_lm_alert_time": first_alert_time,
+                "exact_warning_lead_seconds": exact_lead,
+            })
+    episode_frame = pd.DataFrame(episode_rows)
+    sample_frame = pd.concat(sample_rows, ignore_index=True)
+    summary: dict[str, Any] = {
+        "threshold_selected_on_validation": threshold,
+        "scope": "episode summary from RSSM Monte Carlo mean horizon probabilities",
+        "splits": {},
+    }
+    for split, group in episode_frame.groupby("split"):
+        progressing = group[group.has_lateral_movement.eq(1)]
+        negative = group[group.has_lateral_movement.eq(0)]
+        leads = progressing.exact_warning_lead_seconds.dropna()
+        summary["splits"][split] = {
+            "episodes": len(group), "progressing_episodes": len(progressing),
+            "progressing_detected_before_first_lm": int(
+                progressing.detected_lm_within_horizon_before_first_lm.sum()
+            ),
+            "nonprogressing_episodes": len(negative),
+            "nonprogressing_episodes_with_any_30s_false_alert": int(
+                (negative.num_false_alert_windows_for_30s_target > 0).sum()
+            ),
+            "exact_warning_lead_seconds": [float(value) for value in leads],
+            "mean_exact_warning_lead_seconds": float(leads.mean()) if len(leads) else None,
+        }
+    return episode_frame, summary, sample_frame
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sequences-dir", default=str(ROOT / "outputs/mvp_v2/sequences"))
+    ap.add_argument("--episodes-dir", default=str(ROOT / "lab/episodes"))
     ap.add_argument("--model-out", default=str(ROOT / "models/mvp_v2_rssm.pt"))
     ap.add_argument("--metrics-out", default=str(ROOT / "outputs/mvp_v2/rssm/metrics.json"))
+    ap.add_argument("--predictions-out", default=str(ROOT / "outputs/mvp_v2/rssm/predictions.npz"))
+    ap.add_argument("--sample-predictions-out", default=str(ROOT / "outputs/mvp_v2/rssm/sample_predictions.csv"))
+    ap.add_argument("--episode-alerts-out", default=str(ROOT / "outputs/mvp_v2/rssm/episode_alerts.csv"))
     ap.add_argument("--epochs", type=int, default=400)
     ap.add_argument("--patience", type=int, default=50)
     ap.add_argument("--batch-size", type=int, default=32)
@@ -654,6 +730,12 @@ def main() -> int:
             "future_lateral_pair_test": ridge["future_lateral_pair_ranking"]["test"],
         }
 
+    episode_alerts, episode_summary, sample_predictions = episode_alert_report(
+        sample_manifest,
+        {split: predictions[split]["lm"] for split in ["validation", "test"]},
+        {"validation": val_lm, "test": test_lm}, lm_threshold, Path(args.episodes_dir),
+    )
+
     metrics = {
         "scope": "compact passive RSSM on equal-duration V2; overlapping windows remain correlated",
         "device": str(device), "torch_version": torch.__version__, "model_config": model_config,
@@ -671,6 +753,7 @@ def main() -> int:
         "future_lateral_pair_ranking": pair_results,
         "future_edge_presence": edge_results,
         "uncertainty": uncertainty,
+        "episode_alert_summary": episode_summary,
         "host_permutation_sensitivity": {
             "rows": permutation_rows,
             "mean_per_sample_lm_probability_range": float(
@@ -691,7 +774,11 @@ def main() -> int:
     }
 
     model_out = Path(args.model_out); metrics_out = Path(args.metrics_out)
-    model_out.parent.mkdir(parents=True, exist_ok=True); metrics_out.parent.mkdir(parents=True, exist_ok=True)
+    predictions_out = Path(args.predictions_out)
+    sample_predictions_out = Path(args.sample_predictions_out)
+    episode_alerts_out = Path(args.episode_alerts_out)
+    for output in [model_out, metrics_out, predictions_out, sample_predictions_out, episode_alerts_out]:
+        output.parent.mkdir(parents=True, exist_ok=True)
     checkpoint = {
         "model_state_dict": model.state_dict(), "model_config": model_config,
         "scaler_mean": scaler.mean_, "scaler_scale": scaler.scale_,
@@ -700,6 +787,25 @@ def main() -> int:
     }
     torch.save(checkpoint, model_out)
     metrics_out.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+    np.savez_compressed(
+        predictions_out,
+        validation_state_mean=predictions["validation"]["state"],
+        validation_state_std=mc["validation"]["state"].std(axis=0),
+        validation_edge_probability=predictions["validation"]["edge"],
+        validation_lm_probability=predictions["validation"]["lm"],
+        validation_lm_probability_std=mc["validation"]["lm"].std(axis=0),
+        validation_technique_probability=predictions["validation"]["technique"],
+        validation_pair_probability=predictions["validation"]["pair"],
+        test_state_mean=predictions["test"]["state"],
+        test_state_std=mc["test"]["state"].std(axis=0),
+        test_edge_probability=predictions["test"]["edge"],
+        test_lm_probability=predictions["test"]["lm"],
+        test_lm_probability_std=mc["test"]["lm"].std(axis=0),
+        test_technique_probability=predictions["test"]["technique"],
+        test_pair_probability=predictions["test"]["pair"],
+    )
+    sample_predictions.to_csv(sample_predictions_out, index=False)
+    episode_alerts.to_csv(episode_alerts_out, index=False)
     test_state = state_results["test"]
     print(f"selected seed={selected_seed} epoch={selected['best_epoch']} val={selected['best_validation_selection']:.4f}")
     print(f"test state MAE={test_state['normalized_mae']:.4f} persistence={test_state['persistence_normalized_mae']:.4f}")
@@ -709,7 +815,11 @@ def main() -> int:
     print("test edge AP:", edge_results["test"]["average_precision"])
     print("test pair top-1:", pair_results["test"]["top1_accuracy_any_true_lm_pair"])
     print("uncertainty:", uncertainty)
-    print(f"model -> {model_out}\nmetrics -> {metrics_out}")
+    print("episode alerts:", json.dumps(episode_summary, indent=2))
+    print(
+        f"model -> {model_out}\nmetrics -> {metrics_out}\npredictions -> {predictions_out}"
+        f"\nsample predictions -> {sample_predictions_out}\nepisode alerts -> {episode_alerts_out}"
+    )
     return 0
 
 

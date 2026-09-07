@@ -2,21 +2,16 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Completed RSSM checkpoint
+## EOD-ready RSSM checkpoint
 
-- CPU PyTorch 2.9.1 installed via `requirements-rssm.txt`; external GPU was unnecessary.
-- `scripts/15_train_rssm.py` implements a 79,421-parameter passive RSSM:
-  - observation MLP 141 -> 64;
-  - deterministic GRU state 64;
-  - diagonal-Gaussian stochastic state 16;
-  - posterior observation inference and six-step prior rollout;
-  - state, edge, LM, three ATT&CK, and six LM-pair outputs.
-- Causality test max delta 0.0; tiny-overfit loss decreased 1.872 -> 1.752.
-- Seeds 7/17/27 trained with validation-only selection; seed 7 epoch 240 selected.
-- Full CPU runtime approximately 76 seconds.
-- Model/checkpoint loading and metric invariants pass.
+Implementation:
 
-## Honest V2 RSSM test result
+- `requirements-rssm.txt`: CPU PyTorch 2.9.1;
+- `scripts/15_train_rssm.py`: 79,421-parameter passive RSSM, three-seed validation selection, causality/overfit checks, MC predictions, shortcut and episode outputs;
+- `scripts/16_replay_rssm.py`: saved-prediction V2 JSON/HTML replay;
+- `docs/RSSM_RESULTS.md`: architecture, training regime, results, and limitations.
+
+Primary V2 test comparison:
 
 ```text
                          RSSM    Ridge   persistence
@@ -29,34 +24,53 @@ future-edge AP          0.222    0.230
 LM-pair top-1           0.143    0.000
 ```
 
-- Validation LM F1 0.741; validation pre-first F1 0.720.
-- ATT&CK test F1: T1046 0.683, T1110.001 0.772, T1021.004 0.839.
-- Twenty-rollout state spread/error correlation 0.613; active spread 0.125 vs quiet 0.066.
-- Host-permutation mean LM score range 0.111 (Ridge 0.120), but max outlier range 0.680.
-- RSSM loses to persistence on active horizons +5/+10 s, then wins at +15 through +30 s.
-- Edge AP is slightly worse than Ridge and exact pair ranking remains weak.
-- Complete training is hybrid because semantic losses backpropagate into the latent model; do not call it wholly self-supervised.
+Other facts:
+
+- validation LM F1 0.741;
+- T1046/T1110.001/T1021.004 test F1 0.683/0.772/0.839;
+- state spread/error correlation 0.613 over 20 stochastic rollouts;
+- host-permutation mean LM probability range 0.111, max 0.680;
+- selected seed 7 epoch 240; CPU runtime 76 seconds;
+- RSSM loses to persistence on active +5/+10 s horizons, wins +15 through +30 s;
+- 2/2 progressing test episodes detected before LM, mean exact lead 26.4 s;
+- 2/4 non-progressing test episodes alert: scan-only and failed guessing;
+- benign ping and legitimate SSH do not alert.
+
+Selected held-out replay:
+
+```text
+episode lab_048, context state 6
+no LM previously observed
+LM score 87.8% ± 5.1%; validation threshold 66.8%
+exact first LM 28.7 seconds later
+top pair srv1 -> ws1 at 76.5%; actual srv1 -> ws1
+```
+
+Replay is explicitly labeled as selected after aggregate test inspection. Aggregate pair top-1 remains 0.143.
 
 Artifacts:
 
 ```text
 models/mvp_v2_rssm.pt
 outputs/mvp_v2/rssm/metrics.json
-docs/RSSM_RESULTS.md
+outputs/mvp_v2/rssm/predictions.npz
+outputs/mvp_v2/rssm/sample_predictions.csv
+outputs/mvp_v2/rssm/episode_alerts.csv
+outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 ```
 
 ## Next code batch
 
-1. Extend RSSM output with reproducible validation/test per-sample prediction NPZ/CSV.
-2. Compute episode-level first-alert, exact lead-time, and non-progressing false-alert reports using the validation-selected threshold.
-3. Build a self-contained V2 RSSM HTML/JSON chronological replay from a fixed held-out sample; disclose if selected after test inspection.
-4. Add architecture/results summary suitable for EOD presentation.
-5. Then improve edge/pair heads and run a pure self-supervised/two-stage versus joint-loss ablation.
+1. Visually inspect/freeze the HTML replay and prepare a concise senior-facing slide/script.
+2. Run a pure self-supervised/two-stage RSSM versus current joint-loss ablation.
+3. Improve edge decoder AP and exact LM-pair ranking.
+4. Reduce scan-only/failed-guessing false alerts with harder matched negative episodes or a progression-specific head.
+5. Consider shared-weight graph encoding after the ablation; do not add action conditioning without intervention data.
 
-## Acceptance and communication rules
+## Communication rules
 
-- Cite RSSM state MAE 0.280 and LM F1 0.800 only with V2 controlled-lab/tiny-corpus caveats.
-- Never cite old confounded F1 0.963.
-- Report active-state and horizon metrics alongside aggregate MAE.
+- Call the complete RSSM regime hybrid, not wholly self-supervised.
+- Cite V2 only; never cite old confounded F1 0.963.
+- Always show persistence/Ridge, active-state, validation, false-alert, and pair limitations.
 - Do not claim calibrated uncertainty, enterprise generalization, or action-conditioned counterfactuals.
-- Senior repository is unavailable; this is an independent implementation.
+- Senior repository is unavailable; this is an independent result.

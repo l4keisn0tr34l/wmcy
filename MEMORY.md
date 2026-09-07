@@ -185,6 +185,8 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 22. Compact passive RSSM is implemented with 64-D GRU state, 16-D Gaussian stochastic state, posterior observation inference, and six-step prior rollout. Three seeds were selected by validation only; seed 7 epoch 240 won. CPU runtime was 76 s.
 23. RSSM V2 test: state MAE 0.280 vs Ridge 0.354/persistence 0.384; active MAE 1.031 vs 1.089/1.137; future-LM F1/AP 0.800/0.910; pre-first F1 0.769; edge AP 0.222 (Ridge 0.230); pair top-1 0.143. MC state spread/error correlation is 0.613.
 24. RSSM training is hybrid: telemetry prediction/reconstruction/KL is self-supervised, but auxiliary LM/ATT&CK/pair losses backpropagate into the shared latent model. Do not describe the whole regime as purely self-supervised.
+25. RSSM episode test: 2/2 progressing episodes detected before LM with mean exact lead 26.4 s; 2/4 non-progressing episodes alert. Benign ping/legitimate SSH do not; scan-only/failed guessing do.
+26. Selected V2 replay `lab_048` context state 6: no prior LM, score 87.8% ± 5.1%, threshold 66.8%, exact first LM 28.7 s later, correct top `srv1->ws1` pair at 76.5%. It was selected after aggregate test inspection; aggregate pair top-1 is only 0.143.
 
 ---
 

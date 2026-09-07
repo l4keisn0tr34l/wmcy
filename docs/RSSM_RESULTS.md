@@ -143,6 +143,41 @@ maximum per-sample range             0.680
 
 Mean sensitivity is slightly lower than Ridge's 0.120, but individual outliers remain. The flattened fixed-slot encoder is not permutation equivariant.
 
+## Episode-level alerts
+
+Using the validation-selected 0.668 threshold:
+
+```text
+validation: 2/2 progressing episodes detected before first LM
+            mean exact lead 24.0 s
+            2/4 non-progressing episodes produced an alert
+test:       2/2 progressing episodes detected before first LM
+            mean exact lead 26.4 s
+            2/4 non-progressing episodes produced an alert
+```
+
+Benign ping and legitimate SSH do not alert. Scan-only and failed-guessing episodes do alert, showing that the model recognizes attack precursors but does not yet reliably distinguish non-progression from imminent movement.
+
+## Held-out V2 replay
+
+A selected replay is generated with:
+
+```bash
+.venv/bin/python scripts/16_replay_rssm.py
+```
+
+For held-out `lab_048` at context state 6:
+
+```text
+no LM previously observed
+LM within 30 s: 87.8% ± 5.1% (threshold 66.8%)
+exact first LM event: 28.7 s later
+top pair: srv1 -> ws1 at 76.5%
+actual pair: srv1 -> ws1
+```
+
+This sample was selected after aggregate test inspection and is explicitly disclosed as such. Aggregate pair top-1 remains 0.143; the replay is not evidence of general pair accuracy.
+
 ## Decision
 
 Retain RSSM as the preferred next model candidate because it materially improves multi-step state prediction, active-state prediction, LM forecasting, and useful stochastic diagnostics. Do not claim universal superiority: edge AP is slightly worse than Ridge and exact pair ranking remains poor.
@@ -154,13 +189,19 @@ Retain RSSM as the preferred next model candidate because it materially improves
 3. The encoder is flattened fixed-slot MLP, not graph message passing.
 4. Security supervision jointly shapes the latent model; a pure self-supervised/two-stage ablation is still needed.
 5. Edge and LM-pair decoders need improvement.
-6. Episode-level RSSM alert/lead-time reporting and a V2 replay are still needed.
-7. No defensive action variable or intervention data exists.
-8. No enterprise, cross-domain, or unseen-playbook claim is supported.
+6. Scan-only and failed-guessing hard negatives still cause episode-level false alerts.
+7. The replay is selected after aggregate test inspection and must remain labeled as selected.
+8. No defensive action variable or intervention data exists.
+9. No enterprise, cross-domain, or unseen-playbook claim is supported.
 
 Artifacts:
 
 ```text
 models/mvp_v2_rssm.pt
 outputs/mvp_v2/rssm/metrics.json
+outputs/mvp_v2/rssm/predictions.npz
+outputs/mvp_v2/rssm/sample_predictions.csv
+outputs/mvp_v2/rssm/episode_alerts.csv
+outputs/mvp_v2/replays/lab_048_context_6_rssm.json
+outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 ```

@@ -278,6 +278,7 @@ scripts/12_replay_mvp.py               held-out JSON/HTML replay
 scripts/13_evaluate_episode_alerts.py  episode alert/lead-time report
 scripts/14_audit_mvp_shortcuts.py     identity/timing shortcut audit
 scripts/15_train_rssm.py              stochastic recurrent world model
+scripts/16_replay_rssm.py             V2 RSSM JSON/HTML replay
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -429,7 +430,7 @@ future-edge AP                        0.222       0.230
 LM-pair top-1                         0.143       0.000
 ```
 
-Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test F1 is 0.683/0.772/0.839 for T1046/T1110.001/T1021.004. RSSM materially improves state and LM forecasting, but edge AP is slightly worse and pair prediction remains weak. See `docs/RSSM_RESULTS.md`.
+Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test F1 is 0.683/0.772/0.839 for T1046/T1110.001/T1021.004. RSSM materially improves state and LM forecasting, but edge AP is slightly worse and pair prediction remains weak. Episode evaluation detects 2/2 progressing test episodes before LM with mean exact lead 26.4 seconds; scan-only and failed-guessing alert while benign ping and legitimate SSH do not. See `docs/RSSM_RESULTS.md`.
 
 Still missing:
 
@@ -473,10 +474,10 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. generate episode-level RSSM alert/lead-time output;
-2. create and freeze a V2 held-out replay;
-3. improve future edge/pair ranking and false-alert behavior;
-4. run pure self-supervised versus joint semantic-loss ablation;
+1. visually inspect and freeze the generated V2 replay;
+2. improve future edge/pair ranking and false-alert behavior;
+3. run pure self-supervised versus joint semantic-loss ablation;
+4. prepare the concise EOD architecture/results narrative;
 5. present active/quiet and per-horizon results with limitations.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.
@@ -487,8 +488,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Add reproducible per-sample and episode-level RSSM alert outputs.
-2. Create a V2 RSSM chronological replay.
-3. Improve edge and exact LM-pair decoding.
+1. Open and visually inspect `outputs/mvp_v2/replays/lab_048_context_6_rssm.html`.
+2. Improve edge and exact LM-pair decoding.
+3. Reduce scan-only/failed-guessing false alerts.
 4. Run pure self-supervised/two-stage versus joint-loss RSSM ablation.
 5. Freeze the EOD architecture/results narrative with honest limitations.

@@ -620,11 +620,15 @@ Audits forbidden feature names, split/scenario role balance, LM pair coverage, d
 
 # 18. `15_train_rssm.py`
 
-Trains a compact recurrent state-space model with deterministic GRU memory and a stochastic diagonal-Gaussian latent state. During inference it observes only three context states and performs six open-loop prior transitions. Observable-state and edge decoders model future telemetry; LM, ATT&CK, and pair heads interpret only imagined future latents. The script performs a causality test, tiny-overfit test, validation-only seed/epoch selection, Monte Carlo uncertainty diagnostics, active/quiet state evaluation, and host-permutation sensitivity analysis.
+Trains a compact recurrent state-space model with deterministic GRU memory and a stochastic diagonal-Gaussian latent state. During inference it observes only three context states and performs six open-loop prior transitions. Observable-state and edge decoders model future telemetry; LM, ATT&CK, and pair heads interpret only imagined future latents. The script performs a causality test, tiny-overfit test, validation-only seed/epoch selection, Monte Carlo uncertainty diagnostics, active/quiet state evaluation, host-permutation sensitivity analysis, and episode alert reporting.
+
+# 19. `16_replay_rssm.py`
+
+Loads saved RSSM Monte Carlo predictions rather than rerunning or selecting the model, joins held-out truth only for display, and renders a self-contained V2 JSON/HTML replay. The output includes prediction uncertainty, ATT&CK scores, pair ranking, actual future states/events, exact lead time, aggregate metrics, and explicit selected-example limitations.
 
 ---
 
-# 19. Where each datapoint resides
+# 20. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -694,7 +698,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 20. What will actually be fed to the model
+# 21. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -730,7 +734,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 21. How this becomes a world model
+# 22. How this becomes a world model
 
 After the state layer is correct:
 

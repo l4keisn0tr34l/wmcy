@@ -87,7 +87,7 @@
 - [x] Measure baseline MITRE multi-label metrics.
 - [x] Measure sample-level LM recall and false positives.
 - [x] Measure baseline LM source-target top-1; improve/qualify it.
-- [x] Measure episode-level forecast lead time and alert behavior on validation/test episodes.
+- [x] Measure episode-level forecast lead time and alert behavior for Ridge and RSSM on validation/test episodes.
 - [ ] Probability calibration.
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.
@@ -102,6 +102,7 @@
 - [x] Show ranked future lateral host-host pair(s), while disclosing weak aggregate pair ranking.
 - [x] Show ATT&CK interpretation derived from predicted future latent states.
 - [x] Show model score, validation-selected threshold, forecast horizon, and non-calibration warning.
+- [x] Generate a selected held-out V2 RSSM HTML/JSON replay with uncertainty and explicit selection disclosure.
 - [ ] Visually inspect/polish and freeze the judge-facing HTML replay.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."

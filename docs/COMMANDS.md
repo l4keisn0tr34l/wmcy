@@ -214,7 +214,19 @@ models/mvp_v2_rssm.pt
 outputs/mvp_v2/rssm/metrics.json
 ```
 
-The current compact run takes approximately 76 seconds on CPU; an external GPU is unnecessary.
+The current compact run takes approximately 76 seconds on CPU; an external GPU is unnecessary. It also writes reproducible Monte Carlo predictions and episode alerts.
+
+Generate the selected held-out V2 replay:
+
+```bash
+.venv/bin/python scripts/16_replay_rssm.py
+```
+
+Open:
+
+```text
+outputs/mvp_v2/replays/lab_048_context_6_rssm.html
+```
 
 ## Shortcut/leakage audit
 

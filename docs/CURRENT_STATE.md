@@ -174,7 +174,7 @@ RSSM edge AP:              0.222 (Ridge 0.230)
 RSSM LM-pair top-1:        0.143
 ```
 
-Twenty stochastic rollouts produce mean state spread 0.076; spread/error correlation is 0.613. Host-permutation mean score range is 0.111, but individual outliers remain. See `docs/RSSM_RESULTS.md`.
+Twenty stochastic rollouts produce mean state spread 0.076; spread/error correlation is 0.613. Host-permutation mean score range is 0.111, but individual outliers remain. Episode evaluation detects 2/2 progressing test episodes before LM with mean exact lead 26.4 seconds; scan-only and failed-guessing produce alerts while benign ping and legitimate SSH do not. See `docs/RSSM_RESULTS.md`.
 
 Not yet implemented:
 
@@ -185,6 +185,6 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-Add reproducible episode-level RSSM alerts/lead times and a V2 replay, then improve edge/pair decoding and run a pure self-supervised versus jointly supervised RSSM ablation. Action-conditioned defensive intervention remains later work.
+The V2 RSSM replay is complete for selected held-out `lab_048`, context state 6: 87.8% ± 5.1% LM probability, correct top `srv1 -> ws1` pair, and exact first LM 28.7 seconds later. Next improve edge/pair decoding and false alerts, then run a pure self-supervised versus jointly supervised RSSM ablation. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

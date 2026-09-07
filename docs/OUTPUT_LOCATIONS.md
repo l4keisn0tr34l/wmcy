@@ -88,6 +88,11 @@ outputs/mvp_v2/model/episode_alerts.csv
 outputs/mvp_v2/model/episode_alert_summary.json
 outputs/mvp_v2/model/shortcut_audit.json
 outputs/mvp_v2/rssm/metrics.json
+outputs/mvp_v2/rssm/predictions.npz
+outputs/mvp_v2/rssm/sample_predictions.csv
+outputs/mvp_v2/rssm/episode_alerts.csv
+outputs/mvp_v2/replays/lab_048_context_6_rssm.json
+outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 models/mvp_v2_baseline.joblib
 models/mvp_v2_rssm.pt
 ```
