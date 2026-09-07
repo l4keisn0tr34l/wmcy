@@ -15,8 +15,9 @@ models/
 checkpoints/
 runs/
 
-# Temporary pipeline output
+# Temporary pipeline output and local corpus pause sentinel
 .processing-*/
+lab/.pause_corpus
 
 # Editor / OS files
 .DS_Store

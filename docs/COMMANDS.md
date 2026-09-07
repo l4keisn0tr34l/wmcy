@@ -81,6 +81,21 @@ Equal-duration V2 replacement plan (next interactive command):
 
 Split assignments are fixed in `configs/mvp_v2_split_assignments.csv`.
 
+Request a clean pause after the currently active episode:
+
+```bash
+touch lab/.pause_corpus
+```
+
+Resume later:
+
+```bash
+rm -f lab/.pause_corpus
+./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+```
+
+Do not use Ctrl+Z; it suspends scenario execution while wall-clock packet-capture timing can continue.
+
 ## Manual lab pipeline (debugging)
 
 ```bash

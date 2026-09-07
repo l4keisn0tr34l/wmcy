@@ -2,39 +2,36 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Completed in the latest batch
+## Current live state
 
-- `lab/run_episode.sh` now enforces a common capture deadline (default/minimum 120 seconds) and records `planned_capture_duration_seconds`.
-- `lab/generate_mvp_corpus.sh` reads optional `duration_seconds`, passes it to each capture, and validates it on resume while remaining compatible with legacy metadata.
-- `scripts/09_build_episode_manifests.py` verifies planned versus metadata/actual duration for new plans.
-- Added `configs/mvp_v2_episode_plan.csv` and `configs/mvp_v2_split_assignments.csv` for `lab_025`-`lab_048`.
-- V2 has 12 train / 6 validation / 6 test episodes; each scenario appears 2/1/1 per split; all six train role permutations occur twice; all six directed train LM pairs occur once.
-- Shell syntax, Python compilation, invalid-duration rejection, old-manifest backward compatibility, plan invariants, and diff checks pass.
+- V2 generation is running.
+- `lab_025` and `lab_026` are complete and derived/validated.
+- `lab_027` was actively capturing when checked.
+- Existing resume is episode-granular: completed episodes skip; interrupted mid-capture episodes require quarantine/regeneration.
 
-## Current invariant
+## Current code batch
 
-Existing `lab_001`-`lab_024` raw episodes are immutable. New captures must use opaque IDs `lab_025`-`lab_048`, remain inside `10.77.0.0/24`, capture for 120 seconds, and be written atomically through the existing processing pipeline.
-
-## Immediate interactive step
-
-From repository root:
+Add a graceful pause-at-boundary sentinel to `lab/generate_mvp_corpus.sh`:
 
 ```bash
-./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+touch lab/.pause_corpus
 ```
 
-The user must enter sudo credentials for host tcpdump. Expected wall time is roughly 48 minutes plus processing. The runner is resumable and refuses mismatched/partial raw episodes.
+The runner should finish/process the current episode, detect the sentinel before starting the next episode, remove/acknowledge it, and exit successfully. Add the sentinel to `.gitignore` and document pause/resume commands. This change is for future invocations; do not assume the already-running shell reloads modified code.
 
-## After capture completes
+## Required checks
 
-1. Validate all 24 episodes and audit actual capture/state-duration spread.
-2. Build V2 manifests into `outputs/mvp_v2/` using `configs/mvp_v2_split_assignments.csv`.
-3. Build V2 fixed-shape sequences.
-4. Retrain persistence and PCA/Ridge baselines into separate V2 model/output paths.
-5. Rerun shortcut diagnostics, especially forbidden state-index and host permutation tests.
-6. Reject/repair V2 if late negative windows are absent or state index remains unrealistically predictive.
-7. Only after V2 passes, overwrite this file with the compact RSSM implementation plan and begin RSSM code.
+- shell syntax;
+- existing capture process remains untouched;
+- pause check occurs only between episodes;
+- no active PCAP is intentionally suspended;
+- resume still validates/skips completed episodes;
+- no external targets or sudo scope changes.
 
-## RSSM decision
+## Manual recovery for the current pre-feature invocation
 
-Use a compact RSSM as the next candidate architecture, not as a replacement for data repair. Keep Ridge as the benchmark. RSSM must use a GRU deterministic state, diagonal-Gaussian prior/posterior, future-state/edge decoder, and auxiliary future ATT&CK/LM heads. Accept it only if it beats persistence/Ridge on multi-step forecasting and does not worsen shortcut/permutation sensitivity.
+If stopped with Ctrl+C during an episode, verify tcpdump stopped. If the active episode lacks `episode_metadata.csv`, preserve it under a suffixed ignored directory, then rerun the same plan. Completed episodes will skip.
+
+## After V2 completes
+
+Validate all 24 captures, build V2 manifests/sequences in separate outputs, rerun shortcut baselines, and then implement the compact passive RSSM smoke test. Senior implementation remains unavailable/unverified.

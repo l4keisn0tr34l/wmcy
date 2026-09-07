@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PLAN="${1:-$ROOT/configs/mvp_episode_plan.csv}"
 PYTHON="$ROOT/.venv/bin/python"
+PAUSE_FILE="$SCRIPT_DIR/.pause_corpus"
 
 if [[ ! -f "$PLAN" ]]; then
   echo "missing episode plan: $PLAN" >&2
@@ -20,6 +21,11 @@ fi
 if [[ "$(docker compose -f "$SCRIPT_DIR/docker-compose.yml" ps --services --status running | wc -l)" -ne 3 ]]; then
   echo "all three lab containers must be running" >&2
   exit 1
+fi
+if [[ -e "$PAUSE_FILE" ]]; then
+  echo "corpus generation is paused by $PAUSE_FILE" >&2
+  echo "remove it to resume: rm -f $PAUSE_FILE" >&2
+  exit 0
 fi
 
 # Authenticate once, then refresh only the timestamp while this foreground corpus
@@ -55,6 +61,14 @@ PY
 total="${#PLAN_ROWS[@]}"
 completed=0
 for row in "${PLAN_ROWS[@]}"; do
+  # A sentinel requests a clean stop between episodes. Never suspend an active
+  # scenario because wall-clock capture would continue and corrupt its timing.
+  if [[ -e "$PAUSE_FILE" ]]; then
+    echo
+    echo "pause requested; stopped cleanly after $completed/$total plan rows"
+    echo "resume with: rm -f $PAUSE_FILE && $0 $PLAN"
+    exit 0
+  fi
   IFS=$'\t' read -r episode_id scenario seed duration_seconds <<< "$row"
   completed=$((completed + 1))
   episode_dir="$SCRIPT_DIR/episodes/$episode_id"

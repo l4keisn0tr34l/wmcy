@@ -98,6 +98,23 @@ For the equal-duration, role/pair-balanced replacement corpus:
 
 The V2 plan writes only new `lab_025`-`lab_048` IDs and never overwrites the original smoke-test corpus.
 
+### Pause safely between episodes
+
+Do not use Ctrl+Z because capture time continues while scenario actions are suspended. Request a clean pause from another terminal:
+
+```bash
+touch lab/.pause_corpus
+```
+
+The runner finishes and validates the active episode, then exits before starting the next one. Resume with:
+
+```bash
+rm -f lab/.pause_corpus
+./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+```
+
+Completed episodes are validated and skipped. If Ctrl+C interrupts an active capture, that one partial episode must be quarantined/regenerated; resume is otherwise episode-granular.
+
 ## Data policy
 
 `lab/episodes/` is Git-ignored. Raw captures and manifests stay local and immutable. Publish only explicitly selected, reviewed demo artifacts later.
