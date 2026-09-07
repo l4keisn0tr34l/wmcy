@@ -25,7 +25,7 @@ The capture command requires interactive sudo authorization for host `tcpdump`:
 
 ```bash
 cd lab
-./run_episode.sh lab_003 --scenario two_hop --seed 2003
+./run_episode.sh lab_003 --scenario two_hop --seed 2003 --duration-seconds 120
 cd ..
 ```
 
@@ -67,11 +67,19 @@ Independent validation:
 ./lab/generate_mvp_corpus.sh
 ```
 
-Plan:
+Original smoke-test plan:
 
 ```text
 configs/mvp_episode_plan.csv
 ```
+
+Equal-duration V2 replacement plan (next interactive command):
+
+```bash
+./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+```
+
+Split assignments are fixed in `configs/mvp_v2_split_assignments.csv`.
 
 ## Manual lab pipeline (debugging)
 

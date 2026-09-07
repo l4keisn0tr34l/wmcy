@@ -14,7 +14,7 @@ For the current verified MVP checkpoint, implementation status, file map, datase
 docs/MVP_STATUS.md
 ```
 
-**Current status:** 20 controlled episodes pass the dense capture-bounded pipeline; the first PCA/Ridge latent six-step world-dynamics baseline is trained and evaluated. A shortcut audit found unequal scenario capture durations censor late negative windows, so current metrics are provisional smoke-test results. See `docs/MVP_STATUS.md` and `docs/SHORTCUT_AUDIT.md`; do not present this as enterprise or final generalization evidence.
+**Current status:** 20 controlled episodes pass the dense capture-bounded pipeline; the first PCA/Ridge latent six-step world-dynamics baseline is trained and evaluated. A shortcut audit found unequal scenario capture durations censor late negative windows, so current metrics are provisional smoke-test results. Equal-duration generation and a balanced 24-episode V2 plan are ready; capture is pending. See `docs/MVP_STATUS.md` and `docs/SHORTCUT_AUDIT.md`; do not present this as enterprise or final generalization evidence.
 
 ## Permanent data flow
 

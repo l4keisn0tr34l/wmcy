@@ -45,14 +45,17 @@ required = {"episode_id", "scenario", "seed"}
 if not rows or not required.issubset(rows[0]):
     raise SystemExit("plan must contain episode_id,scenario,seed and at least one row")
 for row in rows:
-    print(f"{row['episode_id']}\t{row['scenario']}\t{row['seed']}")
+    duration = row.get("duration_seconds") or "120"
+    if not duration.isdigit() or int(duration) < 120:
+        raise SystemExit(f"invalid duration_seconds for {row['episode_id']}: {duration!r}")
+    print(f"{row['episode_id']}\t{row['scenario']}\t{row['seed']}\t{duration}")
 PY
 )
 
 total="${#PLAN_ROWS[@]}"
 completed=0
 for row in "${PLAN_ROWS[@]}"; do
-  IFS=$'\t' read -r episode_id scenario seed <<< "$row"
+  IFS=$'\t' read -r episode_id scenario seed duration_seconds <<< "$row"
   completed=$((completed + 1))
   episode_dir="$SCRIPT_DIR/episodes/$episode_id"
   echo
@@ -60,7 +63,7 @@ for row in "${PLAN_ROWS[@]}"; do
 
   if [[ -f "$episode_dir/network.pcap" && -f "$episode_dir/ground_truth.csv" && -f "$episode_dir/episode_metadata.csv" ]]; then
     # Resume only when existing raw data exactly matches this plan row.
-    "$PYTHON" - "$episode_dir/episode_metadata.csv" "$episode_id" "$scenario" "$seed" <<'PY'
+    "$PYTHON" - "$episode_dir/episode_metadata.csv" "$episode_id" "$scenario" "$seed" "$duration_seconds" <<'PY'
 import csv
 import sys
 with open(sys.argv[1], newline="", encoding="utf-8") as handle:
@@ -71,6 +74,13 @@ expected = {"episode_id": sys.argv[2], "scenario": sys.argv[3], "seed": sys.argv
 actual = {key: rows[0].get(key) for key in expected}
 if actual != expected:
     raise SystemExit(f"cannot resume: metadata {actual} does not match plan {expected}")
+planned_duration = rows[0].get("planned_capture_duration_seconds")
+if planned_duration is not None and planned_duration != sys.argv[5]:
+    raise SystemExit(
+        f"cannot resume: metadata duration {planned_duration!r} does not match plan {sys.argv[5]!r}"
+    )
+if planned_duration is None:
+    print("resume: legacy metadata has no planned duration; base fields match")
 PY
     if [[ -f "$episode_dir/observations.csv.gz" && -d "$episode_dir/states" && -f "$episode_dir/state_ground_truth.csv" ]] \
        && "$PYTHON" "$ROOT/scripts/07_validate_episode.py" "$episode_dir" --window-seconds 5; then
@@ -86,7 +96,8 @@ PY
     echo "cannot resume partial raw episode directory: $episode_dir" >&2
     exit 1
   fi
-  "$SCRIPT_DIR/run_episode.sh" "$episode_id" --scenario "$scenario" --seed "$seed"
+  "$SCRIPT_DIR/run_episode.sh" "$episode_id" --scenario "$scenario" --seed "$seed" \
+    --duration-seconds "$duration_seconds"
   "$PYTHON" "$ROOT/scripts/08_process_lab_episode.py" "$episode_dir"
 done
 

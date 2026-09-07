@@ -602,7 +602,7 @@ Creates fixed-shape observable state vectors for the three known lab hosts and s
 
 # 14. `11_train_mvp_baseline.py`
 
-Fits preprocessing only on train episodes, encodes states through PCA, predicts six future latent states with Ridge regression, reconstructs future observable states, and interprets predicted futures with security heads. Validation chooses PCA/Ridge settings and the LM threshold; test is used only after selection.
+Fits preprocessing only on observable training-context states, encodes states through PCA, predicts six future latent states with Ridge regression, reconstructs future observable states, and interprets predicted futures with security heads. Validation chooses PCA/Ridge settings and the LM threshold; test is used only after selection.
 
 This is a direct multi-horizon baseline, not yet an autoregressive probabilistic neural rollout.
 

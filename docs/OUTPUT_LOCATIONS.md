@@ -52,6 +52,8 @@ outputs/friday/state_ground_truth.csv
 configs/cic2017_known_mitre.csv
 configs/mvp_episode_plan.csv
 configs/mvp_split_assignments.csv
+configs/mvp_v2_episode_plan.csv
+configs/mvp_v2_split_assignments.csv
 ```
 
 ## MVP manifests, sequences, and model

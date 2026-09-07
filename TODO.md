@@ -29,8 +29,9 @@
 - [x] Randomize action timing, baseline length, and attempt count from a recorded seed.
 - [x] Randomize actor/pivot/target host roles.
 - [x] Audit fixed-IP, role, timing, capture-length, and model shortcut risks (`docs/SHORTCUT_AUDIT.md`).
-- [ ] Replace scenario-dependent captures with equal-duration 120-150 second episodes.
-- [ ] Balance all directed LM pairs within training and define a separate unseen-pair test.
+- [x] Enforce equal-duration 120-second captures and create the V2 replacement plan.
+- [x] Balance all six directed LM pairs within V2 training; a separate unseen-pair test remains future work.
+- [ ] Capture and validate planned V2 episodes `lab_025`-`lab_048`.
 - [ ] Broaden action timing and add hard negatives with similar precursors.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.

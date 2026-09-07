@@ -14,9 +14,10 @@ Usage: ./run_episode.sh EPISODE_ID [options]
 Options:
   --scenario NAME   benign_ping | legitimate_ssh | scan_only |
                     failed_guessing | one_hop | two_hop (default: two_hop)
-  --seed INTEGER    Seed for host-role and timing randomization (default: epoch time)
-  --out-dir PATH    Output directory (default: lab/episodes/EPISODE_ID)
-  --help            Show this help
+  --seed INTEGER       Seed for host-role and timing randomization (default: epoch time)
+  --duration-seconds N Common capture duration for every scenario (default: 120)
+  --out-dir PATH       Output directory (default: lab/episodes/EPISODE_ID)
+  --help               Show this help
 
 Use opaque episode IDs such as lab_002. Do not encode the scenario name in an ID
 that may later appear in model-facing dataset metadata.
@@ -32,11 +33,13 @@ EPISODE_ID="$1"
 shift
 SCENARIO="two_hop"
 SEED="$(date +%s)"
+DURATION_SECONDS=120
 OUT_DIR="$SCRIPT_DIR/episodes/$EPISODE_ID"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --scenario) SCENARIO="${2:?missing --scenario value}"; shift 2 ;;
     --seed) SEED="${2:?missing --seed value}"; shift 2 ;;
+    --duration-seconds) DURATION_SECONDS="${2:?missing --duration-seconds value}"; shift 2 ;;
     --out-dir) OUT_DIR="${2:?missing --out-dir value}"; shift 2 ;;
     --help) usage; exit 0 ;;
     *) echo "unknown option: $1" >&2; usage >&2; exit 2 ;;
@@ -49,6 +52,10 @@ case "$SCENARIO" in
 esac
 if [[ ! "$SEED" =~ ^[0-9]+$ ]]; then
   echo "seed must be a non-negative integer" >&2
+  exit 2
+fi
+if [[ ! "$DURATION_SECONDS" =~ ^[0-9]+$ ]] || ((DURATION_SECONDS < 120)); then
+  echo "duration must be an integer of at least 120 seconds" >&2
   exit 2
 fi
 if [[ ! "$EPISODE_ID" =~ ^[A-Za-z0-9_.-]+$ ]]; then
@@ -171,6 +178,8 @@ sudo -v
 mkdir -p "$OUT_DIR"
 echo 'episode_id,start_time,end_time,actor,target,technique_id,technique,tactic' > "$GT"
 CAPTURE_START="$(iso_now)"
+CAPTURE_START_NS="$(date +%s%N)"
+CAPTURE_DEADLINE_NS=$((CAPTURE_START_NS + DURATION_SECONDS * 1000000000))
 sudo -n tcpdump -i cyberwm0 -n -s 0 -w "$PCAP" 'net 10.77.0.0/24' >/dev/null 2>&1 &
 TCPDUMP_PID=$!
 sleep 1
@@ -227,18 +236,30 @@ case "$SCENARIO" in
     ;;
 esac
 
-# Retain enough fully captured future time for an MVP sequence with 15 seconds
-# of context and up to 30 seconds of forecast horizon, including benign episodes.
-sleep 31
+# Every scenario continues to the same capture deadline. This prevents short
+# negative scenarios from losing late sequence windows while attack scenarios
+# continue to contribute them. Fail rather than silently extending a scenario
+# whose actions exceed the declared common duration.
+REMAINING_SECONDS="$(python3 - "$CAPTURE_DEADLINE_NS" <<'PY'
+import sys
+import time
+remaining = (int(sys.argv[1]) - time.time_ns()) / 1_000_000_000
+if remaining <= 0:
+    raise SystemExit("scenario actions exceeded the fixed capture duration")
+print(f"{remaining:.9f}")
+PY
+)"
+echo "[capture] retaining background/quiet traffic until ${DURATION_SECONDS}s deadline"
+sleep "$REMAINING_SECONDS"
 CAPTURE_END="$(iso_now)"
 cleanup
 trap - EXIT
 
 # Metadata is supervision/audit information and must never be fed to the model.
-printf 'episode_id,scenario,seed,capture_start,capture_end,actor,pivot,target,window_seconds\n' > "$META"
-printf '%s,%s,%s,%s,%s,%s,%s,%s,5\n' \
+printf 'episode_id,scenario,seed,capture_start,capture_end,actor,pivot,target,window_seconds,planned_capture_duration_seconds\n' > "$META"
+printf '%s,%s,%s,%s,%s,%s,%s,%s,5,%s\n' \
   "$EPISODE_ID" "$SCENARIO" "$SEED" "$CAPTURE_START" "$CAPTURE_END" \
-  "$ACTOR" "$PIVOT" "$TARGET" >> "$META"
+  "$ACTOR" "$PIVOT" "$TARGET" "$DURATION_SECONDS" >> "$META"
 
 # Refuse to announce success when locale/quoting or a future edit corrupts a manifest.
 python3 - "$GT" "$META" <<'PY'
@@ -246,7 +267,7 @@ import csv
 import re
 import sys
 
-expected = {sys.argv[1]: 8, sys.argv[2]: 9}
+expected = {sys.argv[1]: 8, sys.argv[2]: 10}
 timestamp = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}$")
 for path, width in expected.items():
     with open(path, newline="", encoding="utf-8") as handle:
@@ -261,7 +282,7 @@ for path, width in expected.items():
 PY
 
 echo "episode written to $OUT_DIR"
-echo "  scenario: $SCENARIO (seed=$SEED; roles=$ACTOR->$PIVOT->$TARGET)"
+echo "  scenario: $SCENARIO (seed=$SEED; roles=$ACTOR->$PIVOT->$TARGET; duration=${DURATION_SECONDS}s)"
 echo "  pcap: $PCAP"
 echo "  truth: $GT"
 echo "  metadata: $META"

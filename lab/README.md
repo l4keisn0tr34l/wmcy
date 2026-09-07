@@ -26,7 +26,7 @@ docker compose ps
 Use an opaque ID; keep the scenario name only in separate metadata:
 
 ```bash
-./run_episode.sh lab_003 --scenario two_hop --seed 2003
+./run_episode.sh lab_003 --scenario two_hop --seed 2003 --duration-seconds 120
 ```
 
 Supported scenarios:
@@ -40,7 +40,7 @@ one_hop
 two_hop
 ```
 
-The runner asks for sudo because host `tcpdump` captures the private bridge. It refuses to overwrite existing raw episodes and writes:
+The runner asks for sudo because host `tcpdump` captures the private bridge. Every scenario uses the same capture duration (default and minimum: 120 seconds), preventing short negative scenarios from losing late sequence windows. It refuses to overwrite existing raw episodes and writes:
 
 ```text
 episodes/<id>/network.pcap
@@ -89,6 +89,14 @@ From repository root:
 ```
 
 This reads `configs/mvp_episode_plan.csv`, keeps sudo authorization alive, runs each episode, immediately processes/validates it, and stops at the first failure.
+
+For the equal-duration, role/pair-balanced replacement corpus:
+
+```bash
+./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+```
+
+The V2 plan writes only new `lab_025`-`lab_048` IDs and never overwrites the original smoke-test corpus.
 
 ## Data policy
 

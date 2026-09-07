@@ -162,7 +162,9 @@ No measured result proves that the model uses this drift. It remains a plausible
 
 ### Priority 0: replacement controlled corpus
 
-1. Capture every scenario for the same fixed duration, recommended 120-150 seconds.
+Implementation update: the runner and `configs/mvp_v2_episode_plan.csv` now enforce 120-second captures for planned `lab_025`-`lab_048`; generation is pending.
+
+1. Capture every scenario for the same fixed duration, currently 120 seconds.
 2. Continue benign/background telemetry through the complete duration so negative episodes supply late windows.
 3. Broaden and randomize action start times independently of scenario where feasible.
 4. Balance actor, pivot, target, and all six directed pairs within training rather than only over the whole corpus.

@@ -140,4 +140,14 @@ Scaling and PCA fitted exclusively on observable training-context states encode 
 
 **Status:** Accepted; replacement corpus not yet generated.
 
-The first 20-episode corpus used scenario execution time plus a fixed tail, causing progressing episodes to be longer than negative episodes. Complete-window sequence construction then censored late negative samples; a forbidden state-index-only diagnostic reached test AP 1.000. Future comparative corpora must capture every scenario for the same fixed 120-150 second duration, retain late benign/background windows, broaden timing, and balance LM directed pairs. Existing episodes remain immutable smoke-test data, but their semantic metrics are provisional.
+The first 20-episode corpus used scenario execution time plus a fixed tail, causing progressing episodes to be longer than negative episodes. Complete-window sequence construction then censored late negative samples; a forbidden state-index-only diagnostic reached test AP 1.000. Future comparative corpora must capture every scenario for the same fixed duration, retain late benign/background windows, broaden timing, and balance LM directed pairs. Existing episodes remain immutable smoke-test data, but their semantic metrics are provisional.
+
+The V2 plan uses 120-second captures for `lab_025`-`lab_048`, balances all six training role permutations and directed LM pairs, and interleaves split capture order. Generation is pending.
+
+---
+
+## D017 — RSSM is the next candidate, not a substitute for data correction
+
+**Status:** Accepted design direction; not yet implemented.
+
+Keep PCA/Ridge as the interpretable benchmark. After V2 passes shortcut checks, implement a compact recurrent state-space model with a deterministic GRU state, diagonal-Gaussian stochastic prior/posterior, observable future-state/edge decoder, and future semantic heads. Accept RSSM only if it improves multi-step forecasting and uncertainty without increasing identity/timing shortcut sensitivity.

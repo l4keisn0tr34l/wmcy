@@ -294,8 +294,10 @@ lab/episodes/<id>/                     local raw/derived episodes (Git-ignored)
 
 ```text
 configs/cic2017_known_mitre.csv         supported public ATT&CK mappings
-configs/mvp_episode_plan.csv            reproducible MVP capture plan
-configs/mvp_split_assignments.csv       fixed whole-episode split
+configs/mvp_episode_plan.csv            original smoke-test capture plan
+configs/mvp_split_assignments.csv       original whole-episode split
+configs/mvp_v2_episode_plan.csv         equal-duration replacement plan
+configs/mvp_v2_split_assignments.csv    balanced V2 whole-episode split
 ```
 
 ### Generated data
@@ -449,8 +451,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Modify capture generation so every scenario records the same 120-150 second duration.
-2. Create a role/pair-balanced replacement plan with broader action timing and harder negatives.
-3. Generate/validate the corrected corpus and rebuild episode-level splits.
+1. Generate `lab_025`-`lab_048` from the implemented 120-second V2 plan.
+2. Validate equal durations, late negative windows, roles, and directed LM pairs.
+3. Rebuild baseline outputs in a separate V2 path.
 4. Require state-index, no-history, global-only, and host-permutation diagnostics before accepting new metrics.
-5. Then freeze the judge replay and state the controlled-lab scope honestly.
+5. Implement/compare a compact RSSM only after V2 passes, then freeze the judge replay.

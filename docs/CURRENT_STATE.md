@@ -157,9 +157,12 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-1. Generate equal-duration replacement captures so negative scenarios provide late windows.
-2. Balance directed LM pairs/roles and broaden action timing.
-3. Retrain and require state-index, no-history, global-only, and host-permutation diagnostics.
-4. Only then polish/freeze the replay and consider a neural recurrent baseline.
+Equal-duration generation and the balanced V2 plan are implemented. The next interactive action is:
+
+```bash
+./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
+```
+
+This generates `lab_025`-`lab_048` with 120-second captures; sudo is required for host tcpdump. After validation, rebuild the baseline and shortcut audit in separate V2 output paths. Only if V2 removes late-negative censoring should implementation begin on the compact RSSM described in `NEXT_STEPS_TEMP.md` and `docs/DECISIONS.md`.
 
 See `docs/MVP_STATUS.md` for full details.

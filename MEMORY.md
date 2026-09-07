@@ -177,6 +177,8 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 14. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
 15. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
 16. A neural graph/recurrent probabilistic world model is not implemented; the current model is a direct PCA/Ridge latent trajectory baseline.
+17. Equal-duration capture support is implemented with a 120-second default/minimum. V2 plans `lab_025`-`lab_048` with 12/6/6 splits, all scenarios per split, all six train role permutations twice, and all six directed train LM pairs once. Capture generation is pending sudo.
+18. A compact RSSM is the next candidate after V2 passes shortcut checks: GRU deterministic state, diagonal-Gaussian stochastic prior/posterior, future state/edge decoder, and auxiliary semantic heads. Ridge remains the benchmark.
 
 ---
 

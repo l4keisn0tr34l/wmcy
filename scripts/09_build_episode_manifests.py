@@ -74,6 +74,14 @@ def main() -> int:
         actual = (str(m.episode_id), str(m.scenario), str(m.seed))
         if actual != expected:
             raise ValueError(f"{planned.episode_id}: metadata {actual} != plan {expected}")
+        planned_duration = getattr(planned, "duration_seconds", None)
+        if planned_duration is not None and not pd.isna(planned_duration):
+            metadata_duration = m.get("planned_capture_duration_seconds")
+            if pd.isna(metadata_duration) or int(metadata_duration) != int(planned_duration):
+                raise ValueError(
+                    f"{planned.episode_id}: metadata planned duration {metadata_duration!r} "
+                    f"!= plan {planned_duration!r}"
+                )
 
         observations = pd.read_csv(episode / "observations.csv.gz", low_memory=False)
         global_states = pd.read_csv(episode / "states/global_states.csv")
@@ -91,6 +99,13 @@ def main() -> int:
         lateral = truth[truth.tactic.astype(str).eq("Lateral Movement")]
         capture_start = pd.to_datetime(m.capture_start, utc=True)
         capture_end = pd.to_datetime(m.capture_end, utc=True)
+        capture_duration = (capture_end - capture_start).total_seconds()
+        if planned_duration is not None and not pd.isna(planned_duration):
+            if abs(capture_duration - float(planned_duration)) > 1.0:
+                raise ValueError(
+                    f"{planned.episode_id}: actual capture duration {capture_duration:.3f}s "
+                    f"differs from planned {float(planned_duration):.3f}s"
+                )
 
         rows.append({
             "episode_id": planned.episode_id,
@@ -103,7 +118,12 @@ def main() -> int:
             "target": m.target,
             "capture_start": capture_start,
             "capture_end": capture_end,
-            "capture_duration_seconds": (capture_end - capture_start).total_seconds(),
+            "capture_duration_seconds": capture_duration,
+            "planned_capture_duration_seconds": (
+                int(planned_duration)
+                if planned_duration is not None and not pd.isna(planned_duration)
+                else None
+            ),
             "window_seconds": args.window_seconds,
             "state_start": state_start,
             "state_end": state_end,
