@@ -162,7 +162,7 @@ No measured result proves that the model uses this drift. It remains a plausible
 
 ### Priority 0: replacement controlled corpus
 
-Implementation update: the runner and `configs/mvp_v2_episode_plan.csv` now enforce 120-second captures for planned `lab_025`-`lab_048`; generation is pending.
+Implementation update: the runner and `configs/mvp_v2_episode_plan.csv` enforce 120-second captures, and all planned `lab_025`-`lab_048` episodes are complete and validated.
 
 1. Capture every scenario for the same fixed duration, currently 120 seconds.
 2. Continue benign/background telemetry through the complete duration so negative episodes supply late windows.
@@ -202,4 +202,41 @@ future-edge AP                      0.412
 LM-pair top-1                       0.429
 ```
 
-These values verify that the end-to-end code still functions after leakage correction. They are not promoted as final evidence because the dataset-length and scenario-template confounds remain.
+These values verify that the original end-to-end code still functions after leakage correction. They are superseded by the V2 evaluation below.
+
+## 9. V2 follow-up audit
+
+The equal-duration V2 corpus is complete and validates:
+
+```text
+24 episodes; 23 states and 15 samples per episode
+capture duration range 120.009-120.013 seconds
+180 / 90 / 90 train-validation-test samples
+all six directed LM pairs exactly once in training
+```
+
+The original censoring shortcut is removed:
+
+```text
+                                      old test AP   V2 test AP
+forbidden context state index             1.000         0.153
+forbidden actor metadata                  0.498         0.132
+slot-specific activity/presence masks     0.691         0.278
+permutation-invariant mask counts         0.683         0.281
+```
+
+V2 target prevalence is 0.156. Late negative samples continue through context state 16, and every context-state position contains negative examples. Fixed identity is not dominant in the simple mask diagnostic, although the Ridge model remains sensitive to equivalent host permutations.
+
+Honest V2 Ridge results are:
+
+```text
+state MAE                   0.354 vs 0.384 persistence
+active-future-state MAE     1.089 vs 1.137 persistence
+quiet-future-state MAE      0.207 vs 0.233 persistence
+future-LM F1                0.645
+pre-first-LM F1             0.640
+edge AP                     0.230
+LM pair top-1               0.000
+```
+
+Only 90/540 test future state-windows are active. The Ridge forecast is worse than persistence on active horizons 1-2 and better on active horizons 3-6, so aggregate MAE alone is insufficient. A global-only direct diagnostic reaches AP 0.770, while the latent LM head reaches AP 0.581. V2 passes the data shortcut gate for an RSSM experiment, but current semantic and pair heads are not judge-ready.

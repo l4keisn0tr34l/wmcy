@@ -96,6 +96,31 @@ rm -f lab/.pause_corpus
 
 Do not use Ctrl+Z; it suspends scenario execution while wall-clock packet-capture timing can continue.
 
+Build and evaluate V2 separately from original outputs:
+
+```bash
+.venv/bin/python scripts/09_build_episode_manifests.py \
+  --plan configs/mvp_v2_episode_plan.csv \
+  --splits configs/mvp_v2_split_assignments.csv \
+  --out-dir outputs/mvp_v2
+.venv/bin/python scripts/10_build_mvp_sequences.py \
+  --episode-manifest outputs/mvp_v2/episode_manifest.csv \
+  --out-dir outputs/mvp_v2/sequences --context 3 --horizon 6
+.venv/bin/python scripts/11_train_mvp_baseline.py \
+  --sequences-dir outputs/mvp_v2/sequences \
+  --model-out models/mvp_v2_baseline.joblib \
+  --metrics-out outputs/mvp_v2/model/baseline_metrics.json
+.venv/bin/python scripts/13_evaluate_episode_alerts.py \
+  --model models/mvp_v2_baseline.joblib \
+  --sequences-dir outputs/mvp_v2/sequences \
+  --out-dir outputs/mvp_v2/model
+.venv/bin/python scripts/14_audit_mvp_shortcuts.py \
+  --sequences-dir outputs/mvp_v2/sequences \
+  --episode-manifest outputs/mvp_v2/episode_manifest.csv \
+  --model models/mvp_v2_baseline.joblib \
+  --out outputs/mvp_v2/model/shortcut_audit.json
+```
+
 ## Manual lab pipeline (debugging)
 
 ```bash

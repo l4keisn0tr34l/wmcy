@@ -31,7 +31,7 @@
 - [x] Audit fixed-IP, role, timing, capture-length, and model shortcut risks (`docs/SHORTCUT_AUDIT.md`).
 - [x] Enforce equal-duration 120-second captures and create the V2 replacement plan.
 - [x] Balance all six directed LM pairs within V2 training; a separate unseen-pair test remains future work.
-- [ ] Capture and validate planned V2 episodes `lab_025`-`lab_048`.
+- [x] Capture and validate planned V2 episodes `lab_025`-`lab_048`.
 - [ ] Broaden action timing and add hard negatives with similar precursors.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
@@ -90,7 +90,8 @@
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.
 - [x] Run provisional global-only, last-state, identity-mask, state-index, and host-permutation shortcut diagnostics.
-- [ ] Repeat ablations on equal-duration corrected data; add no-SSL vs SSL if SSL is implemented.
+- [x] Repeat state-index, actor, global-only, last-state, mask, and permutation diagnostics on equal-duration V2 data.
+- [ ] Add no-SSL vs SSL if SSL is implemented.
 
 ## EXPLAINABILITY / DEMO
 

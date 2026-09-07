@@ -392,7 +392,27 @@ Implemented judge replay:
 scripts/12_replay_mvp.py
 ```
 
-The fixed held-out `lab_023`, context-state-8 replay observes 15 seconds ending before any LM, predicts 67.8% LM risk within 30 seconds, predicts T1021.004 at 96.2%, ranks the correct `srv1 -> srv2` pair first at 99.4%, and is followed by the exact first LM event 22.8 seconds after prediction availability. This is a selected replay inspected after test results; `srv1 -> srv2` occurred twice in training and aggregate pair ranking remains weak.
+The fixed held-out `lab_023`, context-state-8 replay observes 15 seconds ending before any LM, predicts 67.8% LM risk within 30 seconds, predicts T1021.004 at 96.2%, ranks the correct `srv1 -> srv2` pair first at 99.4%, and is followed by the exact first LM event 22.8 seconds after prediction availability. This selected replay belongs to the superseded unequal-duration corpus and must not be presented as V2 evidence.
+
+### Equal-duration V2 result
+
+All 24 `lab_025`-`lab_048` episodes pass validation. Capture durations span 120.009-120.013 seconds; each episode yields exactly 23 states and 15 sequences. Totals are 552 states, 1,068 observations, 36 ATT&CK events, and 12 LM events. V2 produces 180/90/90 train/validation/test samples and includes all six directed LM pairs exactly once in training.
+
+V2 test results:
+
+```text
+normalized state MAE                         0.354 (persistence 0.384)
+active-future-state MAE                     1.089 (persistence 1.137)
+quiet-future-state MAE                      0.207 (persistence 0.233)
+future-LM precision / recall / F1           0.588 / 0.714 / 0.645
+pre-first-LM precision / recall / F1        0.615 / 0.667 / 0.640
+future-edge AP                              0.230
+LM pair top-1                               0.000
+```
+
+The state-index shortcut falls from AP 1.000 to 0.153 at target prevalence 0.156. Both progressing test episodes are detected before first LM (mean exact lead 21.4 seconds), but 3/4 non-progressing test episodes alert. Global-only direct AP 0.770 exceeds latent LM AP 0.581. V2 is suitable for the RSSM experiment, but semantic and pair performance are not yet strong.
+
+V2 artifacts are local under `outputs/mvp_v2/` and `models/mvp_v2_baseline.joblib`.
 
 Still missing:
 
@@ -407,8 +427,8 @@ Still missing:
 2. All six generator branches have now run successfully in the planned corpus.
 3. Twenty episodes are enough for an MVP smoke test, not strong generalization evidence.
 4. Overlapping windows within held-out episodes are correlated, so sample-level metrics must not be described as 31 independent incidents.
-5. Scenario-dependent capture length censors late negative windows; the current model metrics are provisional until equal-duration captures replace this corpus for evaluation.
-6. Fixed IP slots create measurable host-relabeling sensitivity even though raw IP values and actor metadata are not model inputs.
+5. V2 removes scenario-dependent capture-length censoring, but 371/552 states are quiet; active/quiet and per-horizon metrics remain mandatory.
+6. Fixed IP slots still create measurable host-relabeling sensitivity even though raw IP values and actor metadata are not model inputs.
 7. Topology, SSH port, and credentials remain simple even though host roles vary.
 8. Edge rows aggregate by host pair. Password guessing and successful SSH may use the same pair, so the first movement is not necessarily a new pair; the second hop often is.
 9. Source state tables omit silent-host rows; the MVP sequence exporter now inserts the causally known three-host inventory with zero activity and an activity mask.
@@ -437,11 +457,11 @@ The MVP does not require a remote GPU. A compact PCA/Ridge/MLP baseline can run 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, the first latent multi-horizon baseline, episode-level alert report, and a self-contained held-out HTML replay are complete as an engineering smoke test. The shortcut audit means the remaining judge-facing path must begin with data repair:
 
-1. generate equal-duration episodes with late negative windows;
-2. balance LM source-target pairs and broaden action timing;
-3. retrain and rerun shortcut/no-history diagnostics;
-4. then polish and freeze the replay and presentation narrative;
-5. optionally add a small neural baseline only after the corrected data path is stable.
+1. implement the compact passive RSSM on V2;
+2. compare RSSM against persistence, Ridge, last-state, and global-only diagnostics;
+3. report active/quiet and per-horizon rollout degradation;
+4. improve future pair ranking and false-alert behavior;
+5. then create and freeze a V2 held-out replay.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.
 
@@ -451,8 +471,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Generate `lab_025`-`lab_048` from the implemented 120-second V2 plan.
-2. Validate equal durations, late negative windows, roles, and directed LM pairs.
-3. Rebuild baseline outputs in a separate V2 path.
-4. Require state-index, no-history, global-only, and host-permutation diagnostics before accepting new metrics.
-5. Implement/compare a compact RSSM only after V2 passes, then freeze the judge replay.
+1. Implement a compact RSSM over V2's chronological graph states.
+2. Compare six-step prior rollout against V2 persistence and PCA/Ridge.
+3. Require active/quiet, per-horizon, global-only, last-state, and permutation diagnostics.
+4. Attach future LM/ATT&CK heads only to predicted RSSM futures.
+5. Freeze a V2 judge replay only after model selection.

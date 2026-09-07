@@ -200,7 +200,7 @@ Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground tru
 
 # Phase 5 — First real latent world model
 
-**Status (2026-09-07):** An interpretable CPU baseline now performs train-context-only scaling/PCA plus direct six-step Ridge latent trajectory prediction, future-state reconstruction, and security interpretation. It beats persistence on provisional aggregate normalized state MAE. A shortcut audit found unequal capture-duration censoring. Equal-duration generation and a balanced 24-episode V2 plan are implemented; capture is pending. After V2 validation, a compact RSSM is the next candidate while Ridge remains the benchmark.
+**Status (2026-09-07):** Equal-duration V2 is complete and removes the original state-index/capture-length shortcut. Its honest PCA/Ridge baseline beats persistence slightly on aggregate and active future-state MAE, but future-LM F1 is 0.645, pair top-1 is 0.000, and global-only AP exceeds the latent semantic head. A compact RSSM is now the next candidate while Ridge remains the benchmark.
 
 ## Provisional architecture
 

@@ -101,6 +101,29 @@ def state_errors(
             for h in range(target_normalized.shape[1])
         ],
     }
+    # Aggregate scores can be dominated by fixed-duration quiet tails. Report
+    # active and zero-flow future states separately, including horizon behavior.
+    active = data["future_states"][:, :, 0] > 0
+    for activity_name, mask in [("active", active), ("quiet", ~active)]:
+        output[f"{activity_name}_future_state_count"] = int(mask.sum())
+        output[f"{activity_name}_normalized_mae"] = (
+            float(np.mean(np.abs(predicted_normalized - target_normalized)[mask]))
+            if mask.any() else None
+        )
+        output[f"{activity_name}_persistence_normalized_mae"] = (
+            float(np.mean(np.abs(persistence - target_normalized)[mask]))
+            if mask.any() else None
+        )
+        output[f"{activity_name}_normalized_mae_by_horizon"] = [
+            float(np.mean(np.abs(predicted_normalized[:, h] - target_normalized[:, h])[mask[:, h]]))
+            if mask[:, h].any() else None
+            for h in range(target_normalized.shape[1])
+        ]
+        output[f"{activity_name}_persistence_normalized_mae_by_horizon"] = [
+            float(np.mean(np.abs(persistence[:, h] - target_normalized[:, h])[mask[:, h]]))
+            if mask[:, h].any() else None
+            for h in range(target_normalized.shape[1])
+        ]
     for name, feature_slice in group_slices.items():
         output[f"{name}_normalized_mae"] = float(
             np.mean(np.abs(predicted_normalized[:, :, feature_slice] - target_normalized[:, :, feature_slice]))
@@ -341,6 +364,12 @@ def main() -> int:
     print(
         f"test normalized state MAE={state_metric_sets['test']['normalized_mae']:.4f} "
         f"persistence={state_metric_sets['test']['persistence_normalized_mae']:.4f}"
+    )
+    print(
+        f"test active-state MAE={state_metric_sets['test']['active_normalized_mae']:.4f} "
+        f"persistence={state_metric_sets['test']['active_persistence_normalized_mae']:.4f}; "
+        f"quiet-state MAE={state_metric_sets['test']['quiet_normalized_mae']:.4f} "
+        f"persistence={state_metric_sets['test']['quiet_persistence_normalized_mae']:.4f}"
     )
     print("test future LM:", semantic_metrics["test"])
     print("test pre-first-LM:", semantic_metrics["test_before_any_observed_lateral"])

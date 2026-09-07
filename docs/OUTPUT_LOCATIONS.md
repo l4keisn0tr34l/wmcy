@@ -77,6 +77,19 @@ models/mvp_baseline.joblib
 
 These are generated locally and Git-ignored. Reproducible scripts/configuration are tracked.
 
+Equal-duration V2 counterparts are stored separately:
+
+```text
+outputs/mvp_v2/episode_manifest.csv
+outputs/mvp_v2/split_manifest.csv
+outputs/mvp_v2/sequences/
+outputs/mvp_v2/model/baseline_metrics.json
+outputs/mvp_v2/model/episode_alerts.csv
+outputs/mvp_v2/model/episode_alert_summary.json
+outputs/mvp_v2/model/shortcut_audit.json
+models/mvp_v2_baseline.joblib
+```
+
 ## Status and methodology
 
 ```text

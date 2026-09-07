@@ -2,36 +2,60 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Current live state
+## Verified current state
 
-- V2 generation is running.
-- `lab_025` and `lab_026` are complete and derived/validated.
-- `lab_027` was actively capturing when checked.
-- Existing resume is episode-granular: completed episodes skip; interrupted mid-capture episodes require quarantine/regeneration.
+V2 corpus is complete and accepted for the RSSM experiment:
 
-## Current code batch
+- 24/24 `lab_025`-`lab_048` episodes pass validation;
+- capture duration 120.008644-120.012759 seconds;
+- exactly 23 states and 15 sequence samples per episode;
+- totals: 552 states, 1,068 observations, 36 ATT&CK events, 12 LM events;
+- splits: 12/6/6 episodes and 180/90/90 samples;
+- all six directed LM pairs occur once in training;
+- late negatives continue through context state 16;
+- state-index AP 0.153 at target prevalence 0.156 (old confounded AP 1.000);
+- actor-only AP 0.132; slot-mask AP 0.278 vs invariant-mask AP 0.281.
 
-Add a graceful pause-at-boundary sentinel to `lab/generate_mvp_corpus.sh`:
+Official local artifacts are under `outputs/mvp_v2/` and `models/mvp_v2_baseline.joblib`.
 
-```bash
-touch lab/.pause_corpus
-```
+Honest V2 Ridge test results:
 
-The runner should finish/process the current episode, detect the sentinel before starting the next episode, remove/acknowledge it, and exit successfully. Add the sentinel to `.gitignore` and document pause/resume commands. This change is for future invocations; do not assume the already-running shell reloads modified code.
+- state MAE 0.354 vs 0.384 persistence;
+- active-state MAE 1.089 vs 1.137;
+- quiet-state MAE 0.207 vs 0.233;
+- future-LM F1 0.645; pre-first F1 0.640;
+- edge AP 0.230; pair top-1 0.000;
+- global-only direct AP 0.770 vs latent LM AP 0.581;
+- 2/2 progressing test episodes detected, but 3/4 non-progressing test episodes alert.
 
-## Required checks
+`scripts/11_train_mvp_baseline.py` now records active/quiet and per-horizon state metrics.
 
-- shell syntax;
-- existing capture process remains untouched;
-- pause check occurs only between episodes;
-- no active PCAP is intentionally suspended;
-- resume still validates/skips completed episodes;
-- no external targets or sudo scope changes.
+## Next code batch: compact passive RSSM
 
-## Manual recovery for the current pre-feature invocation
+1. Confirm disk/PyTorch installation choice; local RTX 3050 4 GB is sufficient and external GPU is not required.
+2. Add PyTorch without removing the current scikit environment.
+3. Implement an RSSM over 9-state V2 sequences:
+   - observation width 141;
+   - MLP embedding 64;
+   - GRU deterministic state 64;
+   - diagonal-Gaussian stochastic state 16;
+   - posterior conditioning for 3 context states;
+   - six-step stochastic prior rollout;
+   - decoder back to normalized 141-feature observable states;
+   - explicit edge-presence logits;
+   - future LM, three ATT&CK, and six LM-pair auxiliary heads from predicted future latents only.
+4. Training losses:
+   - equal-weight global/node/edge normalized prediction MSE;
+   - edge-presence BCE;
+   - posterior-prior KL with free nats and conservative beta;
+   - auxiliary semantic BCE with class weighting;
+   - no scenario, actor, target, state index, timestamp, or labels as input.
+5. Use train-only normalization, validation early stopping, fixed seeds, gradient clipping, and consistent host permutation augmentation.
+6. Run tiny-overfit and tensor/causality tests before full training.
+7. Compare against V2 persistence/Ridge using aggregate, active/quiet, and per-horizon state MAE; edge AP; pre-first-LM metrics; episode false alerts/lead time; stochastic calibration; and host-permutation sensitivity.
 
-If stopped with Ctrl+C during an episode, verify tcpdump stopped. If the active episode lacks `episode_metadata.csv`, preserve it under a suffixed ignored directory, then rerun the same plan. Completed episodes will skip.
+## Acceptance rule
 
-## After V2 completes
+RSSM is retained only if multi-step state/edge forecasting or uncertainty improves without increasing shortcut sensitivity. Do not select architecture on test. Ridge remains the baseline. The old F1 0.963 is superseded and must not be cited as valid V2 performance.
 
-Validate all 24 captures, build V2 manifests/sequences in separate outputs, rerun shortcut baselines, and then implement the compact passive RSSM smoke test. Senior implementation remains unavailable/unverified.
+Senior implementation remains unavailable/unverified. Action-conditioned firewall imagination is not part of this immediate model.

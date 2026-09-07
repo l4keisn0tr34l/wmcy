@@ -105,7 +105,21 @@ Verified corpus totals:
 12 lateral-movement events
 ```
 
-All 12 lateral events have their intended actor-to-target directed traffic edge in the same state.
+All 12 lateral events have their intended actor-to-target directed traffic edge in the same state. This corpus is retained as an engineering smoke test but its semantic metrics are superseded because scenario lengths were unequal.
+
+## Equal-duration V2 corpus
+
+All 24 planned `lab_025`-`lab_048` episodes pass validation:
+
+```text
+552 complete five-second states (23 per episode)
+1,068 canonical observations
+36 ATT&CK events
+12 lateral-movement events
+360 sequences (15 per episode)
+```
+
+Every capture is 120.009-120.013 seconds. Splits are 12/6/6 episodes and 180/90/90 sequences. Every scenario appears in every split, and all six directed LM pairs occur exactly once in training. Late negative samples continue through context state 16.
 
 ## Public data currently present
 
@@ -120,34 +134,32 @@ Existing processed Friday CIC output has 286,467 observations and 150 exact one-
 
 ## World-model status
 
-The first interpretable latent multi-horizon baseline is implemented and trained:
+The V2 interpretable baseline is:
 
 ```text
-observable graph-state vector
-  -> train-only scaling
-  -> 32-component PCA latent state
+141-feature observable graph state
+  -> train-context-only scaling
+  -> 8-component PCA latent state
   -> Ridge six-step latent trajectory
   -> reconstructed future states
   -> future ATT&CK / LM / pair interpretation
 ```
 
-Whole-episode split is 12 train / 4 validation / 4 test. Fifteen seconds of context predicts thirty seconds of future. Sequence counts are 73 / 33 / 31.
-
-Observed controlled test results:
+Fifteen seconds of context predicts thirty seconds of future. Honest V2 held-out test results are:
 
 ```text
-future-state normalized MAE: 0.676 (persistence: 0.767)
-future-LM F1: 0.963
-pre-first-LM F1: 0.957
-future-edge AP: 0.412 (prevalence: 0.176)
-LM pair top-1: 0.429
+future-state normalized MAE: 0.354 (persistence: 0.384)
+active-future-state MAE:     1.089 (persistence: 1.137)
+quiet-future-state MAE:      0.207 (persistence: 0.233)
+future-LM F1:                0.645
+pre-first-LM F1:             0.640
+future-edge AP:              0.230
+LM pair top-1:               0.000
 ```
 
-These are provisional correlated-window results from four held-out controlled episodes. `docs/SHORTCUT_AUDIT.md` documents a critical unequal-capture-length confound: on test, all complete samples at context state 7 or later are positive. The metric change also reflects correcting scaler/PCA fitting from train-context-plus-future to train-context-only preprocessing.
+The forbidden state-index diagnostic fell from AP 1.000 to 0.153, near target prevalence 0.156. Actor-only AP is 0.132; slot-specific masks (0.278) are nearly identical to permutation-invariant counts (0.281). The main prior shortcut is removed, although host permutation sensitivity remains.
 
-Episode-level evaluation detects 2/2 progressing validation and 2/2 progressing test episodes before first LM, with mean exact leads of 27.9 and 27.0 seconds. Failed guessing produces a validation false alert; current test non-progressing episodes do not alert. Unequal episode length still makes this provisional.
-
-A deterministic self-contained HTML/JSON replay exists for held-out `lab_023` at context state 8. The first actual LM event occurs 22.8 seconds after prediction availability; LM probability is 67.8%, T1021.004 is 96.2%, and the correct `srv1 -> srv2` pair ranks first. This selected pair occurred twice in training.
+The model detects both progressing test episodes before first LM, with mean exact lead 21.4 seconds, but 3/4 non-progressing test episodes produce at least one false alert. A global-only direct diagnostic reaches AP 0.770 versus the latent model's AP 0.581, so the current semantic head does not yet establish graph-dynamics value.
 
 Not yet implemented:
 
@@ -157,12 +169,6 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-Equal-duration generation and the balanced V2 plan are implemented. The next interactive action is:
-
-```bash
-./lab/generate_mvp_corpus.sh configs/mvp_v2_episode_plan.csv
-```
-
-This generates `lab_025`-`lab_048` with 120-second captures; sudo is required for host tcpdump. After validation, rebuild the baseline and shortcut audit in separate V2 output paths. Only if V2 removes late-negative censoring should implementation begin on the compact RSSM described in `NEXT_STEPS_TEMP.md` and `docs/DECISIONS.md`.
+V2 passes the duration/identity shortcut gate. Implement the compact passive RSSM described in `NEXT_STEPS_TEMP.md` and compare it against V2 persistence, PCA/Ridge, last-state, and global-only diagnostics. Report active/quiet and per-horizon state errors so quiet tails cannot dominate the result. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.
