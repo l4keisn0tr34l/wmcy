@@ -200,7 +200,7 @@ Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground tru
 
 # Phase 5 — First real latent world model
 
-**Status (2026-09-06):** An interpretable CPU baseline now performs train-only PCA encoding plus direct six-step Ridge latent trajectory prediction, future-state reconstruction, and security interpretation. It beats persistence on aggregate held-out normalized state MAE. A learned graph encoder and autoregressive probabilistic dynamics model remain open.
+**Status (2026-09-07):** An interpretable CPU baseline now performs train-context-only scaling/PCA plus direct six-step Ridge latent trajectory prediction, future-state reconstruction, and security interpretation. It beats persistence on provisional aggregate normalized state MAE. A shortcut audit found unequal capture-duration censoring, so replacement equal-duration episodes are required before final evaluation. A learned graph encoder and autoregressive probabilistic dynamics model remain open.
 
 ## Provisional architecture
 

@@ -124,7 +124,7 @@ For the time-limited MVP, start with an interpretable latent-transition baseline
 
 **Status:** Accepted for the controlled three-host MVP only.
 
-Raw IP addresses select one of three stable known-inventory slots but are not scalar model features. Missing host and directed-pair rows are represented with zero activity plus explicit activity/presence masks. All six host-role permutations occur in training. This is not yet a general enterprise graph contract.
+Raw IP addresses select one of three stable known-inventory slots but are not scalar model features. Missing host and directed-pair rows are represented with zero activity plus explicit activity/presence masks. All six host-role permutations occur across training episodes, but LM-specific training covers only four directed pairs and no LM originates at `srv2`. Host-relabeling sensitivity is therefore an unresolved limitation. This is not yet a general enterprise graph contract.
 
 ---
 
@@ -132,4 +132,12 @@ Raw IP addresses select one of three stable known-inventory slots but are not sc
 
 **Status:** Accepted and implemented as an MVP baseline.
 
-Train-only scaling and PCA encode observable states; Ridge predicts six future latent states directly from three context latents; inverse PCA reconstructs future states; separate heads interpret predicted futures. This validates the end-to-end world-model objective quickly but is not an autoregressive probabilistic rollout and does not replace the planned neural graph dynamics model.
+Scaling and PCA fitted exclusively on observable training-context states encode the inputs; Ridge predicts six future latent states directly from three context latents; inverse PCA reconstructs future states; separate heads interpret predicted futures. Training future states are supervised targets, not preprocessing-fit data. This validates the end-to-end world-model objective quickly but is not an autoregressive probabilistic rollout and does not replace the planned neural graph dynamics model.
+
+---
+
+## D016 — Equal capture duration is mandatory for comparative episode evaluation
+
+**Status:** Accepted; replacement corpus not yet generated.
+
+The first 20-episode corpus used scenario execution time plus a fixed tail, causing progressing episodes to be longer than negative episodes. Complete-window sequence construction then censored late negative samples; a forbidden state-index-only diagnostic reached test AP 1.000. Future comparative corpora must capture every scenario for the same fixed 120-150 second duration, retain late benign/background windows, broaden timing, and balance LM directed pairs. Existing episodes remain immutable smoke-test data, but their semantic metrics are provisional.

@@ -136,18 +136,18 @@ Whole-episode split is 12 train / 4 validation / 4 test. Fifteen seconds of cont
 Observed controlled test results:
 
 ```text
-future-state normalized MAE: 0.612 (persistence: 0.728)
-future-LM F1: 0.875
-pre-first-LM F1: 0.857
-future-edge AP: 0.414 (prevalence: 0.176)
+future-state normalized MAE: 0.676 (persistence: 0.767)
+future-LM F1: 0.963
+pre-first-LM F1: 0.957
+future-edge AP: 0.412 (prevalence: 0.176)
 LM pair top-1: 0.429
 ```
 
-These are correlated samples from four held-out controlled episodes. They are not enterprise/generalization evidence. Exact source-target ranking remains weak.
+These are provisional correlated-window results from four held-out controlled episodes. `docs/SHORTCUT_AUDIT.md` documents a critical unequal-capture-length confound: on test, all complete samples at context state 7 or later are positive. The metric change also reflects correcting scaler/PCA fitting from train-context-plus-future to train-context-only preprocessing.
 
-Episode-level evaluation detects 2/2 progressing validation and 2/2 progressing test episodes before first LM, with mean exact leads of 27.9 and 27.0 seconds. One of two non-progressing episodes in each split produces at least one false alert. Benign ping and legitimate SSH do not alert; failed-guessing and scan-only each produce false alerts in one held-out split.
+Episode-level evaluation detects 2/2 progressing validation and 2/2 progressing test episodes before first LM, with mean exact leads of 27.9 and 27.0 seconds. Failed guessing produces a validation false alert; current test non-progressing episodes do not alert. Unequal episode length still makes this provisional.
 
-A deterministic self-contained HTML/JSON replay exists for held-out `lab_023` at context state 8. The first actual LM event occurs 22.8 seconds after prediction availability; LM probability is 65.3%, T1021.004 is 94.8%, and the correct `srv1 -> srv2` pair ranks first for that selected replay.
+A deterministic self-contained HTML/JSON replay exists for held-out `lab_023` at context state 8. The first actual LM event occurs 22.8 seconds after prediction availability; LM probability is 67.8%, T1021.004 is 96.2%, and the correct `srv1 -> srv2` pair ranks first. This selected pair occurred twice in training.
 
 Not yet implemented:
 
@@ -157,9 +157,9 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-1. Visually inspect/polish and freeze the held-out HTML replay.
-2. Prepare a concise judge narrative explaining inputs, transformations, outputs, leakage prevention, and limitations.
-3. Improve or clearly qualify exact source-target ranking and technique false positives.
-4. Add a neural recurrent baseline only if it cannot destabilize the working CPU MVP.
+1. Generate equal-duration replacement captures so negative scenarios provide late windows.
+2. Balance directed LM pairs/roles and broaden action timing.
+3. Retrain and require state-index, no-history, global-only, and host-permutation diagnostics.
+4. Only then polish/freeze the replay and consider a neural recurrent baseline.
 
 See `docs/MVP_STATUS.md` for full details.

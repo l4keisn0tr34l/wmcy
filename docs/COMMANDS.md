@@ -145,6 +145,14 @@ models/mvp_baseline.joblib
 outputs/mvp/model/baseline_metrics.json
 ```
 
+## Shortcut/leakage audit
+
+```bash
+.venv/bin/python scripts/14_audit_mvp_shortcuts.py
+```
+
+Read `docs/SHORTCUT_AUDIT.md` before citing controlled-corpus metrics.
+
 ## Episode alerts and held-out replay
 
 ```bash

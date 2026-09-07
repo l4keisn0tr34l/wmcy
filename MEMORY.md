@@ -166,14 +166,17 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 3. `lab_002` is quarantined because locale-dependent commas corrupted its timestamp CSV fields; raw files remain unchanged.
 4. The replacement 20-episode MVP corpus completed: 297 complete five-second states, 1,122 canonical observations, 34 ATT&CK events, and 12 lateral-movement events. All episodes pass validation and all 12 LM events have the intended directed edge in the same state.
 5. Whole-episode splits are 12 train / 4 validation / 4 test. The 15-second-context/30-second-horizon exporter produces 73 / 33 / 31 sequences with only observable context features.
-6. The first CPU latent baseline is trained: train-only scaling, 32-component PCA, direct six-step Ridge latent trajectory, state reconstruction, and future semantic/pair heads.
-7. On the tiny controlled test split, normalized state MAE is 0.612 versus 0.728 persistence; future-LM F1 is 0.875; pre-first-LM F1 is 0.857; edge AP is 0.414 at 0.176 prevalence; LM-pair top-1 is weak at 0.429. These overlapping samples are correlated and not enterprise evidence.
-8. Episode-level evaluation detects both progressing episodes in validation and test before first LM (mean exact lead 27.9/27.0 s), but one of two non-progressing episodes in each split has a false alert. Benign ping and legitimate SSH do not alert; failed guessing and scan-only do.
-9. A held-out `lab_023` replay at context state 8 is coherent: no prior LM, exact event 22.8 s later, LM score 65.3%, T1021.004 94.8%, and correct `srv1->srv2` pair ranked first. It is a selected example; aggregate pair ranking remains weak.
-10. Fixed topology, SSH service/credentials, and limited background traffic still permit shortcuts despite role randomization.
-11. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
-12. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
-13. A neural graph/recurrent probabilistic world model is not implemented; the current model is a direct PCA/Ridge latent trajectory baseline.
+6. The first CPU latent baseline is trained: train-context-only scaling/PCA, direct six-step Ridge latent trajectory, state reconstruction, and future semantic/pair heads.
+7. A shortcut audit found critical scenario-dependent capture-length censoring: on test, all complete samples at context state 7 or later are positive because negative captures end sooner. A forbidden state-index-only diagnostic gets AP 1.000. Current metrics are smoke tests, not final evidence; see `docs/SHORTCUT_AUDIT.md`.
+8. Scaler/PCA originally fitted on train context plus train futures. This was corrected to train-context-only preprocessing. Corrected provisional test results are state MAE 0.676 versus 0.767 persistence, future-LM F1 0.963, pre-first-LM F1 0.957, edge AP 0.412, and pair top-1 0.429.
+9. Raw actor metadata alone has AP 0.498, so no evidence says one common attack IP dominates. Fixed IP slots still matter: equivalent host relabeling changes LM probability by 0.234 on average. Training LM truth covers only 4/6 directed pairs and none sourced by srv2.
+10. Simple last-state-only and global-only diagnostics achieve high semantic AP, so current LM results do not prove temporal history or graph identity is necessary. The primary future-state objective still beats persistence on this provisional split.
+11. Episode-level evaluation detects both progressing episodes in validation and test before first LM (mean exact lead 27.9/27.0 s); failed guessing causes a validation false alert and current test negatives do not alert. Unequal duration confounds these results.
+12. A held-out `lab_023` replay at context state 8 has no prior LM, exact event 22.8 s later, LM score 67.8%, T1021.004 96.2%, and correct `srv1->srv2` pair ranked first. It is selected after test inspection, and that pair occurred twice in training.
+13. Fixed topology, SSH service/credentials, deterministic action order, capture order, and limited background traffic permit shortcuts despite role randomization.
+14. Source state tables omit silent hosts; the MVP exporter inserts the known roster with zero activity and masks.
+15. Host-pair edge aggregation does not distinguish a new service relationship from renewed activity on an existing pair.
+16. A neural graph/recurrent probabilistic world model is not implemented; the current model is a direct PCA/Ridge latent trajectory baseline.
 
 ---
 

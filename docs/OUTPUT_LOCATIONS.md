@@ -65,6 +65,11 @@ outputs/mvp/sequences/test.npz
 outputs/mvp/sequences/sample_manifest.csv
 outputs/mvp/sequences/feature_metadata.json
 outputs/mvp/model/baseline_metrics.json
+outputs/mvp/model/episode_alerts.csv
+outputs/mvp/model/episode_alert_summary.json
+outputs/mvp/model/shortcut_audit.json
+outputs/mvp/replays/lab_023_context_8.json
+outputs/mvp/replays/lab_023_context_8.html
 models/mvp_baseline.joblib
 ```
 
@@ -76,6 +81,7 @@ These are generated locally and Git-ignored. Reproducible scripts/configuration 
 docs/MVP_STATUS.md
 docs/CURRENT_STATE.md
 docs/DATA_PIPELINE.md
+docs/SHORTCUT_AUDIT.md
 ```
 
 ## External raw datasets

@@ -614,9 +614,13 @@ Loads one fixed held-out sequence, performs prediction without reading future tr
 
 Aggregates horizon-window predictions into episode-level detection, exact warning lead time, and non-progressing false-alert summaries for validation/test episodes.
 
+# 17. `14_audit_mvp_shortcuts.py`
+
+Audits forbidden feature names, split/scenario role balance, LM pair coverage, direct global/last-state/identity/timing diagnostics, and sensitivity to six equivalent host relabelings. This stage identified unequal capture-duration censoring and fixed-slot sensitivity; see `docs/SHORTCUT_AUDIT.md`.
+
 ---
 
-# 17. Where each datapoint resides
+# 18. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -686,7 +690,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 18. What will actually be fed to the model
+# 19. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -722,7 +726,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 19. How this becomes a world model
+# 20. How this becomes a world model
 
 After the state layer is correct:
 

@@ -166,12 +166,12 @@ def main() -> int:
     feature_metadata = json.loads((sequences_dir / "feature_metadata.json").read_text())
     sample_manifest = pd.read_csv(sequences_dir / "sample_manifest.csv")
 
-    train_state_pool = np.concatenate(
-        [train["context_states"].reshape(-1, train["context_states"].shape[-1]),
-         train["future_states"].reshape(-1, train["future_states"].shape[-1])],
-        axis=0,
+    # Fit all preprocessing on observable training contexts only. Training futures
+    # remain supervised targets and must not influence scaling or PCA axes.
+    train_context_state_pool = train["context_states"].reshape(
+        -1, train["context_states"].shape[-1]
     )
-    scaler = StandardScaler().fit(train_state_pool)
+    scaler = StandardScaler().fit(train_context_state_pool)
 
     global_width = len(feature_metadata["global_feature_names"])
     node_width = len(feature_metadata["node_feature_names"]) * len(feature_metadata["node_slots"])
@@ -185,7 +185,9 @@ def main() -> int:
     candidates: list[dict[str, float]] = []
     fitted: dict[tuple[int, float], tuple[PCA, Ridge]] = {}
     for components in [8, 16, 24, 32]:
-        pca = PCA(n_components=components, random_state=42).fit(scaler.transform(train_state_pool))
+        pca = PCA(n_components=components, random_state=42).fit(
+            scaler.transform(train_context_state_pool)
+        )
         for alpha in [0.1, 1.0, 10.0, 100.0]:
             dynamics = fit_dynamics(scaler, pca, train, alpha)
             predicted_latent = forecast_latents(scaler, pca, dynamics, validation)

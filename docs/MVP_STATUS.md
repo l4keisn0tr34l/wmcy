@@ -276,6 +276,7 @@ scripts/10_build_mvp_sequences.py      fixed-shape graph sequences/targets
 scripts/11_train_mvp_baseline.py       latent trajectory baseline/evaluation
 scripts/12_replay_mvp.py               held-out JSON/HTML replay
 scripts/13_evaluate_episode_alerts.py  episode alert/lead-time report
+scripts/14_audit_mvp_shortcuts.py     identity/timing shortcut audit
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -342,20 +343,20 @@ validation: 33 sequences / 14 future-LM positives
 test:       31 sequences / 14 future-LM positives
 ```
 
-`scripts/11_train_mvp_baseline.py` trains a train-only StandardScaler + PCA state encoder, Ridge six-step latent trajectory predictor, future-state reconstruction, and future semantic/pair heads. Validation selected 32 PCA components and Ridge alpha 100.
+`scripts/11_train_mvp_baseline.py` fits StandardScaler + PCA exclusively on observable training contexts, then trains a Ridge six-step latent trajectory predictor, future-state reconstruction, and future semantic/pair heads. Validation selected 32 PCA components and Ridge alpha 100.
 
 Observed untouched-test results:
 
 ```text
-normalized future-state MAE                 0.612
-persistence baseline MAE                    0.728
-future-LM precision / recall / F1            0.778 / 1.000 / 0.875
-pre-first-LM precision / recall / F1         0.750 / 1.000 / 0.857
-future-edge presence average precision       0.414 (positive prevalence 0.176)
+normalized future-state MAE                 0.676
+persistence baseline MAE                    0.767
+future-LM precision / recall / F1            1.000 / 0.929 / 0.963
+pre-first-LM precision / recall / F1         1.000 / 0.917 / 0.957
+future-edge presence average precision       0.412 (positive prevalence 0.176)
 future LM source-target top-1 accuracy       0.429
 ```
 
-These results are correlated-window metrics from only four held-out controlled episodes. They support an MVP demonstration but do not establish enterprise, unseen-playbook, or cross-domain generalization. Exact LM pair prediction is currently weak.
+These are provisional smoke-test metrics from only four held-out controlled episodes. A shortcut audit found scenario-dependent capture-length censoring: all available test samples at context state 7 or later are positive because shorter negative captures no longer produce complete futures. They do not support final generalization claims. See `docs/SHORTCUT_AUDIT.md`.
 
 Episode-level horizon alert behavior:
 
@@ -363,10 +364,10 @@ Episode-level horizon alert behavior:
 validation: 2/2 progressing detected before first LM; mean exact lead 27.9 s
             1/2 non-progressing episodes produced at least one false alert
 test:       2/2 progressing detected before first LM; mean exact lead 27.0 s
-            1/2 non-progressing episodes produced at least one false alert
+            0/2 non-progressing episodes produced a false alert
 ```
 
-The false-alert episodes were failed-guessing-only on validation and scan-only on test. Benign ping and legitimate administrative SSH did not alert.
+After correcting preprocessing to fit only training contexts, the remaining episode-level false alert is failed-guessing-only on validation. The current test scan-only, benign-ping, and legitimate-SSH episodes do not alert. These results remain confounded by unequal episode lengths.
 
 Generated local artifacts:
 
@@ -377,6 +378,7 @@ outputs/mvp/sequences/
 outputs/mvp/model/baseline_metrics.json
 outputs/mvp/model/episode_alerts.csv
 outputs/mvp/model/episode_alert_summary.json
+outputs/mvp/model/shortcut_audit.json
 outputs/mvp/replays/lab_023_context_8.json
 outputs/mvp/replays/lab_023_context_8.html
 models/mvp_baseline.joblib
@@ -388,7 +390,7 @@ Implemented judge replay:
 scripts/12_replay_mvp.py
 ```
 
-The fixed held-out `lab_023`, context-state-8 replay observes 15 seconds ending before any LM, predicts 65.3% LM risk within 30 seconds, predicts T1021.004 at 94.8%, ranks the correct `srv1 -> srv2` pair first at 98.4%, and is followed by the exact first LM event 22.8 seconds after prediction availability. This is one transparent selected replay; aggregate pair ranking remains weak.
+The fixed held-out `lab_023`, context-state-8 replay observes 15 seconds ending before any LM, predicts 67.8% LM risk within 30 seconds, predicts T1021.004 at 96.2%, ranks the correct `srv1 -> srv2` pair first at 99.4%, and is followed by the exact first LM event 22.8 seconds after prediction availability. This is a selected replay inspected after test results; `srv1 -> srv2` occurred twice in training and aggregate pair ranking remains weak.
 
 Still missing:
 
@@ -403,12 +405,14 @@ Still missing:
 2. All six generator branches have now run successfully in the planned corpus.
 3. Twenty episodes are enough for an MVP smoke test, not strong generalization evidence.
 4. Overlapping windows within held-out episodes are correlated, so sample-level metrics must not be described as 31 independent incidents.
-5. Topology, SSH port, and credentials remain simple even though host roles vary.
-6. Edge rows aggregate by host pair. Password guessing and successful SSH may use the same pair, so the first movement is not necessarily a new pair; the second hop often is.
-7. Source state tables omit silent-host rows; the MVP sequence exporter now inserts the causally known three-host inventory with zero activity and an activity mask.
-8. Public datasets are not yet integrated into one combined training contract.
-9. The current baseline improves aggregate future-state MAE and LM forecasting on the tiny held-out controlled split, but exact LM pair ranking is weak.
-10. Documentation and metrics must distinguish this controlled-lab proof of concept from enterprise generalization.
+5. Scenario-dependent capture length censors late negative windows; the current model metrics are provisional until equal-duration captures replace this corpus for evaluation.
+6. Fixed IP slots create measurable host-relabeling sensitivity even though raw IP values and actor metadata are not model inputs.
+7. Topology, SSH port, and credentials remain simple even though host roles vary.
+8. Edge rows aggregate by host pair. Password guessing and successful SSH may use the same pair, so the first movement is not necessarily a new pair; the second hop often is.
+9. Source state tables omit silent-host rows; the MVP sequence exporter now inserts the causally known three-host inventory with zero activity and an activity mask.
+10. Public datasets are not yet integrated into one combined training contract.
+11. The current baseline improves aggregate future-state MAE on the tiny held-out controlled split, but simple last-state/global semantic diagnostics are very strong and exact LM pair ranking is weak.
+12. Documentation and metrics must distinguish this controlled-lab proof of concept from enterprise generalization.
 
 ## 9. Hardware and dependency assessment
 
@@ -429,14 +433,15 @@ The MVP does not require a remote GPU. A compact PCA/Ridge/MLP baseline can run 
 
 ### Judge-facing MVP
 
-Corpus capture, whole-episode splits, fixed-shape arrays, the first latent multi-horizon baseline, episode-level alert report, and a self-contained held-out HTML replay are complete. The remaining judge-facing work is:
+Corpus capture, whole-episode splits, fixed-shape arrays, the first latent multi-horizon baseline, episode-level alert report, and a self-contained held-out HTML replay are complete as an engineering smoke test. The shortcut audit means the remaining judge-facing path must begin with data repair:
 
-1. inspect/polish the replay visually and freeze its command;
-2. add a concise architecture/methodology panel or presentation narrative;
-3. improve or clearly qualify exact source-target and technique behavior;
-4. optionally add a small neural baseline only if it cannot destabilize the working MVP.
+1. generate equal-duration episodes with late negative windows;
+2. balance LM source-target pairs and broaden action timing;
+3. retrain and rerun shortcut/no-history diagnostics;
+4. then polish and freeze the replay and presentation narrative;
+5. optionally add a small neural baseline only after the corrected data path is stable.
 
-A narrow controlled-lab MVP now exists. Remaining work is presentation hardening and, where time permits, model improvement—not creation of the first end-to-end path.
+The end-to-end MVP exists, but current metrics are not final judge evidence.
 
 ### Full research system
 
@@ -444,8 +449,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Open and visually inspect `outputs/mvp/replays/lab_023_context_8.html`.
-2. Freeze a one-command demo flow and prepare the judge explanation.
-3. Add a small neural recurrent model only if it can be completed without destabilizing the working baseline.
-4. Improve technique false positives and exact pair ranking if time permits.
-5. State the controlled-lab scope, correlated-window limitation, and non-progressing false alerts honestly.
+1. Modify capture generation so every scenario records the same 120-150 second duration.
+2. Create a role/pair-balanced replacement plan with broader action timing and harder negatives.
+3. Generate/validate the corrected corpus and rebuild episode-level splits.
+4. Require state-index, no-history, global-only, and host-permutation diagnostics before accepting new metrics.
+5. Then freeze the judge replay and state the controlled-lab scope honestly.

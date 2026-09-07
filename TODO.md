@@ -28,7 +28,12 @@
 - [ ] Add valid-credential malicious SSH movement without prior scan.
 - [x] Randomize action timing, baseline length, and attempt count from a recorded seed.
 - [x] Randomize actor/pivot/target host roles.
-- [ ] Verify fixed-IP role shortcuts are controlled in the generated corpus and model loader.
+- [x] Audit fixed-IP, role, timing, capture-length, and model shortcut risks (`docs/SHORTCUT_AUDIT.md`).
+- [ ] Replace scenario-dependent captures with equal-duration 120-150 second episodes.
+- [ ] Balance all directed LM pairs within training and define a separate unseen-pair test.
+- [ ] Broaden action timing and add hard negatives with similar precursors.
+- [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
+- [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.
 - [x] Record episode metadata separately from observable telemetry.
 - [x] Create a balanced 20-episode MVP capture plan and bulk runner.
@@ -54,7 +59,7 @@
 ## FIRST WORLD MODEL
 
 - [x] Create the MVP fixed-shape graph-state/sequence exporter with persistent known hosts and activity/presence masks.
-- [x] Implement an interpretable PCA baseline state encoder producing `z_t`.
+- [x] Implement an interpretable PCA baseline state encoder producing `z_t`, with scaler/PCA fitted on train contexts only.
 - [x] Implement a direct six-step Ridge latent trajectory baseline over `z_(t-L+1:t)`.
 - [ ] Implement a learned graph encoder and recurrent next-latent dynamics model.
 - [ ] Add autoregressive multi-step rollout.
@@ -83,7 +88,8 @@
 - [ ] Probability calibration.
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.
-- [ ] Ablations: global-only vs graph; no-history vs temporal; no-SSL vs SSL.
+- [x] Run provisional global-only, last-state, identity-mask, state-index, and host-permutation shortcut diagnostics.
+- [ ] Repeat ablations on equal-duration corrected data; add no-SSL vs SSL if SSL is implemented.
 
 ## EXPLAINABILITY / DEMO
 
