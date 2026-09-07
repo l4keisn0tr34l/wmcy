@@ -161,14 +161,30 @@ The forbidden state-index diagnostic fell from AP 1.000 to 0.153, near target pr
 
 The model detects both progressing test episodes before first LM, with mean exact lead 21.4 seconds, but 3/4 non-progressing test episodes produce at least one false alert. A global-only direct diagnostic reaches AP 0.770 versus the latent model's AP 0.581, so the current semantic head does not yet establish graph-dynamics value.
 
+## RSSM status
+
+A compact passive RSSM is implemented and trained independently on V2. It uses a 64-dimensional GRU state, 16-dimensional diagonal-Gaussian stochastic state, posterior telemetry inference, and six-step open-loop prior rollout.
+
+```text
+RSSM test state MAE:       0.280 (Ridge 0.354; persistence 0.384)
+RSSM active-state MAE:     1.031 (Ridge 1.089; persistence 1.137)
+RSSM future-LM F1 / AP:    0.800 / 0.910
+RSSM pre-first-LM F1:      0.769
+RSSM edge AP:              0.222 (Ridge 0.230)
+RSSM LM-pair top-1:        0.143
+```
+
+Twenty stochastic rollouts produce mean state spread 0.076; spread/error correlation is 0.613. Host-permutation mean score range is 0.111, but individual outliers remain. See `docs/RSSM_RESULTS.md`.
+
 Not yet implemented:
 
-- autoregressive probabilistic rollout;
 - learned graph message-passing encoder;
+- calibrated uncertainty;
+- action-conditioned dynamics;
 - cross-domain evaluation.
 
 ## Immediate next milestone
 
-V2 passes the duration/identity shortcut gate. Implement the compact passive RSSM described in `NEXT_STEPS_TEMP.md` and compare it against V2 persistence, PCA/Ridge, last-state, and global-only diagnostics. Report active/quiet and per-horizon state errors so quiet tails cannot dominate the result. Action-conditioned defensive intervention remains later work.
+Add reproducible episode-level RSSM alerts/lead times and a V2 replay, then improve edge/pair decoding and run a pure self-supervised versus jointly supervised RSSM ablation. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

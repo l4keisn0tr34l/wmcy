@@ -14,7 +14,7 @@ For the current verified MVP checkpoint, implementation status, file map, datase
 docs/MVP_STATUS.md
 ```
 
-**Current status:** the equal-duration 24-episode V2 corpus is complete and validated. It removes the original late-negative censoring shortcut: state-index AP fell from 1.000 to 0.153. The honest V2 PCA/Ridge baseline has future-LM F1 0.645 and pre-first-LM F1 0.640; the earlier 0.963 result is superseded/confounded. See `docs/MVP_STATUS.md` and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
+**Current status:** equal-duration V2 is complete and removes the original late-negative censoring shortcut. An independent compact RSSM now performs six-step stochastic prior rollout: test state MAE is 0.280 versus 0.354 Ridge and 0.384 persistence; future-LM F1 is 0.800 versus 0.645 Ridge. Edge AP and exact pair ranking remain weak. See `docs/RSSM_RESULTS.md`, `docs/MVP_STATUS.md`, and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
 
 ## Permanent data flow
 

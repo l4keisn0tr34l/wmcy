@@ -200,7 +200,7 @@ Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground tru
 
 # Phase 5 — First real latent world model
 
-**Status (2026-09-07):** Equal-duration V2 is complete and removes the original state-index/capture-length shortcut. Its honest PCA/Ridge baseline beats persistence slightly on aggregate and active future-state MAE, but future-LM F1 is 0.645, pair top-1 is 0.000, and global-only AP exceeds the latent semantic head. A compact RSSM is now the next candidate while Ridge remains the benchmark.
+**Status (2026-09-07):** Equal-duration V2 removes the original state-index/capture-length shortcut. A compact stochastic RSSM is implemented and improves test state MAE to 0.280 (Ridge 0.354; persistence 0.384) and LM F1 to 0.800 (Ridge 0.645). Edge AP remains slightly below Ridge and pair ranking remains weak. Next: episode replay/reporting, decoder improvement, and self-supervised/joint-loss ablation.
 
 ## Provisional architecture
 

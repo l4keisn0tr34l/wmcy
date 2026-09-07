@@ -277,6 +277,7 @@ scripts/11_train_mvp_baseline.py       latent trajectory baseline/evaluation
 scripts/12_replay_mvp.py               held-out JSON/HTML replay
 scripts/13_evaluate_episode_alerts.py  episode alert/lead-time report
 scripts/14_audit_mvp_shortcuts.py     identity/timing shortcut audit
+scripts/15_train_rssm.py              stochastic recurrent world model
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -414,19 +415,34 @@ The state-index shortcut falls from AP 1.000 to 0.153 at target prevalence 0.156
 
 V2 artifacts are local under `outputs/mvp_v2/` and `models/mvp_v2_baseline.joblib`.
 
+### Compact RSSM result
+
+A compact passive RSSM now performs posterior state inference and six-step stochastic prior rollout. Validation selected seed 7 at epoch 240 from three fixed seeds without test selection. CPU runtime was approximately 76 seconds.
+
+```text
+                                      RSSM       Ridge       persistence
+normalized state MAE                  0.280       0.354       0.384
+active-state MAE                      1.031       1.089       1.137
+future-LM F1                          0.800       0.645
+pre-first-LM F1                       0.769       0.640
+future-edge AP                        0.222       0.230
+LM-pair top-1                         0.143       0.000
+```
+
+Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test F1 is 0.683/0.772/0.839 for T1046/T1110.001/T1021.004. RSSM materially improves state and LM forecasting, but edge AP is slightly worse and pair prediction remains weak. See `docs/RSSM_RESULTS.md`.
+
 Still missing:
 
-- an autoregressive probabilistic rollout model;
 - a learned graph message-passing encoder;
 - robust exact source-target ranking;
 - cross-dataset and unseen-playbook evaluation.
 
 ## 8. Current limitations and risks
 
-1. Twenty planned current-format episodes are complete and validated; `lab_003` remains the separate smoke test.
-2. All six generator branches have now run successfully in the planned corpus.
-3. Twenty episodes are enough for an MVP smoke test, not strong generalization evidence.
-4. Overlapping windows within held-out episodes are correlated, so sample-level metrics must not be described as 31 independent incidents.
+1. Twenty-four equal-duration V2 episodes are complete and validated; the original 20 remain separate smoke-test data.
+2. All six generator branches are represented in every V2 split.
+3. Twenty-four episodes are enough for an MVP experiment, not strong generalization evidence.
+4. Overlapping windows within held-out episodes are correlated, so sample-level metrics must not be described as independent incidents.
 5. V2 removes scenario-dependent capture-length censoring, but 371/552 states are quiet; active/quiet and per-horizon metrics remain mandatory.
 6. Fixed IP slots still create measurable host-relabeling sensitivity even though raw IP values and actor metadata are not model inputs.
 7. Topology, SSH port, and credentials remain simple even though host roles vary.
@@ -447,21 +463,21 @@ AMD Ryzen 7 7435HS, 16 logical CPUs
 26 GB free project-disk space
 ```
 
-Current virtual environment contains NumPy, pandas, and scikit-learn. PyTorch and TensorFlow are not installed.
+Current virtual environment contains NumPy, pandas, scikit-learn, and CPU PyTorch 2.9.1. TensorFlow is not installed.
 
-The MVP does not require a remote GPU. A compact PCA/Ridge/MLP baseline can run on CPU. A small PyTorch recurrent/graph model should fit on the local RTX 3050 after installation. If infrastructure is easy to request, an NVIDIA GPU with 8–16 GB VRAM is useful but should not delay the MVP. Data quality and episode variety are currently the bottlenecks.
+The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is unnecessary for this corpus. The local RTX 3050 remains sufficient for modest scaling. Data quality and episode variety remain larger bottlenecks than compute.
 
 ## 10. Distance to the world model
 
 ### Judge-facing MVP
 
-Corpus capture, whole-episode splits, fixed-shape arrays, the first latent multi-horizon baseline, episode-level alert report, and a self-contained held-out HTML replay are complete as an engineering smoke test. The shortcut audit means the remaining judge-facing path must begin with data repair:
+Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. implement the compact passive RSSM on V2;
-2. compare RSSM against persistence, Ridge, last-state, and global-only diagnostics;
-3. report active/quiet and per-horizon rollout degradation;
-4. improve future pair ranking and false-alert behavior;
-5. then create and freeze a V2 held-out replay.
+1. generate episode-level RSSM alert/lead-time output;
+2. create and freeze a V2 held-out replay;
+3. improve future edge/pair ranking and false-alert behavior;
+4. run pure self-supervised versus joint semantic-loss ablation;
+5. present active/quiet and per-horizon results with limitations.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.
 
@@ -471,8 +487,8 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Implement a compact RSSM over V2's chronological graph states.
-2. Compare six-step prior rollout against V2 persistence and PCA/Ridge.
-3. Require active/quiet, per-horizon, global-only, last-state, and permutation diagnostics.
-4. Attach future LM/ATT&CK heads only to predicted RSSM futures.
-5. Freeze a V2 judge replay only after model selection.
+1. Add reproducible per-sample and episode-level RSSM alert outputs.
+2. Create a V2 RSSM chronological replay.
+3. Improve edge and exact LM-pair decoding.
+4. Run pure self-supervised/two-stage versus joint-loss RSSM ablation.
+5. Freeze the EOD architecture/results narrative with honest limitations.

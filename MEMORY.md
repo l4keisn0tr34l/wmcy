@@ -182,6 +182,9 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 19. Honest V2 Ridge test results: state MAE 0.354 vs 0.384 persistence; active-state 1.089 vs 1.137; quiet-state 0.207 vs 0.233; LM F1 0.645; pre-first F1 0.640; edge AP 0.230; pair top-1 0.000. Global-only direct AP 0.770 exceeds latent LM AP 0.581.
 20. A compact RSSM is now the next candidate: GRU deterministic state, diagonal-Gaussian stochastic prior/posterior, future state/edge decoder, and auxiliary semantic heads. Ridge remains the benchmark.
 21. The senior's separate CICIDS2018 implementation is unavailable because they judged its results too poor to continue. Treat its verbal description as motivation only; do not depend on, integrate with, or claim empirical comparison against it.
+22. Compact passive RSSM is implemented with 64-D GRU state, 16-D Gaussian stochastic state, posterior observation inference, and six-step prior rollout. Three seeds were selected by validation only; seed 7 epoch 240 won. CPU runtime was 76 s.
+23. RSSM V2 test: state MAE 0.280 vs Ridge 0.354/persistence 0.384; active MAE 1.031 vs 1.089/1.137; future-LM F1/AP 0.800/0.910; pre-first F1 0.769; edge AP 0.222 (Ridge 0.230); pair top-1 0.143. MC state spread/error correlation is 0.613.
+24. RSSM training is hybrid: telemetry prediction/reconstruction/KL is self-supervised, but auxiliary LM/ATT&CK/pair losses backpropagate into the shared latent model. Do not describe the whole regime as purely self-supervised.
 
 ---
 

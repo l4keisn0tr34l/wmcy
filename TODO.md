@@ -62,11 +62,13 @@
 - [x] Create the MVP fixed-shape graph-state/sequence exporter with persistent known hosts and activity/presence masks.
 - [x] Implement an interpretable PCA baseline state encoder producing `z_t`, with scaler/PCA fitted on train contexts only.
 - [x] Implement a direct six-step Ridge latent trajectory baseline over `z_(t-L+1:t)`.
-- [ ] Implement a learned graph encoder and recurrent next-latent dynamics model.
-- [ ] Add autoregressive multi-step rollout.
+- [x] Implement a compact RSSM with recurrent deterministic and stochastic latent dynamics.
+- [x] Add six-step stochastic prior rollout.
+- [ ] Replace the flattened observation encoder with a learned shared-weight graph encoder.
 - [x] Add baseline future-state reconstruction.
 - [x] Evaluate baseline future-edge presence decoded from predicted future state.
-- [ ] Add uncertainty/probabilistic output where appropriate.
+- [x] Add Monte Carlo RSSM rollout spread and error-correlation diagnostics.
+- [ ] Calibrate RSSM predictive uncertainty.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
 ## SECURITY HEADS
@@ -80,7 +82,7 @@
 ## EVALUATION
 
 - [x] Measure direct multi-horizon state error by global/node/edge feature group.
-- [ ] Measure autoregressive rollout degradation vs horizon.
+- [x] Measure RSSM open-loop rollout degradation vs horizon, including active/quiet states.
 - [x] Measure baseline future-edge average precision/ranking.
 - [x] Measure baseline MITRE multi-label metrics.
 - [x] Measure sample-level LM recall and false positives.
@@ -91,7 +93,7 @@
 - [ ] Cross-dataset/domain-shift tests.
 - [x] Run provisional global-only, last-state, identity-mask, state-index, and host-permutation shortcut diagnostics.
 - [x] Repeat state-index, actor, global-only, last-state, mask, and permutation diagnostics on equal-duration V2 data.
-- [ ] Add no-SSL vs SSL if SSL is implemented.
+- [ ] Compare pure self-supervised/two-stage RSSM against current jointly supervised auxiliary-loss training.
 
 ## EXPLAINABILITY / DEMO
 

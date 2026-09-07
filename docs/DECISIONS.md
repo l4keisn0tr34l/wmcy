@@ -148,8 +148,18 @@ V2 uses 120-second captures for `lab_025`-`lab_048`, balances all six training r
 
 ## D017 — RSSM is the next candidate, not a substitute for data correction
 
-**Status:** Accepted design direction; not yet implemented.
+**Status:** Accepted and implemented.
 
 Keep PCA/Ridge as the interpretable benchmark. After V2 passes shortcut checks, implement a compact recurrent state-space model with a deterministic GRU state, diagonal-Gaussian stochastic prior/posterior, observable future-state/edge decoder, and future semantic heads. Accept RSSM only if it improves multi-step forecasting and uncertainty without increasing identity/timing shortcut sensitivity.
 
-The senior's separate CICIDS2018 model is unavailable because its results were deemed too poor to continue. Its verbal description is motivation, not a verified baseline; this project will implement and evaluate RSSM independently.
+The senior's separate CICIDS2018 model is unavailable because its results were deemed too poor to continue. Its verbal description is motivation, not a verified baseline; this project implements and evaluates RSSM independently.
+
+The compact V2 RSSM improves test state MAE from 0.354 Ridge to 0.280 and future-LM F1 from 0.645 to 0.800. It is retained as the preferred next candidate, not declared universally superior: edge AP falls from 0.230 to 0.222 and pair top-1 remains weak at 0.143.
+
+---
+
+## D018 — Report the RSSM training regime as hybrid
+
+**Status:** Accepted.
+
+Telemetry reconstruction, prior prediction, and KL dynamics losses are self-supervised. LM, ATT&CK, and pair losses jointly backpropagate through the same latent model, so the complete training regime is hybrid rather than purely self-supervised. A pure self-supervised/two-stage ablation is required before attributing downstream gains to unsupervised world-model learning alone.

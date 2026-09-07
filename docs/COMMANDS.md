@@ -193,6 +193,29 @@ models/mvp_baseline.joblib
 outputs/mvp/model/baseline_metrics.json
 ```
 
+## Train the compact V2 RSSM
+
+Install the CPU dependency once:
+
+```bash
+.venv/bin/python -m pip install -r requirements-rssm.txt
+```
+
+Train three fixed seeds with validation-only selection:
+
+```bash
+.venv/bin/python scripts/15_train_rssm.py
+```
+
+Local outputs:
+
+```text
+models/mvp_v2_rssm.pt
+outputs/mvp_v2/rssm/metrics.json
+```
+
+The current compact run takes approximately 76 seconds on CPU; an external GPU is unnecessary.
+
 ## Shortcut/leakage audit
 
 ```bash

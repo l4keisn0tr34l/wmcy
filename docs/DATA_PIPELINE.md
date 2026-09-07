@@ -618,9 +618,13 @@ Aggregates horizon-window predictions into episode-level detection, exact warnin
 
 Audits forbidden feature names, split/scenario role balance, LM pair coverage, direct global/last-state/identity/timing diagnostics, and sensitivity to six equivalent host relabelings. This stage identified unequal capture-duration censoring and fixed-slot sensitivity; see `docs/SHORTCUT_AUDIT.md`.
 
+# 18. `15_train_rssm.py`
+
+Trains a compact recurrent state-space model with deterministic GRU memory and a stochastic diagonal-Gaussian latent state. During inference it observes only three context states and performs six open-loop prior transitions. Observable-state and edge decoders model future telemetry; LM, ATT&CK, and pair heads interpret only imagined future latents. The script performs a causality test, tiny-overfit test, validation-only seed/epoch selection, Monte Carlo uncertainty diagnostics, active/quiet state evaluation, and host-permutation sensitivity analysis.
+
 ---
 
-# 18. Where each datapoint resides
+# 19. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -690,7 +694,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 19. What will actually be fed to the model
+# 20. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -726,7 +730,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 20. How this becomes a world model
+# 21. How this becomes a world model
 
 After the state layer is correct:
 
