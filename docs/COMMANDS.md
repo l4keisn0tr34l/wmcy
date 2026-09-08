@@ -330,6 +330,15 @@ Pretrain graph dynamics on UNSW and fine-tune semantics on controlled V2:
 
 Public semantic loss weights are zero; V2 test loads only after public and lab-validation selection.
 
+## GPU execution
+
+```bash
+.venv/bin/python -m pip install -r requirements-rssm-cu128.txt
+.venv/bin/python scripts/32_test_torch_devices.py --device cuda --batch-size 128
+```
+
+Primary training scripts default to `--device auto`. Use larger prespecified batches on this small model; batch 32 is slower on the RTX 3050. See `docs/GPU_EXECUTION.md`.
+
 ## V3 matched hard-negative plan
 
 ```bash

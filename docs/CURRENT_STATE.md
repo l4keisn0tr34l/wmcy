@@ -208,4 +208,6 @@ On fresh test, scratch/public-initialized graph RSSMs reach state MAE 0.294/0.32
 
 The paired result exposes an observability boundary: a future scenario-controller decision to perform SSH is not present in the shared passive-telemetry prefix. Next work must represent branching risk/uncertainty and eventually action/intervention variables rather than promise deterministic recovery of unobserved intent.
 
+CUDA execution is now verified on the local RTX 3050. PyTorch 2.9.1+cu128, device-portable training, finite backward gradients, and graph equivariance all pass. Batch 128 is 1.78× faster per forward/backward step with only ~202 MB peak allocated VRAM; batch 32 is slightly slower than CPU, so future GPU runs should use larger prespecified batches. See `docs/GPU_EXECUTION.md`.
+
 See `docs/MVP_STATUS.md` for full details.

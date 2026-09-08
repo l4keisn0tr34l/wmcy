@@ -2,36 +2,32 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Verified V3 experiment
+## GPU facts
 
-All 48 episodes and 720 sequences pass. The prespecified scratch/public-initialized GraphRSSMs were selected independently on V3 validation; thresholds frozen before model test predictions.
+Verified local hardware/runtime:
 
 ```text
-Fresh test               Scratch       UNSW init
-state MAE                 0.294         0.321
-active MAE                0.556         0.579
-edge AP                   0.808         0.796
-LM F1 / AP                0.560/0.477   0.596/0.504
-pre-first-LM F1           0.571         0.596
-pair top-1                0.333         0.333
-progress episodes found   3/3           3/3
-stopped episodes alert    3/3           3/3
-mean lead                 23.5s         23.5s
-spread/error corr         0.768         0.533
+GPU: NVIDIA GeForce RTX 3050 Mobile, 4 GiB
+Driver: 595.84
+Driver-reported CUDA compatibility: 13.2
+Current torch: 2.9.1+cpu (CUDA unavailable only because CPU wheel installed)
+CPU: 16 logical cores; RAM 15 GiB
+Disk available: ~21 GiB after CUDA metadata probe
 ```
 
-UNSW initialization does not transfer positively under the fresh matched distribution: scratch is better for state/edge/uncertainty; UNSW is slightly better for LM point scores. Exact score equivariance remains around 1e-8, but near-tied argmax pair choices can vary under floating-point/MC perturbations.
+PyTorch index confirms `torch==2.9.1+cu128` exists and is compatible with the current driver. No system CUDA toolkit or sudo should be needed because the wheel supplies runtime libraries.
 
-Important interpretation: same-seed stopped/progressing episodes intentionally share the observable discovery/guessing prefix. Whether the external scenario controller performs later SSH is not in passive telemetry. Alerting on both can represent valid compromise risk; exact binary eventual-outcome discrimination is partly unidentifiable without action/intent/intervention variables.
+## Current batch: device-portable RSSM
 
-Disclosure: before training, test NPZ was opened only for schema/finiteness/count integrity, not model predictions. Model test predictions occurred only after both regimes and thresholds were frozen.
+1. Add shared `auto|cpu|cuda` device resolution with clear CUDA errors and deterministic seed handling.
+2. Add `--device auto` to active flattened/graph training and V3/public training paths.
+3. Move models, batches, permutation indices, positive weights, smoke tests, validation, Monte Carlo forecasting, and equivariance audits consistently to the chosen device.
+4. Keep checkpoints device-portable via CPU state dictionaries/map-location.
+5. Preserve CPU compatibility and old CLI defaults through `auto` fallback.
+6. Add separate CPU/CUDA requirement files; install `torch==2.9.1+cu128` into `.venv` without sudo.
+7. Run CUDA availability, forward/backward, exact graph equivariance, CPU-vs-GPU deterministic-output tolerance, and VRAM tests.
+8. Run a short selection-only training benchmark without reopening V3 test or changing published models.
 
-## Current batch
+## Expected limitation
 
-1. Implement `scripts/31_audit_v3_matched_pairs.py`.
-2. Pair stopped/progressing episode summaries by seed and split.
-3. Report max-risk overlap, paired ordering, both-alert rate, action timing mismatch, and per-regime differences.
-4. Do not alter model, threshold, or test selection.
-5. Document the observed identifiability boundary and public-transfer result.
-6. Update standalone HTML with fresh-holdout results and limitations.
-7. Compile, integrity-check, commit, and push.
+The current 358k-parameter graph model and batches of 32 are small. GPU may provide modest rather than dramatic speedup because Python recurrent loops, six seeds/regimes, early stopping, data loading, and metric code dominate. Branching models/public batches should benefit more. PCAP parsing remains CPU/disk-bound.

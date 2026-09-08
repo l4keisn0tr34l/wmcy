@@ -75,7 +75,9 @@ def pair_metrics(target: np.ndarray, probability: np.ndarray) -> dict[str, Any]:
 def evaluate_split(module: Any, model: torch.nn.Module, scaler: StandardScaler,
                    split: dict[str, np.ndarray], state_permutations: np.ndarray,
                    pair_permutations: np.ndarray, mc_samples: int, batch_size: int,
-                   seed: int, threshold: float | None) -> tuple[dict[str, Any], float]:
+                   seed: int, threshold: float | None,
+                   device: torch.device | None = None) -> tuple[dict[str, Any], float]:
+    device = device or torch.device("cpu")
     width = split["context_states"].shape[-1]
     assert all(np.array_equal(np.sort(row), np.arange(width)) for row in state_permutations)
     pair_count = split["future_lateral_edges"].shape[-1]
@@ -92,7 +94,7 @@ def evaluate_split(module: Any, model: torch.nn.Module, scaler: StandardScaler,
         zip(state_permutations, pair_permutations)
     ):
         mc = module.mc_predictions(
-            model, split["context_states"][..., state_order], scaler, torch.device("cpu"),
+            model, split["context_states"][..., state_order], scaler, device,
             mc_samples, batch_size, seed,
         )
         prediction = {name: values.mean(axis=0) for name, values in mc.items()}

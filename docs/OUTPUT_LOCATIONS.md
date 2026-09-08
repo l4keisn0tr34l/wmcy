@@ -164,6 +164,7 @@ docs/UNSW_GRAPH_SEQUENCES.md
 docs/PUBLIC_PRETRAINING_RESULTS.md
 docs/V3_HARD_NEGATIVE_PLAN.md
 docs/V3_RESULTS.md
+docs/GPU_EXECUTION.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -178,6 +179,14 @@ outputs/mvp_v3/graph_rssm/unsw_pretrained_episode_alerts.csv
 models/mvp_v3_graph_rssm_scratch.pt
 models/mvp_v3_graph_rssm_unsw_pretrained.pt
 ```
+
+## Hardware validation
+
+```text
+outputs/device_test.json
+```
+
+Train-only CPU/CUDA parity, equivariance, gradient, speed, and VRAM audit.
 
 ## External raw datasets
 

@@ -34,6 +34,7 @@
 - [x] Capture and validate planned V2 episodes `lab_025`-`lab_048`.
 - [x] Define a seeded matched-prefix hard negative and fresh V3 split plan.
 - [x] Capture/process 24 paired V3 episodes and run prespecified scratch/public-init comparison.
+- [x] Enable and validate CUDA execution on the local RTX 3050 without reopening V3 test.
 - [ ] Define branching-risk and exact-outcome metrics separately; do not tune further on V3 test.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.

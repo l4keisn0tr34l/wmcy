@@ -294,7 +294,9 @@ scripts/28_pretrain_graph_rssm_unsw.py   public dynamics transfer experiment
 scripts/29_validate_v3_plan.py            paired split invariants
 scripts/30_train_graph_rssm_v3.py         fresh V3 matched comparison
 scripts/31_audit_v3_matched_pairs.py      stopped/progressing audit
+scripts/32_test_torch_devices.py           train-only CPU/CUDA audit
 src/cyberwm/common.py
+src/cyberwm/device.py                     shared device/checkpoint helpers
 src/cyberwm/graph_rssm.py              structured graph RSSM module                  shared utility functions
 ```
 
@@ -457,6 +459,8 @@ The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 
 The graph RSSM resolves that bottleneck: state MAE 0.252, active MAE 0.895, edge AP 0.394, and pair top-1 0.357 exactly stable under relabeling. An invariant decoded-future semantic readout gives LM F1/AP 0.667/0.744.
 
 Observable-only UNSW pretraining improves V2 validation edge/LM AP and diagnostic V2 pair ranking, but worsens false alerts/stochastic diagnostics.
+
+CUDA execution is verified on the RTX 3050 with deterministic CPU/device delta below 8e-8, finite gradients, and ~202 MB peak allocated memory at batch 128. Batch 128 is 1.78× faster per forward/backward step; batch 32 is slightly slower than CPU.
 
 Fresh V3 matched-prefix evaluation changes the conclusion: scratch beats UNSW initialization on validation joint objective (0.952 vs 1.060) and fresh-test state/edge/stochastic metrics. Both detect 3/3 progressing episodes about 23.5 seconds early, but both alert on 3/3 same-prefix stopped episodes. Scratch/UNSW LM F1 is 0.560/0.596; scratch pair maximum risk differs only 0.0027 on average within stopped/progressing pairs. This exposes an observability boundary for future external attacker action. See `docs/V3_RESULTS.md`.
 

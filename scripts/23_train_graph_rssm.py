@@ -20,6 +20,7 @@ from torch import nn
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.cyberwm.graph_rssm import GraphRSSM, fit_graph_feature_scaler  # noqa: E402
+from src.cyberwm.device import cpu_state_dict, device_summary, resolve_device  # noqa: E402
 
 
 def load_script(name: str, path: Path) -> Any:
@@ -48,9 +49,9 @@ def smoke_tests(module: Any, model: GraphRSSM, train_loader: Any,
                 state_permutations: np.ndarray, pair_permutations: np.ndarray,
                 scaler: Any, raw_context: np.ndarray, context_steps: int,
                 groups: list[slice], weights: dict[str, float],
-                pos_weights: dict[str, torch.Tensor]) -> dict[str, float]:
+                pos_weights: dict[str, torch.Tensor], device: torch.device) -> dict[str, float]:
     raw_batch = next(iter(train_loader))
-    batch = tuple(tensor[:16] for tensor in raw_batch)
+    batch = module.move(tuple(tensor[:16] for tensor in raw_batch), device)
     full = torch.cat([batch[0], batch[1]], dim=1)
     model.eval()
     with torch.no_grad():
@@ -65,13 +66,13 @@ def smoke_tests(module: Any, model: GraphRSSM, train_loader: Any,
         if future_a["decoded"].shape != (len(full), full.shape[1] - context_steps, 141):
             raise AssertionError("unexpected graph future shape")
 
-        base_context = torch.from_numpy(module.normalize(scaler, raw_context[:8]))
+        base_context = torch.from_numpy(module.normalize(scaler, raw_context[:8])).to(device)
         base = model.forecast(base_context, sample=False)
         equivariance_delta = 0.0
         for state_order, pair_order in zip(state_permutations, pair_permutations):
             permuted_context = torch.from_numpy(
                 module.normalize(scaler, raw_context[:8, :, state_order])
-            )
+            ).to(device)
             predicted = model.forecast(permuted_context, sample=False)
             deltas = [
                 float((predicted["decoded"] - base["decoded"][..., state_order]).abs().max()),
@@ -105,17 +106,18 @@ def train_seed(module: Any, seed: int, train_loader: Any, validation_loader: Any
                config: dict[str, int], context_steps: int, groups: list[slice],
                weights: dict[str, float], pos_weights: dict[str, torch.Tensor],
                state_indices: torch.Tensor, edge_indices: torch.Tensor,
-               max_epochs: int, patience: int, learning_rate: float
+               max_epochs: int, patience: int, learning_rate: float,
+               device: torch.device,
                ) -> tuple[dict[str, torch.Tensor], dict[str, Any]]:
     module.seed_everything(seed)
-    model = GraphRSSM(**config)
+    model = GraphRSSM(**config).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    best_state = deepcopy(model.state_dict()); best_validation = math.inf
+    best_state = cpu_state_dict(model.state_dict()); best_validation = math.inf
     best_epoch = 0; stale = 0; epochs_run = 0
     for epoch in range(1, max_epochs + 1):
         model.train(); total = 0.0; count = 0
         for raw_batch in train_loader:
-            batch = module.augment_batch(raw_batch, state_indices, edge_indices)
+            batch = module.augment_batch(module.move(raw_batch, device), state_indices, edge_indices)
             optimizer.zero_grad(set_to_none=True)
             terms = module.loss_terms(
                 model, batch, context_steps, groups, weights, pos_weights, sample=True
@@ -125,12 +127,12 @@ def train_seed(module: Any, seed: int, train_loader: Any, validation_loader: Any
             count += len(batch[0])
         validation = module.validate_objective(
             model, validation_loader, context_steps, groups, weights, pos_weights,
-            torch.device("cpu"), selection_mode="joint",
+            device, selection_mode="joint",
         )
         epochs_run = epoch
         if validation["selection"] < best_validation - 1e-5:
             best_validation = validation["selection"]; best_epoch = epoch
-            best_state = deepcopy(model.state_dict()); stale = 0
+            best_state = cpu_state_dict(model.state_dict()); stale = 0
         else:
             stale += 1
         if epoch == 1 or epoch % 25 == 0:
@@ -155,12 +157,15 @@ def main() -> int:
     ap.add_argument("--learning-rate", type=float, default=3e-4)
     ap.add_argument("--seeds", default="7,17,27")
     ap.add_argument("--mc-samples", type=int, default=20)
+    ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     args = ap.parse_args()
 
     module = load_script("cyberwm_rssm_training", ROOT / "scripts/15_train_rssm.py")
     ablation = load_script("cyberwm_rssm_ablation", ROOT / "scripts/18_run_rssm_ablations.py")
     pair_audit = load_script("cyberwm_pair_audit", ROOT / "scripts/21_audit_pair_equivariance.py")
     torch.set_num_threads(min(8, os.cpu_count() or 1))
+    device = resolve_device(args.device)
+    print("device:", device_summary(device))
     sequence_dir = Path(args.sequences_dir)
     metadata = json.loads((sequence_dir / "feature_metadata.json").read_text())
     # Test is not loaded until validation has selected a seed.
@@ -171,8 +176,8 @@ def main() -> int:
         config["node_count"], config["edge_size"], config["pair_count"],
     )
     state_permutations, pair_permutations = module.state_and_edge_permutation_indices(metadata)
-    state_indices = torch.from_numpy(state_permutations).long()
-    edge_indices = torch.from_numpy(pair_permutations).long()
+    state_indices = torch.from_numpy(state_permutations).long().to(device)
+    edge_indices = torch.from_numpy(pair_permutations).long().to(device)
     context_steps = metadata["context_states"]
     global_width = config["global_size"]
     node_width = config["node_size"] * config["node_count"]
@@ -187,12 +192,14 @@ def main() -> int:
         "technique": module.positive_weight(data["train"]["future_techniques"].max(axis=1)),
         "pair": module.positive_weight(data["train"]["future_lateral_edges"].max(axis=1)),
     }
+    pos_weights = {name: value.to(device) for name, value in pos_weights.items()}
     train_loader = module.make_loader(data["train"], scaler, args.batch_size, True)
     validation_loader = module.make_loader(data["validation"], scaler, args.batch_size, False)
-    initial_model = GraphRSSM(**config)
+    initial_model = GraphRSSM(**config).to(device)
     smoke = smoke_tests(
         module, initial_model, train_loader, state_permutations, pair_permutations,
         scaler, data["train"]["context_states"], context_steps, groups, weights, pos_weights,
+        device,
     )
     candidates = []; states = {}
     print("===== graph RSSM training; validation-only seed selection =====")
@@ -200,28 +207,28 @@ def main() -> int:
         state, summary = train_seed(
             module, seed, train_loader, validation_loader, config, context_steps,
             groups, weights, pos_weights, state_indices, edge_indices,
-            args.epochs, args.patience, args.learning_rate,
+            args.epochs, args.patience, args.learning_rate, device,
         )
         states[seed] = state; candidates.append(summary)
     selected = min(candidates, key=lambda row: row["best_validation_selection"])
     selected_seed = int(selected["seed"])
-    model = GraphRSSM(**config); model.load_state_dict(states[selected_seed]); model.eval()
+    model = GraphRSSM(**config).to(device); model.load_state_dict(states[selected_seed]); model.eval()
 
     # Freeze selection before loading/evaluating test.
     data["test"] = module.load_split(sequence_dir, "test")
     dynamics, mc = ablation.dynamics_metrics(
         module, model, data, scaler, metadata, args.mc_samples, args.batch_size,
-        selected_seed + 800_000,
+        selected_seed + 800_000, device=device,
     )
     semantics = ablation.internal_semantic_metrics(module, mc, data, metadata, sequence_dir)
     threshold = semantics["future_lateral_movement"]["threshold_selected_on_validation"]
     validation_audit, _ = pair_audit.evaluate_split(
         module, model, scaler, data["validation"], state_permutations, pair_permutations,
-        args.mc_samples, args.batch_size, selected_seed + 810_000, threshold,
+        args.mc_samples, args.batch_size, selected_seed + 810_000, threshold, device=device,
     )
     test_audit, _ = pair_audit.evaluate_split(
         module, model, scaler, data["test"], state_permutations, pair_permutations,
-        args.mc_samples, args.batch_size, selected_seed + 820_000, threshold,
+        args.mc_samples, args.batch_size, selected_seed + 820_000, threshold, device=device,
     )
     probabilities = {split: mc[split]["lm"].mean(axis=0) for split in ["validation", "test"]}
     labels = {split: data[split]["lateral_movement_within_horizon"].astype(int)
@@ -237,6 +244,7 @@ def main() -> int:
         "test_isolation": "test loaded only after validation selected seed",
         "model_config": config,
         "parameter_count": sum(parameter.numel() for parameter in model.parameters()),
+        "runtime": device_summary(device),
         "training": {"weights": weights, "candidates": candidates,
                      "selected_seed": selected_seed,
                      "selection_rule": "validation joint dynamics + semantic weighted objective"},
@@ -271,7 +279,7 @@ def main() -> int:
         validation_pair_draws=mc["validation"]["pair"], test_pair_draws=mc["test"]["pair"],
     )
     checkpoint = Path(args.checkpoint_out); checkpoint.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"model_state_dict": model.state_dict(), "model_config": config,
+    torch.save({"model_state_dict": cpu_state_dict(model.state_dict()), "model_config": config,
                 "scaler_mean": scaler.mean_, "scaler_scale": scaler.scale_,
                 "feature_metadata": metadata, "training": metrics["training"]}, checkpoint)
 

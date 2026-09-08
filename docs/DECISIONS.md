@@ -281,3 +281,13 @@ Scratch wins the V3 validation joint objective (0.952 versus 1.060), state/edge 
 Both models detect all 3 progressing test episodes but alert on all 3 stopped-prefix episodes. Scratch episode maximum probabilities differ by only 0.0027 on average within pairs. At the shared prefix, the future scenario-controller decision to execute successful SSH is not observable.
 
 Do not claim a passive model can deterministically infer unobserved attacker intent. Separate dangerous-progression risk from exact eventual-outcome scoring, expose probabilistic branching, and collect action/intervention variables before counterfactual defense claims.
+
+---
+
+## D031 — Use CUDA for future neural experiments with prespecified larger batches
+
+**Status:** Accepted after train-only hardware audit.
+
+The RTX 3050/CUDA 12.8 path passes deterministic parity, finite gradients, and graph equivariance. Batch 128 is 1.78× faster per forward/backward step and uses only ~202 MB allocated VRAM, while batch 32 is slightly slower than CPU due launch overhead.
+
+Use `--device auto` by default and prespecify larger batches for new experiments. Do not rerun or alter completed test results merely to benchmark GPU. Keep CPU fallback and save device-portable CPU checkpoint tensors. PCAP/data preparation remains CPU/disk-bound.

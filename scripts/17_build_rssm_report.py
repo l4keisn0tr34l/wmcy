@@ -228,6 +228,7 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <div class="grid"><div class="card"><div class="metric"><span>Parameters</span><strong>{parameter_count:,}</strong></div><div class="metric"><span>Context</span><strong>3 × 5s</strong></div><div class="metric"><span>Prior rollout</span><strong>6 × 5s</strong></div><div class="metric"><span>Monte Carlo futures</span><strong>{uncertainty['mc_samples']}</strong></div></div>
 <div class="card"><div class="metric"><span>Optimizer</span><strong>Adam 3e-4</strong></div><div class="metric"><span>Batch</span><strong>32</strong></div><div class="metric"><span>Candidate seeds</span><strong>7, 17, 27</strong></div><div class="metric"><span>Runtime</span><strong>~76s CPU</strong></div></div></div>
 <p class="callout"><strong>Training terminology:</strong> telemetry reconstruction, prior prediction, and KL are self-supervised. LM/ATT&amp;CK/pair losses jointly shape the latent state, so the complete regime is <strong>hybrid</strong>, not wholly self-supervised.</p>
+<p class="callout good"><strong>GPU readiness:</strong> CUDA 12.8 execution is verified on the local RTX 3050. At batch 128, CPU/CUDA deterministic delta is below 8e-8, graph equivariance remains below 3e-8, peak allocated VRAM is ~202 MB, and forward/backward throughput is 1.78× CPU. Historical results retain their recorded training devices.</p>
 <table><tr><th>Seed</th><th>Best epoch</th><th>Validation selection score</th><th>Epochs run</th></tr>{candidate_rows}</table>
 
 <h2>3a. Frozen, unfrozen, and KL ablations</h2>

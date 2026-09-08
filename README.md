@@ -14,7 +14,7 @@ For the current verified MVP checkpoint, implementation status, file map, datase
 docs/MVP_STATUS.md
 ```
 
-**Current status:** equal-duration V2 is complete and removes the original late-negative censoring shortcut. An independent compact RSSM now performs six-step stochastic prior rollout: test state MAE is 0.280 versus 0.354 Ridge and 0.384 persistence; future-LM F1 is 0.800 versus 0.645 Ridge. A permutation-equivariant graph RSSM reaches V2 state MAE 0.252 and edge AP 0.394. Observable-only UNSW pretraining helps some V2 metrics, but fresh matched-prefix V3 selects scratch initialization: state MAE 0.294, edge AP 0.808, 3/3 progressing episodes detected 23.5 seconds early—and 3/3 same-prefix stopped episodes alert. This reveals a passive-observability boundary for unobserved future attacker action. See `docs/RSSM_RESULTS.md`, `docs/RSSM_ABLATIONS.md`, `docs/KL_TUNING.md`, `docs/PAIR_EQUIVARIANCE_AUDIT.md`, `docs/SHARED_PAIR_DECODER.md`, `docs/GRAPH_RSSM_RESULTS.md`, `docs/GRAPH_SEMANTIC_RESULTS.md`, `docs/PUBLIC_PRETRAINING_RESULTS.md`, `docs/V3_RESULTS.md`, `docs/MVP_STATUS.md`, and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
+**Current status:** equal-duration V2 is complete and removes the original late-negative censoring shortcut. An independent compact RSSM now performs six-step stochastic prior rollout: test state MAE is 0.280 versus 0.354 Ridge and 0.384 persistence; future-LM F1 is 0.800 versus 0.645 Ridge. CUDA training is verified on the local RTX 3050 (`--device auto|cpu|cuda`); use prespecified larger batches because batch 32 is launch-overhead bound. A permutation-equivariant graph RSSM reaches V2 state MAE 0.252 and edge AP 0.394. Observable-only UNSW pretraining helps some V2 metrics, but fresh matched-prefix V3 selects scratch initialization: state MAE 0.294, edge AP 0.808, 3/3 progressing episodes detected 23.5 seconds early—and 3/3 same-prefix stopped episodes alert. This reveals a passive-observability boundary for unobserved future attacker action. See `docs/RSSM_RESULTS.md`, `docs/RSSM_ABLATIONS.md`, `docs/KL_TUNING.md`, `docs/PAIR_EQUIVARIANCE_AUDIT.md`, `docs/SHARED_PAIR_DECODER.md`, `docs/GRAPH_RSSM_RESULTS.md`, `docs/GRAPH_SEMANTIC_RESULTS.md`, `docs/PUBLIC_PRETRAINING_RESULTS.md`, `docs/V3_RESULTS.md`, `docs/GPU_EXECUTION.md`, `docs/MVP_STATUS.md`, and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
 
 ## Permanent data flow
 
@@ -45,6 +45,8 @@ Create a virtual environment:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+# Optional NVIDIA/CUDA RSSM environment:
+.venv/bin/python -m pip install -r requirements-rssm-cu128.txt
 ```
 
 Put the CIC files in a directory, then profile them:

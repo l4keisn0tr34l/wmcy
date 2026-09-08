@@ -36,12 +36,16 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from src.cyberwm.device import cpu_state_dict, device_summary, resolve_device  # noqa: E402
 
 
 def seed_everything(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def load_split(directory: Path, split: str) -> dict[str, np.ndarray]:
@@ -630,10 +634,12 @@ def main() -> int:
     ap.add_argument("--learning-rate", type=float, default=3e-4)
     ap.add_argument("--seeds", default="7,17,27")
     ap.add_argument("--mc-samples", type=int, default=20)
+    ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     args = ap.parse_args()
 
     torch.set_num_threads(min(8, os.cpu_count() or 1))
-    device = torch.device("cpu")
+    device = resolve_device(args.device)
+    print("device:", device_summary(device))
     sequence_dir = Path(args.sequences_dir)
     metadata = json.loads((sequence_dir / "feature_metadata.json").read_text())
     if metadata["state_feature_names"][0] != "flow_count":
@@ -808,7 +814,7 @@ def main() -> int:
 
     metrics = {
         "scope": "compact passive RSSM on equal-duration V2; overlapping windows remain correlated",
-        "device": str(device), "torch_version": torch.__version__, "model_config": model_config,
+        "runtime": device_summary(device), "model_config": model_config,
         "training_config": {"weights": weights, "batch_size": args.batch_size,
                             "learning_rate": args.learning_rate, "max_epochs": args.epochs,
                             "patience": args.patience, "candidate_seeds": [row["seed"] for row in candidate_summaries],
@@ -850,7 +856,7 @@ def main() -> int:
     for output in [model_out, metrics_out, predictions_out, sample_predictions_out, episode_alerts_out]:
         output.parent.mkdir(parents=True, exist_ok=True)
     checkpoint = {
-        "model_state_dict": model.state_dict(), "model_config": model_config,
+        "model_state_dict": cpu_state_dict(model.state_dict()), "model_config": model_config,
         "scaler_mean": scaler.mean_, "scaler_scale": scaler.scale_,
         "feature_metadata": metadata, "selected_seed": selected_seed,
         "lm_threshold": lm_threshold,

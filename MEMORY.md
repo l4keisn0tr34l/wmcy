@@ -201,6 +201,7 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 38. V3 adds 12 seed-matched `scan_guess_then_stop`/`one_hop` pairs. Old V2 is development train; only new episodes form 6-episode validation and 6-episode test. Total: 48 episodes/720 samples. See `docs/V3_HARD_NEGATIVE_PLAN.md`.
 39. Fresh V3 test: scratch/public-init graph models state MAE 0.294/0.321, edge AP 0.808/0.796, LM F1/AP 0.560/0.477 and 0.596/0.504, pair 6/18 both; 3/3 progress detected 23.5s early and 3/3 stopped episodes alert. Scratch wins validation joint 0.952 vs1.060 and is selected; public transfer rejected for V3. See `docs/V3_RESULTS.md`.
 40. Matched prefixes expose observability: future controller SSH is absent from shared passive telemetry. Scratch test pair max risks differ only 0.0027 on average. Treat as branching risk, not deterministic intent inference. Score equivariance ~1e-8 but near-tied pair argmax varies 6/18–7/18.
+41. CUDA is verified on RTX 3050 Mobile 4GB with torch2.9.1+cu128. CPU/CUDA deterministic delta 7.45e-8, equivariance 2.24e-8, finite gradients, ~202MB peak at batch128. Batch128 is1.78x per-step faster; batch32 is0.86x. Primary scripts support `--device auto|cpu|cuda`; checkpoint states save on CPU. See `docs/GPU_EXECUTION.md`.
 
 ---
 

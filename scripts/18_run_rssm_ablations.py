@@ -31,7 +31,9 @@ def load_rssm_module() -> Any:
 
 def dynamics_metrics(module: Any, model: torch.nn.Module, data: dict[str, dict[str, np.ndarray]],
                      scaler: StandardScaler, metadata: dict[str, Any], mc_samples: int,
-                     batch_size: int, seed: int) -> tuple[dict[str, Any], dict[str, Any]]:
+                     batch_size: int, seed: int, device: torch.device | None = None
+                     ) -> tuple[dict[str, Any], dict[str, Any]]:
+    device = device or torch.device("cpu")
     global_width = len(metadata["global_feature_names"])
     node_width = len(metadata["node_feature_names"]) * len(metadata["node_slots"])
     groups = {"global": slice(0, global_width), "node": slice(global_width, global_width + node_width),
@@ -39,7 +41,7 @@ def dynamics_metrics(module: Any, model: torch.nn.Module, data: dict[str, dict[s
     output: dict[str, Any] = {"state_prediction": {}, "future_edge_presence": {}}
     mc_outputs = {}
     for offset, split in enumerate(["validation", "test"]):
-        mc = module.mc_predictions(model, data[split]["context_states"], scaler, torch.device("cpu"),
+        mc = module.mc_predictions(model, data[split]["context_states"], scaler, device,
                                    mc_samples, batch_size, seed + 1000 * (offset + 1))
         mc_outputs[split] = mc
         state_mean = mc["state"].mean(axis=0)
@@ -112,12 +114,14 @@ def internal_semantic_metrics(module: Any, mc_outputs: dict[str, dict[str, np.nd
 
 def host_sensitivity_internal(module: Any, model: torch.nn.Module, test: dict[str, np.ndarray],
                               scaler: StandardScaler, state_permutations: np.ndarray,
-                              threshold: float, batch_size: int, seed: int) -> dict[str, Any]:
+                              threshold: float, batch_size: int, seed: int,
+                              device: torch.device | None = None) -> dict[str, Any]:
+    device = device or torch.device("cpu")
     rows, scores = [], []
     labels = test["lateral_movement_within_horizon"].astype(int)
     for index, order in enumerate(state_permutations):
         mc = module.mc_predictions(model, test["context_states"][..., order], scaler,
-                                   torch.device("cpu"), 5, batch_size, seed + index)
+                                   device, 5, batch_size, seed + index)
         probability = mc["lm"].mean(axis=0)
         rows.append({"permutation_index": index,
                      "average_precision": float(average_precision_score(labels, probability)),
