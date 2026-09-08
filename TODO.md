@@ -71,7 +71,7 @@
 - [x] Run matched frozen/unfrozen and zero-KL representation-training ablations.
 - [x] Tune KL weight/free nats with validation-only gates; retain lower-KL result as a candidate pending new-data validation.
 - [ ] Calibrate RSSM predictive uncertainty.
-- [ ] Recover graph-RSSM semantic performance with frozen-head and low-rate joint fine-tuning.
+- [x] Test frozen pooled and decoded-future invariant graph semantic readouts; rich readout improves F1 but data remains limiting.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
 ## SECURITY HEADS

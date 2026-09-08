@@ -285,6 +285,15 @@ Train the permutation-equivariant graph RSSM:
 
 Read `docs/GRAPH_RSSM_RESULTS.md` for the first dynamics/semantic trade-off.
 
+Run frozen pooled-head and decoded-future invariant semantic follow-ups:
+
+```bash
+.venv/bin/python scripts/24_tune_graph_semantic_heads.py
+.venv/bin/python scripts/25_train_graph_rich_semantic.py
+```
+
+See `docs/GRAPH_SEMANTIC_RESULTS.md`.
+
 Build the updated report and send/open it:
 
 ```bash

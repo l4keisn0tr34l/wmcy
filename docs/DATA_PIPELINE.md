@@ -654,9 +654,17 @@ Freezes the lower-KL RSSM and trains one shared pair scorer over each imagined s
 
 Parse each state into global/node/directed-edge tensors, share normalization and neural operations across host/pair slots, aggregate incoming/outgoing messages, retain structured recurrent node/edge states, and roll a stochastic global prior forward. Shared decoders produce an exactly host-relabeling-equivariant future graph. Validation selects the seed before test loading; causality, tiny-overfit, shared-scaler, and exact permutation tests run before training.
 
+# 27. `24_tune_graph_semantic_heads.py`
+
+Freezes graph dynamics bit-identically and continues pooled LM/ATT&CK/shared-pair heads with validation semantic selection. The negative result separates representation/readout limitations from dynamics optimization.
+
+# 28. `25_train_graph_rich_semantic.py`
+
+Freezes graph dynamics and trains invariant LM/ATT&CK readouts from decoded future global features plus node/edge mean/max summaries. This preserves exact host invariance while exposing outlier behavior hidden by mean-only latent pooling.
+
 ---
 
-# 27. Where each datapoint resides
+# 29. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -726,7 +734,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 28. What will actually be fed to the model
+# 30. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -762,7 +770,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 29. How this becomes a world model
+# 31. How this becomes a world model
 
 After the state layer is correct:
 

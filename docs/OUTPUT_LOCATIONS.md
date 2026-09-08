@@ -96,7 +96,9 @@ outputs/mvp_v2/rssm/kl_tuning.json
 outputs/mvp_v2/rssm/kl_tuned/
 outputs/mvp_v2/rssm/pair_equivariance_audit.json
 outputs/mvp_v2/rssm/shared_pair_decoder.json
-outputs/mvp_v2/graph_rssm/
+outputs/mvp_v2/graph_rssm/metrics.json
+outputs/mvp_v2/graph_rssm/semantic_tuning.json
+outputs/mvp_v2/graph_rssm/rich_semantic.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 outputs/mvp_v2/report/rssm_eod_report.html
@@ -110,6 +112,8 @@ models/mvp_v2_rssm_zero_kl.pt
 models/mvp_v2_rssm_kl_tuned.pt
 models/mvp_v2_rssm_shared_pair.pt
 models/mvp_v2_graph_rssm.pt
+models/mvp_v2_graph_rssm_semantic.pt
+models/mvp_v2_graph_rssm_rich_semantic.pt
 ```
 
 ## Status and methodology
@@ -125,6 +129,7 @@ docs/KL_TUNING.md
 docs/PAIR_EQUIVARIANCE_AUDIT.md
 docs/SHARED_PAIR_DECODER.md
 docs/GRAPH_RSSM_RESULTS.md
+docs/GRAPH_SEMANTIC_RESULTS.md
 ```
 
 ## External raw datasets

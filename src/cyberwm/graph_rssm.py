@@ -66,7 +66,7 @@ class GraphRSSM(nn.Module):
                  edge_size: int = 12, pair_count: int = 6, horizon: int = 6,
                  global_hidden: int = 64, node_hidden: int = 32, edge_hidden: int = 32,
                  stochastic_size: int = 16, local_embedding: int = 32,
-                 technique_count: int = 3) -> None:
+                 technique_count: int = 3, semantic_from_decoded: bool = False) -> None:
         super().__init__()
         if pair_count != node_count * (node_count - 1):
             raise ValueError("pair_count must represent every directed non-self node pair")
@@ -74,6 +74,7 @@ class GraphRSSM(nn.Module):
         self.edge_size = edge_size; self.pair_count = pair_count; self.horizon = horizon
         self.global_hidden = global_hidden; self.node_hidden = node_hidden
         self.edge_hidden = edge_hidden; self.stochastic_size = stochastic_size
+        self.semantic_from_decoded = semantic_from_decoded
         self.observation_size = global_size + node_count * node_size + pair_count * edge_size
 
         sources, destinations = [], []
@@ -133,10 +134,16 @@ class GraphRSSM(nn.Module):
         self.pair_embedding = nn.Sequential(nn.Linear(edge_decode, 64), nn.SiLU(),
                                             nn.Linear(64, 32), nn.SiLU())
         self.pair_head = nn.Sequential(nn.Linear(horizon * 32, 64), nn.SiLU(), nn.Linear(64, 1))
-        horizon_graph = horizon * graph_feature
-        self.lm_head = nn.Sequential(nn.Linear(horizon_graph, 64), nn.SiLU(), nn.Linear(64, 1))
+        semantic_per_step = (
+            global_size + 2 * node_size + 2 * edge_size
+            if semantic_from_decoded else graph_feature
+        )
+        horizon_semantic = horizon * semantic_per_step
+        self.lm_head = nn.Sequential(
+            nn.Linear(horizon_semantic, 64), nn.SiLU(), nn.Linear(64, 1)
+        )
         self.technique_head = nn.Sequential(
-            nn.Linear(horizon_graph, 64), nn.SiLU(), nn.Linear(64, technique_count)
+            nn.Linear(horizon_semantic, 64), nn.SiLU(), nn.Linear(64, technique_count)
         )
 
     def split_observation(self, observation: torch.Tensor
@@ -324,12 +331,19 @@ class GraphRSSM(nn.Module):
             ]:
                 records[name].append(value)
         result = {name: torch.stack(values, dim=1) for name, values in records.items()}
-        graph_flat = result["feature"].reshape(len(global_hidden), -1)
+        if self.semantic_from_decoded:
+            global_value, node_value, edge_value = self.split_observation(result["decoded"])
+            semantic = torch.cat([
+                global_value, node_value.mean(dim=2), node_value.amax(dim=2),
+                edge_value.mean(dim=2), edge_value.amax(dim=2),
+            ], dim=-1).reshape(len(global_hidden), -1)
+        else:
+            semantic = result["feature"].reshape(len(global_hidden), -1)
         pair_flat = result["pair_embedding"].permute(0, 2, 1, 3).reshape(
             len(global_hidden), self.pair_count, -1
         )
-        result["lm_logits"] = self.lm_head(graph_flat).squeeze(-1)
-        result["technique_logits"] = self.technique_head(graph_flat)
+        result["lm_logits"] = self.lm_head(semantic).squeeze(-1)
+        result["technique_logits"] = self.technique_head(semantic)
         result["pair_logits"] = self.pair_head(pair_flat).squeeze(-1)
         return result
 
@@ -359,4 +373,5 @@ class GraphRSSM(nn.Module):
             "pair_count": self.pair_count, "horizon": self.horizon,
             "global_hidden": self.global_hidden, "node_hidden": self.node_hidden,
             "edge_hidden": self.edge_hidden, "stochastic_size": self.stochastic_size,
+            "semantic_from_decoded": self.semantic_from_decoded,
         }

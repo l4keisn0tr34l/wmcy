@@ -124,6 +124,8 @@ These exclusions prevent the graph model from memorizing attack roles or schedul
 - Semantic heads use pooled graph trajectories and may need richer node-to-global attention.
 - Exact pair ranking still has only 14 positive test windows.
 
-## Immediate next step
+## Semantic follow-up
 
-Freeze this graph dynamics checkpoint and train LM/ATT&CK/pair heads with validation semantic selection. Then optionally unfreeze with a smaller learning rate. This directly tests whether strong graph dynamics can retain its forecasting gains while recovering semantic performance.
+Frozen continuation of the original pooled heads did not improve test LM AP. A decoded-future invariant mean/max readout raises LM F1 from 0.476 to 0.667 and pre-first-LM F1 from 0.526 to 0.667 while preserving dynamics/equivariance, but LM AP remains approximately 0.744. See `docs/GRAPH_SEMANTIC_RESULTS.md`.
+
+The immediate bottleneck is now varied semantic data—especially matched non-progression negatives—rather than additional V2-only head tuning.

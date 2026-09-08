@@ -50,6 +50,8 @@ def main() -> int:
     kl_episode = json.loads((v2 / "rssm/kl_tuned/episode_alert_summary.json").read_text())
     pair_audit = json.loads((v2 / "rssm/pair_equivariance_audit.json").read_text())
     shared_pair = json.loads((v2 / "rssm/shared_pair_decoder.json").read_text())
+    graph_rssm = json.loads((v2 / "graph_rssm/metrics.json").read_text())
+    graph_rich = json.loads((v2 / "graph_rssm/rich_semantic.json").read_text())
     replay = json.loads(Path(args.replay).read_text())
     episodes = pd.read_csv(v2 / "episode_manifest.csv")
 
@@ -251,7 +253,18 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <tr><td>Pair AP</td><td>{shared_pair['reference_kl_tuned_independent_head']['test']['summary']['pair_micro_average_precision']['mean']:.3f}</td><td>{shared_pair['test']['summary']['pair_micro_average_precision']['mean']:.3f}</td></tr>
 <tr><td>Pair top-1</td><td>{shared_pair['reference_kl_tuned_independent_head']['test']['summary']['pair_top1_accuracy_any_true_pair']['mean']:.3f}</td><td>{shared_pair['test']['summary']['pair_top1_accuracy_any_true_pair']['mean']:.3f}</td></tr>
 <tr><td>Equivariance MAE</td><td>{shared_pair['reference_kl_tuned_independent_head']['test']['summary']['pair_equivariance_mae']['mean']:.3f}</td><td><strong>{shared_pair['test']['summary']['pair_equivariance_mae']['mean']:.3f}</strong></td></tr></table>
-<p class="callout"><strong>Negative result:</strong> shared scoring lowers score-level equivariance error but worsens ranking and does not stabilize top choices. The fixed-slot encoder/decoder is the upstream bottleneck. The shared head is not adopted; full graph message passing is the next architectural step.</p>
+<p class="callout"><strong>Negative result:</strong> shared scoring lowers score-level equivariance error but worsens ranking and does not stabilize top choices. The fixed-slot encoder/decoder is the upstream bottleneck. The shared head is not adopted.</p>
+
+<h2>3e. Permutation-equivariant graph RSSM</h2>
+<p>We then replaced the flattened upstream model: shared node/edge encoders, message aggregation, structured recurrent node/edge states, stochastic global dynamics, and shared future decoders now preserve the actual graph.</p>
+<table><tr><th>Metric</th><th>Graph RSSM</th><th>Published flattened RSSM</th><th>Ridge</th></tr>
+<tr><td>State MAE ↓</td><td><strong>{graph_rssm['state_prediction']['test']['normalized_mae']:.3f}</strong></td><td>{rssm_state['normalized_mae']:.3f}</td><td>{ridge_state['normalized_mae']:.3f}</td></tr>
+<tr><td>Active-state MAE ↓</td><td><strong>{graph_rssm['state_prediction']['test']['active_normalized_mae']:.3f}</strong></td><td>{rssm_state['active_normalized_mae']:.3f}</td><td>{ridge_state['active_normalized_mae']:.3f}</td></tr>
+<tr><td>Future edge AP ↑</td><td><strong>{graph_rssm['future_edge_presence']['test']['average_precision']:.3f}</strong></td><td>{rssm['future_edge_presence']['test']['average_precision']:.3f}</td><td>{ridge['future_edge_presence']['test']['average_precision']:.3f}</td></tr>
+<tr><td>Robust pair top-1 ↑</td><td><strong>{graph_rssm['future_lateral_pair_ranking']['test']['top1_accuracy_any_true_lm_pair']:.3f}</strong></td><td>failed permutation audit</td><td>{ridge['future_lateral_pair_ranking']['test']['top1_accuracy_any_true_lm_pair']:.3f}</td></tr>
+<tr><td>LM F1 / AP ↑</td><td>{graph_rich['future_lateral_movement']['test']['f1']:.3f} / {graph_rich['future_lateral_movement']['test']['average_precision']:.3f}</td><td><strong>{rssm_lm['f1']:.3f} / {rssm_lm['average_precision']:.3f}</strong></td><td>{ridge_lm['f1']:.3f} / {ridge_lm['average_precision']:.3f}</td></tr></table>
+<div class="callout good"><strong>Architectural result:</strong> graph state/edge forecasting is substantially better and host-relabeling equivariance is numerical-exact. Pair top-1 is 5/14 under every relabeling rather than changing with slots.</div>
+<div class="callout"><strong>Remaining semantic gap:</strong> an invariant decoded-future readout improves graph LM F1 from 0.476 to 0.667, but AP remains 0.744. Further V2-only head tuning is stopped; matched hard negatives and public dynamics pretraining are more valuable.</div>
 
 <h2>4. Primary future-state results</h2>
 <p>Lower state MAE is better. All models use the same train-context normalization.</p><div class="card">{state_bars}</div>
@@ -295,7 +308,7 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <h2>9. Next experiment</h2>
 <ol><li>Train RSSM using only telemetry reconstruction, prediction, and KL.</li><li>Freeze its latent dynamics and train downstream security heads separately.</li><li>Compare against the current joint-loss model to determine whether useful security semantics emerge from self-supervised dynamics.</li><li>Add matched scan/guessing non-progression episodes, then improve edge and pair decoders.</li><li>Collect explicit intervention/no-intervention episodes before adding defensive action conditioning.</li></ol>
 
-<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details: <code>docs/RSSM_RESULTS.md</code>, <code>docs/RSSM_ABLATIONS.md</code>, <code>docs/KL_TUNING.md</code>, <code>docs/PAIR_EQUIVARIANCE_AUDIT.md</code>, and <code>docs/SHARED_PAIR_DECODER.md</code>.</p>
+<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details: <code>docs/RSSM_RESULTS.md</code>, <code>docs/RSSM_ABLATIONS.md</code>, <code>docs/KL_TUNING.md</code>, <code>docs/PAIR_EQUIVARIANCE_AUDIT.md</code>, <code>docs/SHARED_PAIR_DECODER.md</code>, <code>docs/GRAPH_RSSM_RESULTS.md</code>, and <code>docs/GRAPH_SEMANTIC_RESULTS.md</code>.</p>
 </main></body></html>"""
 
     output = Path(args.out)

@@ -223,3 +223,13 @@ This indicates that slot dependence is already present in the flattened encoder/
 A 358,115-parameter graph RSSM shares preprocessing, encoding, recurrence, decoding, edge scoring, and pair scoring across host/pair slots. It achieves deterministic and stochastic host-relabeling equivariance near numerical precision. V2 test state MAE improves to 0.252, active MAE to 0.895, edge AP to 0.394, and robust pair top-1 to 0.357.
 
 Its initial LM F1/AP is only 0.476/0.738. Therefore adopt the architecture as the stronger world-dynamics foundation while retaining the flattened model as the current semantic benchmark. Train graph semantic heads separately before deciding on a combined successor.
+
+---
+
+## D025 — Stop V2-only semantic-head tuning after invariant readout
+
+**Status:** Accepted.
+
+Continuing the frozen pooled heads lowers test LM AP to 0.707. Reading decoded future global features plus permutation-invariant node/edge mean/max improves LM F1 from 0.476 to 0.667, but LM AP remains 0.744. Dynamics and exact equivariance remain intact.
+
+The graph model's validation/test LM AP are both near 0.74, while the flattened model rises from validation AP 0.744 to test AP 0.910. Do not optimize repeatedly against this difference on an already inspected 14-positive-window test. Add matched hard negatives/progression episodes and public dynamics pretraining instead.
