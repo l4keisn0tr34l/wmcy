@@ -184,6 +184,8 @@ The pair result fails a six-permutation robustness audit: tuned pair top-1 range
 
 A frozen shared-weight pair scorer reduces permutation-mean score equivariance MAE from 0.031 to 0.021, but worsens test permutation-mean pair AP from 0.267 to 0.232 and top-1 from 0.274 to 0.202. It is not adopted; the upstream flattened encoder/decoder must become graph-equivariant. See `docs/SHARED_PAIR_DECODER.md`.
 
+The first permutation-equivariant graph RSSM is now trained. It improves test state MAE to 0.252, active-state MAE to 0.895, edge AP to 0.394, and pair top-1 to a relabeling-stable 0.357. Its initial LM F1/AP is weaker at 0.476/0.738, so semantic-head training is the immediate next step. See `docs/GRAPH_RSSM_RESULTS.md`.
+
 Not yet implemented:
 
 - learned graph message-passing encoder;
@@ -193,6 +195,6 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-The replay, standalone report, representation/KL ablations, pair audit, and shared-head diagnostic are complete. Next replace the flattened encoder with graph-equivariant message passing and add matched scan/guessing hard negatives. Action-conditioned defensive intervention remains later work.
+The graph-equivariant RSSM foundation is complete and materially improves dynamics/edges. Next recover semantic performance through frozen-head then low-rate joint fine-tuning, integrate host-rich UNSW dynamics, and add matched scan/guessing hard negatives. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

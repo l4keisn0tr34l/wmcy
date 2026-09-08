@@ -213,3 +213,13 @@ Implement a shared-weight source-target scorer next, while acknowledging that fu
 A shared `288 -> 64 -> 1` scorer over decoded source-node, destination-node, and edge features lowers test permutation-mean pair equivariance MAE from 0.031 to 0.021. However, permutation-mean pair AP falls from 0.267 to 0.232 and top-1 falls from 0.274 to 0.202; top-choice consistency remains near chance.
 
 This indicates that slot dependence is already present in the flattened encoder/decoder. Do not add more complexity to the terminal head. The next architectural change must make node/edge representation learning permutation equivariant.
+
+---
+
+## D024 — Adopt graph RSSM as the dynamics foundation, not yet semantic winner
+
+**Status:** Accepted first checkpoint.
+
+A 358,115-parameter graph RSSM shares preprocessing, encoding, recurrence, decoding, edge scoring, and pair scoring across host/pair slots. It achieves deterministic and stochastic host-relabeling equivariance near numerical precision. V2 test state MAE improves to 0.252, active MAE to 0.895, edge AP to 0.394, and robust pair top-1 to 0.357.
+
+Its initial LM F1/AP is only 0.476/0.738. Therefore adopt the architecture as the stronger world-dynamics foundation while retaining the flattened model as the current semantic benchmark. Train graph semantic heads separately before deciding on a combined successor.

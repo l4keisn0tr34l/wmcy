@@ -277,6 +277,14 @@ Train/evaluate the frozen shared-weight pair-head diagnostic:
 
 The head was rejected; see `docs/SHARED_PAIR_DECODER.md`.
 
+Train the permutation-equivariant graph RSSM:
+
+```bash
+.venv/bin/python scripts/23_train_graph_rssm.py
+```
+
+Read `docs/GRAPH_RSSM_RESULTS.md` for the first dynamics/semantic trade-off.
+
 Build the updated report and send/open it:
 
 ```bash

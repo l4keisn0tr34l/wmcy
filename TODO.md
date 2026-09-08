@@ -64,13 +64,14 @@
 - [x] Implement a direct six-step Ridge latent trajectory baseline over `z_(t-L+1:t)`.
 - [x] Implement a compact RSSM with recurrent deterministic and stochastic latent dynamics.
 - [x] Add six-step stochastic prior rollout.
-- [ ] Replace the flattened observation encoder with a learned shared-weight graph encoder; final-head sharing alone was tested and rejected.
+- [x] Implement a learned shared-weight graph RSSM encoder/decoder with exact host-relabeling equivariance.
 - [x] Add baseline future-state reconstruction.
 - [x] Evaluate baseline future-edge presence decoded from predicted future state.
 - [x] Add Monte Carlo RSSM rollout spread and error-correlation diagnostics.
 - [x] Run matched frozen/unfrozen and zero-KL representation-training ablations.
 - [x] Tune KL weight/free nats with validation-only gates; retain lower-KL result as a candidate pending new-data validation.
 - [ ] Calibrate RSSM predictive uncertainty.
+- [ ] Recover graph-RSSM semantic performance with frozen-head and low-rate joint fine-tuning.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
 ## SECURITY HEADS

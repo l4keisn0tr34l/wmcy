@@ -650,9 +650,13 @@ Applies all six consistent host relabelings to observable context, remaps evalua
 
 Freezes the lower-KL RSSM and trains one shared pair scorer over each imagined source-node, destination-node, and directed-edge trajectory. It selects a seed by validation permutation-mean ranking before loading test, verifies all non-pair tensors remain bit-identical, and records the negative result that final-head sharing cannot repair an upstream fixed-slot representation.
 
+# 26. `23_train_graph_rssm.py` + `src/cyberwm/graph_rssm.py`
+
+Parse each state into global/node/directed-edge tensors, share normalization and neural operations across host/pair slots, aggregate incoming/outgoing messages, retain structured recurrent node/edge states, and roll a stochastic global prior forward. Shared decoders produce an exactly host-relabeling-equivariant future graph. Validation selects the seed before test loading; causality, tiny-overfit, shared-scaler, and exact permutation tests run before training.
+
 ---
 
-# 26. Where each datapoint resides
+# 27. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -722,7 +726,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 27. What will actually be fed to the model
+# 28. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -758,7 +762,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 28. How this becomes a world model
+# 29. How this becomes a world model
 
 After the state layer is correct:
 
