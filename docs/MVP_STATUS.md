@@ -284,6 +284,7 @@ scripts/18_run_rssm_ablations.py       frozen/unfrozen/zero-KL study
 scripts/19_tune_rssm_kl.py              validation-only KL/free-nats grid
 scripts/20_evaluate_rssm_checkpoint.py saved-checkpoint episode evaluation
 scripts/21_audit_pair_equivariance.py host-relabeling pair audit
+scripts/22_train_shared_pair_decoder.py frozen shared-pair diagnostic
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -441,7 +442,7 @@ The matched representation ablation is complete. Frozen self-supervised features
 
 A test-isolated KL grid selected KL 0.01/free-nats 0/seed 7. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, identity-order pair top-1 0.643, and spread 0.068. A 100-rollout checkpoint evaluation retains 2/2 progressing episode detection and 2/4 negative episode alerts. See `docs/KL_TUNING.md`.
 
-The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 8/14 across equivalent permutations, and non-identity top choices almost never map back to the identity choice. Reject it as robust evidence and replace independent fixed-slot pair weights. See `docs/PAIR_EQUIVARIANCE_AUDIT.md`.
+The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 8/14 across equivalent permutations, and non-identity top choices almost never map back to the identity choice. Reject it as robust evidence. A frozen shared pair head lowers score equivariance MAE but worsens permutation-mean AP/top-1, showing that the flattened upstream representation is the bottleneck. See `docs/PAIR_EQUIVARIANCE_AUDIT.md` and `docs/SHARED_PAIR_DECODER.md`.
 
 Still missing:
 
@@ -485,7 +486,7 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. audit pair-ranking equivariance and improve the pair decoder;
+1. replace flattened state encoding with graph-equivariant message passing;
 2. improve future edge/pair ranking and false-alert behavior;
 3. add matched hard-negative episodes;
 4. present active/quiet and per-horizon results with limitations.
@@ -499,6 +500,6 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 ## 11. Immediate next steps
 
 1. Open/send the updated `outputs/mvp_v2/report/rssm_eod_report.html`.
-2. Audit the KL-tuned pair result, then improve edge and exact LM-pair decoding.
+2. Design a graph-equivariant encoder/decoder before further pair-head tuning.
 3. Reduce scan-only/failed-guessing false alerts with matched hard negatives.
 4. Freeze the architecture/results narrative with honest limitations.

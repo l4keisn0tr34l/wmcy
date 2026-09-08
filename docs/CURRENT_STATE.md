@@ -182,6 +182,8 @@ Validation-only KL tuning selected weight 0.01/free-nats 0/seed 7 without loadin
 
 The pair result fails a six-permutation robustness audit: tuned pair top-1 ranges from 2/14 to 8/14 and non-identity top choices almost never map back to the identity choice. It is fixed-slot sensitive and is rejected as robust evidence. See `docs/PAIR_EQUIVARIANCE_AUDIT.md`.
 
+A frozen shared-weight pair scorer reduces permutation-mean score equivariance MAE from 0.031 to 0.021, but worsens test permutation-mean pair AP from 0.267 to 0.232 and top-1 from 0.274 to 0.202. It is not adopted; the upstream flattened encoder/decoder must become graph-equivariant. See `docs/SHARED_PAIR_DECODER.md`.
+
 Not yet implemented:
 
 - learned graph message-passing encoder;
@@ -191,6 +193,6 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-The replay, standalone report, representation ablations, and KL tuning are complete. Next audit the tuned pair result for host-permutation equivariance, improve edge/pair decoding if needed, and add matched scan/guessing hard negatives. Action-conditioned defensive intervention remains later work.
+The replay, standalone report, representation/KL ablations, pair audit, and shared-head diagnostic are complete. Next replace the flattened encoder with graph-equivariant message passing and add matched scan/guessing hard negatives. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

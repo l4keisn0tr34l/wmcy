@@ -64,7 +64,7 @@
 - [x] Implement a direct six-step Ridge latent trajectory baseline over `z_(t-L+1:t)`.
 - [x] Implement a compact RSSM with recurrent deterministic and stochastic latent dynamics.
 - [x] Add six-step stochastic prior rollout.
-- [ ] Replace the flattened observation encoder with a learned shared-weight graph encoder.
+- [ ] Replace the flattened observation encoder with a learned shared-weight graph encoder; final-head sharing alone was tested and rejected.
 - [x] Add baseline future-state reconstruction.
 - [x] Evaluate baseline future-edge presence decoded from predicted future state.
 - [x] Add Monte Carlo RSSM rollout spread and error-correlation diagnostics.
@@ -78,7 +78,7 @@
 - [x] Add baseline future ATT&CK technique multi-label interpretation from predicted future latent states.
 - [ ] Add tactic head only if useful; do not force a linear kill chain.
 - [x] Add baseline lateral-movement-within-horizon interpretation.
-- [x] Add baseline source-target lateral-movement ranking; improve current weak top-1 result.
+- [x] Add baseline source-target lateral-movement ranking and test a shared pair scorer; robust ranking remains unresolved upstream.
 - [ ] Optional future compromise-state head.
 
 ## EVALUATION

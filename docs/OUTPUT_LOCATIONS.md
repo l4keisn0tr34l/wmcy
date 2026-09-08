@@ -95,6 +95,7 @@ outputs/mvp_v2/rssm/ablations.json
 outputs/mvp_v2/rssm/kl_tuning.json
 outputs/mvp_v2/rssm/kl_tuned/
 outputs/mvp_v2/rssm/pair_equivariance_audit.json
+outputs/mvp_v2/rssm/shared_pair_decoder.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 outputs/mvp_v2/report/rssm_eod_report.html
@@ -106,6 +107,7 @@ models/mvp_v2_rssm_pretrained_unfrozen.pt
 models/mvp_v2_rssm_joint_matched.pt
 models/mvp_v2_rssm_zero_kl.pt
 models/mvp_v2_rssm_kl_tuned.pt
+models/mvp_v2_rssm_shared_pair.pt
 ```
 
 ## Status and methodology
@@ -119,6 +121,7 @@ docs/RSSM_RESULTS.md
 docs/RSSM_ABLATIONS.md
 docs/KL_TUNING.md
 docs/PAIR_EQUIVARIANCE_AUDIT.md
+docs/SHARED_PAIR_DECODER.md
 ```
 
 ## External raw datasets

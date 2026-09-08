@@ -110,12 +110,20 @@ def sample_normal(mean: torch.Tensor, std: torch.Tensor, sample: bool) -> torch.
 class CompactRSSM(nn.Module):
     def __init__(self, observation_size: int = 141, embedding_size: int = 64,
                  deterministic_size: int = 64, stochastic_size: int = 16,
-                 horizon: int = 6, technique_count: int = 3, pair_count: int = 6) -> None:
+                 horizon: int = 6, technique_count: int = 3, pair_count: int = 6,
+                 shared_pair_decoder: bool = False, global_size: int = 15,
+                 node_size: int = 18, node_count: int = 3, edge_size: int = 12) -> None:
         super().__init__()
         self.observation_size = observation_size
         self.deterministic_size = deterministic_size
         self.stochastic_size = stochastic_size
         self.horizon = horizon
+        self.pair_count = pair_count
+        self.shared_pair_decoder = shared_pair_decoder
+        self.global_size = global_size
+        self.node_size = node_size
+        self.node_count = node_count
+        self.edge_size = edge_size
         feature_size = deterministic_size + stochastic_size
         self.encoder = nn.Sequential(
             nn.Linear(observation_size, embedding_size), nn.SiLU(),
@@ -134,7 +142,25 @@ class CompactRSSM(nn.Module):
         horizon_width = horizon * feature_size
         self.lm_head = nn.Linear(horizon_width, 1)
         self.technique_head = nn.Linear(horizon_width, technique_count)
-        self.pair_head = nn.Linear(horizon_width, pair_count)
+        if shared_pair_decoder:
+            expected_size = global_size + node_count * node_size + pair_count * edge_size
+            if expected_size != observation_size:
+                raise ValueError(
+                    f"shared pair layout width {expected_size} != observation size {observation_size}"
+                )
+            pair_feature_size = horizon * (2 * node_size + edge_size)
+            self.pair_head = nn.Sequential(
+                nn.Linear(pair_feature_size, 64), nn.SiLU(), nn.Linear(64, 1)
+            )
+            sources, destinations = [], []
+            for source in range(node_count):
+                for destination in range(node_count):
+                    if source != destination:
+                        sources.append(source); destinations.append(destination)
+            self.register_buffer("pair_sources", torch.tensor(sources), persistent=False)
+            self.register_buffer("pair_destinations", torch.tensor(destinations), persistent=False)
+        else:
+            self.pair_head = nn.Linear(horizon_width, pair_count)
 
     def initial(self, batch_size: int, device: torch.device) -> tuple[torch.Tensor, torch.Tensor]:
         h = torch.zeros(batch_size, self.deterministic_size, device=device)
@@ -179,15 +205,33 @@ class CompactRSSM(nn.Module):
             features.append(feature); decoded.append(self.decoder(feature))
             edge_logits.append(self.edge_head(feature))
         feature_sequence = torch.stack(features, dim=1)
+        decoded_sequence = torch.stack(decoded, dim=1)
         flat = feature_sequence.reshape(len(feature_sequence), -1)
+        if self.shared_pair_decoder:
+            node_start = self.global_size
+            edge_start = node_start + self.node_count * self.node_size
+            node_features = decoded_sequence[..., node_start:edge_start].reshape(
+                len(decoded_sequence), steps, self.node_count, self.node_size
+            )
+            edge_features = decoded_sequence[..., edge_start:].reshape(
+                len(decoded_sequence), steps, self.pair_count, self.edge_size
+            )
+            source_features = node_features[:, :, self.pair_sources, :]
+            destination_features = node_features[:, :, self.pair_destinations, :]
+            per_pair = torch.cat(
+                [source_features, destination_features, edge_features], dim=-1
+            ).permute(0, 2, 1, 3).reshape(len(decoded_sequence), self.pair_count, -1)
+            pair_logits = self.pair_head(per_pair).squeeze(-1)
+        else:
+            pair_logits = self.pair_head(flat)
         return {
             "h": torch.stack(hs, dim=1), "z": torch.stack(zs, dim=1),
             "mean": torch.stack(means, dim=1), "std": torch.stack(stds, dim=1),
-            "feature": feature_sequence, "decoded": torch.stack(decoded, dim=1),
+            "feature": feature_sequence, "decoded": decoded_sequence,
             "edge_logits": torch.stack(edge_logits, dim=1),
             "lm_logits": self.lm_head(flat).squeeze(-1),
             "technique_logits": self.technique_head(flat),
-            "pair_logits": self.pair_head(flat),
+            "pair_logits": pair_logits,
         }
 
     def forward(self, observations: torch.Tensor, context_steps: int,
@@ -325,6 +369,8 @@ def validate_objective(model: CompactRSSM, loader: DataLoader, context_steps: in
         averaged["selection"] = semantics
     elif selection_mode == "joint":
         averaged["selection"] = dynamics + semantics
+    elif selection_mode == "pair":
+        averaged["selection"] = averaged["pair"]
     else:
         raise ValueError(f"unknown selection mode: {selection_mode}")
     return averaged

@@ -203,3 +203,13 @@ Use this checkpoint to initialize pair-decoder experiments, but retain the publi
 Under equivalent host relabelings, the KL-tuned test pair top-1 ranges from 2/14 to 8/14 and only about 1.3% of non-identity top choices map back to the identity choice. The published model is also unstable. Therefore the tuned identity-order pair result fails the robustness gate and must not be a headline.
 
 Implement a shared-weight source-target scorer next, while acknowledging that full equivariance requires replacing the flattened encoder/decoder with graph message passing.
+
+---
+
+## D023 — Do not adopt the isolated shared pair head
+
+**Status:** Rejected after matched frozen-backbone experiment.
+
+A shared `288 -> 64 -> 1` scorer over decoded source-node, destination-node, and edge features lowers test permutation-mean pair equivariance MAE from 0.031 to 0.021. However, permutation-mean pair AP falls from 0.267 to 0.232 and top-1 falls from 0.274 to 0.202; top-choice consistency remains near chance.
+
+This indicates that slot dependence is already present in the flattened encoder/decoder. Do not add more complexity to the terminal head. The next architectural change must make node/edge representation learning permutation equivariant.

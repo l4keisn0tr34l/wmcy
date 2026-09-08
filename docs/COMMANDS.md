@@ -269,6 +269,14 @@ Audit state/edge/pair behavior under all six host relabelings:
 
 Read `docs/PAIR_EQUIVARIANCE_AUDIT.md` before citing pair top-1.
 
+Train/evaluate the frozen shared-weight pair-head diagnostic:
+
+```bash
+.venv/bin/python scripts/22_train_shared_pair_decoder.py
+```
+
+The head was rejected; see `docs/SHARED_PAIR_DECODER.md`.
+
 Build the updated report and send/open it:
 
 ```bash

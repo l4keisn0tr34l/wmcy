@@ -646,9 +646,13 @@ Loads a saved RSSM checkpoint and reproducibly recomputes validation-thresholded
 
 Applies all six consistent host relabelings to observable context, remaps evaluation targets, and measures whether state, edge, LM, ATT&CK, and pair predictions transform consistently. It performs no training or model selection and exposes fixed-slot pair shortcuts that identity-order top-1 hides.
 
+# 25. `22_train_shared_pair_decoder.py`
+
+Freezes the lower-KL RSSM and trains one shared pair scorer over each imagined source-node, destination-node, and directed-edge trajectory. It selects a seed by validation permutation-mean ranking before loading test, verifies all non-pair tensors remain bit-identical, and records the negative result that final-head sharing cannot repair an upstream fixed-slot representation.
+
 ---
 
-# 25. Where each datapoint resides
+# 26. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -718,7 +722,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 26. What will actually be fed to the model
+# 27. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -754,7 +758,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 27. How this becomes a world model
+# 28. How this becomes a world model
 
 After the state layer is correct:
 
