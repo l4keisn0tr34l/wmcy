@@ -233,3 +233,13 @@ Its initial LM F1/AP is only 0.476/0.738. Therefore adopt the architecture as th
 Continuing the frozen pooled heads lowers test LM AP to 0.707. Reading decoded future global features plus permutation-invariant node/edge mean/max improves LM F1 from 0.476 to 0.667, but LM AP remains 0.744. Dynamics and exact equivariance remain intact.
 
 The graph model's validation/test LM AP are both near 0.74, while the flattened model rises from validation AP 0.744 to test AP 0.910. Do not optimize repeatedly against this difference on an already inspected 14-positive-window test. Add matched hard negatives/progression episodes and public dynamics pretraining instead.
+
+---
+
+## D026 — Use UNSW only as grouped public telemetry pretraining
+
+**Status:** Accepted after full local canonicalization.
+
+UNSW original rows preserve host identities and Unix-second time but are heavily out of order. After sorting and one-hour gap segmentation, five source segments form only two connected capture groups because file times overlap. Never randomly split rows/segments across those groups.
+
+Use observable UNSW flows for graph-dynamics pretraining and domain diagnostics. Keep raw categories separate and do not infer exact ATT&CK or lateral-movement progression from them. Missing TCP flag counts remain unavailable rather than fabricated.

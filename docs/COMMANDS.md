@@ -304,6 +304,17 @@ Build the updated report and send/open it:
 outputs/mvp_v2/report/rssm_eod_report.html
 ```
 
+## UNSW-NB15 temporal canonicalization
+
+```bash
+.venv/bin/python scripts/26_canonicalize_unsw.py \
+  /home/paprika/Documents/153/ds/un/CSV\ Files/UNSW-NB15_{1,2,3,4}.csv \
+  --features /home/paprika/Documents/153/ds/un/CSV\ Files/NUSW-NB15_features.csv \
+  --out-dir outputs/unsw/canonical
+```
+
+This writes observable events and raw attack truth separately, sorts out-of-order rows, and keeps overlapping source segments in two capture groups.
+
 ## Shortcut/leakage audit
 
 ```bash

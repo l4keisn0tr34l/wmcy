@@ -80,13 +80,16 @@ Verified local path:
 
 The four original `UNSW-NB15_*.csv` files total approximately 587 MB and contain 49 fields per row. Representative rows preserve source/destination IPs and ports, protocol, service, connection state, duration, bytes, and packet statistics. `NUSW-NB15_features.csv` provides field definitions. Reduced training/testing tables with 45 columns are also present.
 
+### Verified temporal adapter
+
+`scripts/26_canonicalize_unsw.py` has processed all 2,540,047 local original rows into five sorted, gap-bounded segments under two connected capture groups. Raw files contain 52k–108k timestamp inversions each, so sorting is essential. Source-file intervals overlap and must remain grouped to prevent split leakage. See `docs/UNSW_ADAPTER.md`.
+
 ### Intended role
 - cross-dataset generalization;
 - dynamics/background diversity;
 - domain-shift test.
 
-### Preference
-Build an adapter around the host-rich original files only after confirming their timestamp/order fields from the feature definitions. Do not default to reduced ML tables merely because they are convenient.
+Raw categories remain separate truth and are not treated as exact ATT&CK/LM progression.
 
 ---
 

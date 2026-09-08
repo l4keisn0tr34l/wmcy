@@ -46,7 +46,8 @@
 - [ ] Finalize canonical event schema.
 - [ ] Decide portable feature set shared across lab/public data.
 - [x] Preserve raw data immutably in the current lab processing path.
-- [ ] Add dataset adapters for CSE-CIC-IDS2018 and UNSW-NB15 where useful.
+- [x] Add a leakage-safe temporal canonical adapter for original host-rich UNSW-NB15 files.
+- [ ] Build UNSW induced-subgraph dynamics sequences and add CSE-CIC-IDS2018 adapter where useful.
 - [ ] Version MITRE Enterprise ATT&CK STIX locally.
 - [ ] Validate technique/tactic IDs automatically against that version.
 

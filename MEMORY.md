@@ -195,6 +195,7 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 32. Frozen shared pair scorer (same 288→64→1 MLP per pair) lowers test permutation-mean equivariance MAE 0.031→0.021 but worsens mean AP 0.267→0.232 and top-1 0.274→0.202. Reject the head; fixed-slot encoder/decoder is upstream bottleneck. See `docs/SHARED_PAIR_DECODER.md`.
 33. First 358,115-param graph RSSM has shared normalization/encoding/recurrent node+edge states/decoders and exact host equivariance. V2 test: state MAE 0.252, active 0.895, edge AP 0.394, robust pair top-1 0.357, but initial LM F1/AP 0.476/0.738. See `docs/GRAPH_RSSM_RESULTS.md`.
 34. Frozen pooled-head continuation worsens graph LM AP to 0.707. Invariant readout from decoded future global + node/edge mean/max raises LM F1/pre-F1 to 0.667/0.667 with AP 0.744, preserving dynamics/equivariance. Stop V2-only head tuning; add data/public dynamics. See `docs/GRAPH_SEMANTIC_RESULTS.md`.
+35. UNSW temporal adapter processed all 2,540,047 host-rich rows into five sorted/gap-bounded segments and separate truth. Raw files have 52k–108k time inversions. Overlapping file intervals form only two connected capture groups and must not be split independently. No TCP flags, ATT&CK, or LM truth is fabricated. See `docs/UNSW_ADAPTER.md`.
 
 ---
 

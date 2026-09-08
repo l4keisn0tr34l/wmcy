@@ -193,6 +193,10 @@ Not yet implemented:
 - action-conditioned dynamics;
 - cross-domain evaluation.
 
+## Public temporal integration
+
+All 2,540,047 original host-rich UNSW-NB15 rows are now canonicalized into five sorted, gap-bounded segments. Observable events and raw attack labels are separate. The segments form only two connected capture groups because source-file times overlap; they cannot be randomly split. UNSW supplies public graph dynamics/background diversity, not exact LM/ATT&CK truth. See `docs/UNSW_ADAPTER.md`.
+
 ## Immediate next milestone
 
 The graph-equivariant RSSM and invariant semantic follow-ups are complete. Next integrate host-rich UNSW dynamics and add matched scan/guessing hard negatives; further V2-only head tuning is unlikely to resolve semantic generalization. Action-conditioned defensive intervention remains later work.

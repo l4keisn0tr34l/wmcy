@@ -664,7 +664,13 @@ Freezes graph dynamics and trains invariant LM/ATT&CK readouts from decoded futu
 
 ---
 
-# 29. Where each datapoint resides
+# 29. `26_canonicalize_unsw.py`
+
+Reads original host-rich UNSW files using their 49-field definition, separates observable flow primitives from raw attack truth, stable-sorts heavily out-of-order Unix timestamps, and creates gap-bounded segments. Overlapping source-file intervals are assigned to connected capture groups that must remain together across any split.
+
+---
+
+# 30. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -734,7 +740,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 30. What will actually be fed to the model
+# 31. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -770,7 +776,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 31. How this becomes a world model
+# 32. How this becomes a world model
 
 After the state layer is correct:
 

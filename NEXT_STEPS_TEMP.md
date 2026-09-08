@@ -2,28 +2,52 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Current graph status
+## Current verified checkpoint
 
-- Graph RSSM dynamics are strong: state MAE 0.252, active 0.895, edge AP 0.394, exact host equivariance, robust pair top-1 0.357.
-- Initial pooled-latent LM F1/AP is 0.476/0.738.
-- Frozen continuation of the same semantic heads did not recover generalization: selected test LM F1/AP 0.455/0.707. Keep as a negative result.
+Graph RSSM and semantic follow-ups are committed at `6703e8b`:
 
-## Current code-writing batch: future-state invariant semantic readout
+```text
+Graph dynamics: state MAE 0.252, active MAE 0.895, edge AP 0.394
+Graph pair:    0.357 (5/14), exactly stable across all host relabelings
+Rich LM head:  F1/AP 0.667/0.744, pre-first F1 0.667
+```
 
-1. Add an optional backward-compatible GraphRSSM semantic readout from decoded imagined future states.
-2. For each future step, concatenate:
-   - decoded global features;
-   - mean and max over decoded node features;
-   - mean and max over decoded directed-edge features.
-3. This readout is permutation invariant but preserves outlier/intensity information lost by mean-pooled latent state alone.
-4. Initialize all graph dynamics, decoders, edge head, and pair head from `mvp_v2_graph_rssm.pt`.
-5. Initialize only new LM/ATT&CK heads randomly; freeze every other tensor.
-6. Train seeds 7/17/27 with validation semantic selection; test remains unloaded until seed selection.
-7. Verify frozen tensors bit-identical and exact host equivariance.
-8. Evaluate LM/pre-LM, ATT&CK, episode lead/false alerts, state/edge, pair, spread.
-9. Save `models/mvp_v2_graph_rssm_rich_semantic.pt` and `outputs/mvp_v2/graph_rssm/rich_semantic.json`.
+Updated report: `/home/paprika/Downloads/rssm_eod_report.html`, SHA-256 `d6ba73be7f00a71ff72a53de295d731c3b32e5b49d0e9bef12f6a759aa2c3216`.
 
-## Decision gate
+## Verified local public-data facts
 
-- Adopt graph RSSM as preferred candidate only if rich readout materially closes LM AP/F1 gap without sacrificing exact equivariance or graph dynamics.
-- Otherwise retain split conclusion: graph RSSM is best dynamics model; flattened RSSM remains best semantic model, and more varied/hard-negative data is the bottleneck.
+UNSW-NB15 original files contain 2,540,047 rows total, source/destination IP and port, Unix-second `Stime/Ltime`, packets/bytes/duration, services/states, and separate attack category/label fields. Rows are not chronological (52k–108k inversions per file), so sorting/segmenting is mandatory. Internal range is documented/observed as `149.171.126.0/24`. Attack labels do not provide clean lateral-movement progression.
+
+CICIDS2018 has ten local processed files with second timestamps, but only `Thuesday-20-02-2018...csv` retains Src/Dst IP in this copy. CICIDS2017 ML files omit IPs; TrafficLabelling copies retain them but have minute timestamps. Friday PCAP remains precise telemetry.
+
+## Current code-writing batch: UNSW canonical temporal adapter
+
+Implement `scripts/26_canonicalize_unsw.py`:
+
+1. Read headerless original UNSW files using the official local 49-field definition and Latin-1 encoding.
+2. Preserve raw files unchanged.
+3. Map observable primitives to the existing canonical event contract:
+   - Stime UTC timestamp, src/dst IP and ports, protocol/service/state;
+   - source/destination packets and bytes;
+   - duration.
+4. Keep `attack_cat` and `Label` only in a separate row-ground-truth file.
+5. Do not fabricate TCP flags unavailable in UNSW.
+6. Stable-sort by Unix start/end time because raw rows are heavily out of order.
+7. Split each source file at configurable large timestamp gaps so dense state generation cannot fill multi-day gaps with artificial empty states.
+8. Reset event IDs inside each generated segment and preserve source-row provenance only in ground truth/audit metadata, not model input.
+9. Write per-segment canonical observations, separate truth, and a profile/manifest JSON.
+10. Smoke-test on a bounded row count, then process all four local files.
+
+## Validation
+
+- observations contain no label/attack category;
+- truth and observations have one-to-one event IDs;
+- timestamps monotonic within segments and retain one-second precision without fabrication;
+- no segment crosses configured large gaps;
+- IP identities and observable quantities are present;
+- profile records unavailable flag fields;
+- inspect generated output, compile, `git diff --check`.
+
+## Following batch
+
+Build three-host chronological induced-subgraph pretraining sequences from UNSW segments, anonymize host slots consistently per sequence/episode, pretrain graph dynamics without attack labels, then fine-tune on lab truth. In parallel add matched scan/guessing hard-negative lab episodes for semantics.

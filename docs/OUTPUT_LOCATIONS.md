@@ -116,6 +116,16 @@ models/mvp_v2_graph_rssm_semantic.pt
 models/mvp_v2_graph_rssm_rich_semantic.pt
 ```
 
+## UNSW public temporal data
+
+```text
+outputs/unsw/canonical/manifest.json
+outputs/unsw/canonical/<segment>/observations.csv.gz
+outputs/unsw/canonical/<segment>/row_ground_truth.csv.gz
+```
+
+Five segments belong to only two connected capture groups; see `docs/UNSW_ADAPTER.md`.
+
 ## Status and methodology
 
 ```text
@@ -130,6 +140,7 @@ docs/PAIR_EQUIVARIANCE_AUDIT.md
 docs/SHARED_PAIR_DECODER.md
 docs/GRAPH_RSSM_RESULTS.md
 docs/GRAPH_SEMANTIC_RESULTS.md
+docs/UNSW_ADAPTER.md
 ```
 
 ## External raw datasets
