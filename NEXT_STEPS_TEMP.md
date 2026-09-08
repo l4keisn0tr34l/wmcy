@@ -2,64 +2,54 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Current EOD deliverable
+## Current verified project result
 
-Standalone HTML report:
+- Equal-duration V2: 24 episodes, duration shortcut removed.
+- Compact hybrid RSSM: state MAE 0.280 vs Ridge 0.354/persistence 0.384; LM F1 0.800; pre-first LM F1 0.769.
+- RSSM forecasting is strong relative to baselines, but edge AP 0.222 and pair top-1 0.143 remain weak.
+- Episode test: 2/2 progressing detected, mean exact lead 26.4 s; scan-only and failed guessing create false alerts.
+- Standalone report: `/home/paprika/Downloads/rssm_eod_report.html`.
 
-```text
-outputs/mvp_v2/report/rssm_eod_report.html
-/home/paprika/Downloads/rssm_eod_report.html
-```
+## New independent senior context
 
-Both copies have SHA-256:
+The senior independently reported that transformers failed on limited data, RSSM forecasting was better, downstream classes remained weak, and allowing downstream losses to unfreeze/adapt the RSSM improved most rare classes. They also reported RSSM+DANN and KL ablations. Their repository, data contract, splits, checkpoints, and metrics are unavailable, so these are external hypotheses only and must never be merged with or numerically compared to our results.
 
-```text
-3aae31e51fd7988272b690ee2ffcba37e340d24315e5071d7e96f89a9d45fd84
-```
+Our current RSSM is already analogous to an unfrozen joint model because LM/ATT&CK/pair losses backpropagate through the latent dynamics. This may contribute to its stronger semantic results. It is not evidence that a frozen self-supervised RSSM would perform equally well.
 
-The file is about 19.5 KB and contains all CSS, two SVG architecture/pipeline diagrams, charts, tables, metrics, selected replay, caveats, and next steps inline. HTMLParser found 539 elements and zero external `src`/`href` dependencies. The senior needs only this HTML file.
+## Next code batch: representation-training ablation
 
-Reproduce with:
+Implement the following on identical V2 splits, architecture, seeds, and validation-only selection:
 
-```bash
-.venv/bin/python scripts/17_build_rssm_report.py
-```
+1. **Joint/unfrozen RSSM — current reference**
+   - telemetry prediction + reconstruction + KL + semantic losses;
+   - full model trainable.
 
-## Reported verified result
+2. **Frozen two-stage RSSM**
+   - pretrain only telemetry prediction + reconstruction + edge + KL;
+   - freeze encoder, GRU, prior/posterior, and decoder;
+   - train LM/ATT&CK/pair heads on imagined future latents only.
 
-```text
-                         RSSM    Ridge   persistence
-state MAE               0.280    0.354      0.384
-active-state MAE        1.031    1.089      1.137
-future-LM F1            0.800    0.645
-pre-first-LM F1         0.769    0.640
-future-edge AP          0.222    0.230
-LM-pair top-1           0.143    0.000
-```
+3. **Unfrozen fine-tuned two-stage RSSM**
+   - initialize from the same self-supervised checkpoint;
+   - attach heads and fine-tune the full model jointly;
+   - compare against training jointly from scratch.
 
-RSSM detects 2/2 progressing test episodes with mean exact lead 26.4 s; scan-only and failed guessing alert, benign ping and legitimate SSH do not. Selected `lab_048` replay: no prior LM, 87.8% ± 5.1%, exact LM 28.7 s later, correct top pair. Selection is disclosed.
+4. **KL ablation**
+   - same joint model but KL weight zero;
+   - check forecasting, latent stochastic spread, and downstream semantics.
 
-## Files implemented
+Report forecasting separately from downstream security metrics. Select checkpoints on validation only and evaluate test once per frozen experiment definition. Use the same active/quiet/per-horizon, LM/pre-first-LM, ATT&CK, edge, pair, uncertainty, false-alert, and host-permutation metrics.
 
-```text
-requirements-rssm.txt
-scripts/15_train_rssm.py
-scripts/16_replay_rssm.py
-scripts/17_build_rssm_report.py
-docs/RSSM_RESULTS.md
-```
+## Explicit deferrals
 
-## Next code batch after EOD review
+- **Transformer:** do not add with only 24 episodes; no evidence it is appropriate.
+- **DANN:** defer until there are meaningful source domains (for example lab versus public telemetry) and a valid domain label. Scenario is not a safe substitute for domain.
+- **Fusion/ensemble:** first measure validation error correlation and oracle gain. Do not combine Ridge/RSSM merely because one edge AP differs by 0.008; fusion requires complementary validated signal.
+- **Action conditioning:** defer until intervention/no-intervention tuples exist.
 
-1. Run pure self-supervised/two-stage RSSM versus current joint-loss ablation.
-2. Improve edge AP and pair ranking using pair-wise/shared-weight decoding.
-3. Add matched scan+guessing non-progression episodes to reduce false alerts.
-4. Calibrate stochastic uncertainty.
-5. Consider shared-weight graph encoding; defer actions until intervention data exists.
+## Interpretation gate
 
-## Communication rules
-
-- Send only `rssm_eod_report.html` unless source/evidence is requested.
-- Never cite old confounded F1 0.963 as valid.
-- Call complete RSSM training hybrid, not wholly self-supervised.
-- Do not claim calibrated uncertainty, enterprise generalization, or action-conditioned counterfactuals.
+- If frozen two-stage semantics approach the joint model, self-supervised dynamics carry useful security information.
+- If unfreezing is much better, semantic supervision is shaping the latent representation and the supervision bottleneck remains important.
+- If KL removal improves point prediction but destroys useful spread/generalization, retain stochastic regularization.
+- Never describe the senior’s independent scores as project results or compare their class F1 numerically to our horizon/multi-label metrics.

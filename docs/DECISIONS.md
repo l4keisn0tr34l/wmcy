@@ -163,3 +163,13 @@ The compact V2 RSSM improves test state MAE from 0.354 Ridge to 0.280 and future
 **Status:** Accepted.
 
 Telemetry reconstruction, prior prediction, and KL dynamics losses are self-supervised. LM, ATT&CK, and pair losses jointly backpropagate through the same latent model, so the complete training regime is hybrid rather than purely self-supervised. A pure self-supervised/two-stage ablation is required before attributing downstream gains to unsupervised world-model learning alone.
+
+---
+
+## D019 — Test representation adaptation before model fusion
+
+**Status:** Accepted experiment plan; not yet implemented.
+
+On identical V2 splits, compare: current joint/unfrozen training, self-supervised pretraining with frozen downstream heads, self-supervised initialization followed by full fine-tuning, and zero-KL ablation. Report dynamics and semantic metrics separately. The senior independently reported that unfreezing helped their downstream classes, but their protocol is unavailable and remains an external hypothesis.
+
+Do not add DANN without meaningful domain labels, and do not ensemble models until validation error correlation/oracle-gain analysis shows complementary signal. A marginal Ridge/RSSM edge-AP difference alone is not evidence for fusion.
