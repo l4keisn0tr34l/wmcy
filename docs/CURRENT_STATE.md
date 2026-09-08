@@ -178,7 +178,9 @@ Twenty stochastic rollouts produce mean state spread 0.076; spread/error correla
 
 A matched representation-training ablation is also complete. Frozen telemetry-pretrained RSSM features reach LM F1 0.757; unfreezing raises LM F1 to 0.800, pre-first-LM F1 from 0.727 to 0.815, and pair top-1 from 0.071 to 0.214. A zero-KL model improves several point metrics but reduces mean rollout spread from 0.076 to 0.025, so it is not promoted as the selected model. See `docs/RSSM_ABLATIONS.md`.
 
-Validation-only KL tuning selected weight 0.01/free-nats 0/seed 7 without loading test during screening. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, and pair top-1 0.643, while spread remains 0.068. Pair top-1 is only 9/14 windows on the repeatedly inspected split and requires equivariance/new-data validation. A 100-rollout episode check still alerts on 2/4 negatives. See `docs/KL_TUNING.md`.
+Validation-only KL tuning selected weight 0.01/free-nats 0/seed 7 without loading test during screening. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, and identity-order pair top-1 0.643, while spread remains 0.068. A 100-rollout episode check still alerts on 2/4 negatives. See `docs/KL_TUNING.md`.
+
+The pair result fails a six-permutation robustness audit: tuned pair top-1 ranges from 2/14 to 8/14 and non-identity top choices almost never map back to the identity choice. It is fixed-slot sensitive and is rejected as robust evidence. See `docs/PAIR_EQUIVARIANCE_AUDIT.md`.
 
 Not yet implemented:
 

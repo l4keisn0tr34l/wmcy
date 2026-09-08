@@ -4,36 +4,43 @@
 
 ## Current verified status
 
-Matched representation ablations are complete and documented in `docs/RSSM_ABLATIONS.md`. The updated standalone report is `/home/paprika/Downloads/rssm_eod_report.html` (SHA-256 `4e94e5bc98744bbb504abca2a81d70505bc31e761e3e7c991990eaab71547ff3`). Git is clean at `1e52e21`.
+- Matched frozen/unfrozen/zero-KL ablation: `docs/RSSM_ABLATIONS.md`.
+- Validation-only KL grid: `docs/KL_TUNING.md`.
+- Lower-KL candidate: KL 0.01/free 0/seed 7, test state MAE 0.276, edge AP 0.285, LM AP 0.926, pair top-1 9/14, spread 0.068.
+- A 100-rollout evaluation gives LM F1/AP 0.828/0.914 and unchanged episode behavior (2/2 progressing, 2/4 negative episodes alert).
+- Git clean at `fa16ff4`.
 
-## Current code-writing batch: KL/free-nats validation grid
+## Current code-writing batch: pair equivariance audit
 
-Implement `scripts/19_tune_rssm_kl.py` with these invariants:
+Implement `scripts/21_audit_pair_equivariance.py` and compare:
 
-1. Use the unchanged V2 whole-episode 12/6/6 split and 141-feature observable input.
-2. Fit scaling on training contexts only.
-3. Keep architecture, augmentation, loss weights other than KL, and semantic heads unchanged.
-4. Screen KL weights `{0, 0.01, 0.03, 0.1, 0.3}` and free-nats `{0, 1}` where meaningful, using seed 7 and validation only.
-5. Evaluate no test arrays during screening/shortlisting.
-6. Require candidates to preserve at least half the reference validation rollout spread, remain within 3% of reference validation state MAE, retain at least 90% of reference validation edge/LM AP, and avoid >1.5x reference mean host-permutation range.
-7. Rank eligible candidates with an explicit state-primary validation score: state-MAE ratio minus 0.25 edge-AP ratio minus 0.25 LM-AP ratio.
-8. Confirm the top two eligible settings across seeds 7/17/27, still using validation only.
-9. Select one setting/seed on validation, then evaluate test exactly once in this script.
-10. Save complete validation screening, eligibility, selection, final test, model checkpoint, and limitations.
-11. Report raw posterior/prior KL, Monte Carlo spread, and host-permutation sensitivity so low spread is never mistaken for calibrated confidence.
+```text
+models/mvp_v2_rssm.pt
+models/mvp_v2_rssm_kl_tuned.pt
+```
 
-Tests:
+For all six consistent host relabelings on validation and test:
 
-- compile and short smoke grid;
-- assert screening artifact has no test metrics;
-- assert all values finite and ranges valid;
-- assert final selection satisfies recorded gates or is marked fallback;
-- inspect final JSON and checkpoint;
-- `git diff --check`.
+1. Permute observable context node/edge slots only through the existing state permutation map.
+2. Permute future edge/pair targets through the matching directed-pair map.
+3. Run 100 Monte Carlo rollouts with no retraining or model selection.
+4. Measure LM AP/F1, edge AP, pair AP/top-1, and pair top-choice consistency.
+5. Compare permuted pair scores against the identity prediction reordered into the same coordinates; report MAE and correlation.
+6. Compare decoded state/edge predictions against consistently reordered identity predictions.
+7. Report per-pair support and correct counts so 9/14 cannot hide slot concentration.
+8. Save `outputs/mvp_v2/rssm/pair_equivariance_audit.json`.
 
-## After KL tuning
+Validation:
 
-1. Document the result and decide whether the published model changes; do not switch solely for one favorable test metric.
-2. Add a shared-weight source-target pair decoder.
-3. Generate matched scan/guessing hard negatives.
-4. Defer transformer, DANN, ensemble, and action conditioning.
+- all six permutations present;
+- pair/state index maps are true permutations;
+- target positive counts are invariant;
+- metrics finite/in range;
+- no ground-truth field enters model input;
+- compile and `git diff --check`.
+
+## Decision gate
+
+- If tuned pair accuracy and reordered scores are stable, retain the existing head provisionally but still require new episodes.
+- If top-1 or scores vary materially by host relabeling, implement a shared-weight pair decoder before citing the gain.
+- Do not select or retrain a model using audit test outcomes.

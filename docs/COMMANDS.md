@@ -261,6 +261,14 @@ outputs/mvp_v2/rssm/kl_tuning.json
 docs/KL_TUNING.md
 ```
 
+Audit state/edge/pair behavior under all six host relabelings:
+
+```bash
+.venv/bin/python scripts/21_audit_pair_equivariance.py
+```
+
+Read `docs/PAIR_EQUIVARIANCE_AUDIT.md` before citing pair top-1.
+
 Build the updated report and send/open it:
 
 ```bash

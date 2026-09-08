@@ -94,6 +94,7 @@ outputs/mvp_v2/rssm/episode_alerts.csv
 outputs/mvp_v2/rssm/ablations.json
 outputs/mvp_v2/rssm/kl_tuning.json
 outputs/mvp_v2/rssm/kl_tuned/
+outputs/mvp_v2/rssm/pair_equivariance_audit.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 outputs/mvp_v2/report/rssm_eod_report.html
@@ -117,6 +118,7 @@ docs/SHORTCUT_AUDIT.md
 docs/RSSM_RESULTS.md
 docs/RSSM_ABLATIONS.md
 docs/KL_TUNING.md
+docs/PAIR_EQUIVARIANCE_AUDIT.md
 ```
 
 ## External raw datasets

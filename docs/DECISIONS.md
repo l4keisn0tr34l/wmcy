@@ -193,3 +193,13 @@ Therefore zero-KL is not promoted as the selected RSSM. Run a validation-only KL
 Nine settings were screened without loading test, and the top two eligible settings were confirmed across seeds 7/17/27. KL 0.01/free-nats 0/seed 7 narrowly won the declared validation score and passed state, edge, LM, spread, and host-sensitivity gates. It improves the 20-rollout test point estimates to state MAE 0.276, edge AP 0.285, LM AP 0.926, and pair top-1 0.643 while retaining spread 0.068.
 
 Use this checkpoint to initialize pair-decoder experiments, but retain the published RSSM as the stable headline. The selected score was close to KL 0.03, pair top-1 is only 9/14 windows, and the test split has been inspected repeatedly. Require permutation auditing and new episodes before treating the pair gain as robust.
+
+---
+
+## D022 — Reject fixed-slot pair top-1 as robust evidence
+
+**Status:** Accepted after six-permutation audit.
+
+Under equivalent host relabelings, the KL-tuned test pair top-1 ranges from 2/14 to 8/14 and only about 1.3% of non-identity top choices map back to the identity choice. The published model is also unstable. Therefore the tuned identity-order pair result fails the robustness gate and must not be a headline.
+
+Implement a shared-weight source-target scorer next, while acknowledging that full equivariance requires replacing the flattened encoder/decoder with graph message passing.

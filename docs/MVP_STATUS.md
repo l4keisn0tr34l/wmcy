@@ -283,6 +283,7 @@ scripts/17_build_rssm_report.py        standalone EOD HTML report
 scripts/18_run_rssm_ablations.py       frozen/unfrozen/zero-KL study
 scripts/19_tune_rssm_kl.py              validation-only KL/free-nats grid
 scripts/20_evaluate_rssm_checkpoint.py saved-checkpoint episode evaluation
+scripts/21_audit_pair_equivariance.py host-relabeling pair audit
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -438,7 +439,9 @@ Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test 
 
 The matched representation ablation is complete. Frozen self-supervised features reach LM F1 0.757; unfreezing improves it to 0.800 and pre-first-LM F1 from 0.727 to 0.815. Zero-KL improves several point metrics but reduces mean rollout spread from 0.076 to 0.025, so it remains an ablation rather than the selected model. See `docs/RSSM_ABLATIONS.md`.
 
-A test-isolated KL grid selected KL 0.01/free-nats 0/seed 7. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, pair top-1 0.643, and spread 0.068. A 100-rollout checkpoint evaluation retains 2/2 progressing episode detection and 2/4 negative episode alerts. The candidate is not promoted until its 9/14 pair result passes permutation and new-data tests. See `docs/KL_TUNING.md`.
+A test-isolated KL grid selected KL 0.01/free-nats 0/seed 7. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, identity-order pair top-1 0.643, and spread 0.068. A 100-rollout checkpoint evaluation retains 2/2 progressing episode detection and 2/4 negative episode alerts. See `docs/KL_TUNING.md`.
+
+The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 8/14 across equivalent permutations, and non-identity top choices almost never map back to the identity choice. Reject it as robust evidence and replace independent fixed-slot pair weights. See `docs/PAIR_EQUIVARIANCE_AUDIT.md`.
 
 Still missing:
 

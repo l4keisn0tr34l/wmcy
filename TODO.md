@@ -94,6 +94,7 @@
 - [ ] Unseen episode/playbook performance.
 - [ ] Cross-dataset/domain-shift tests.
 - [x] Run provisional global-only, last-state, identity-mask, state-index, and host-permutation shortcut diagnostics.
+- [x] Audit RSSM pair/state/edge outputs across all six consistent host relabelings; reject fixed-slot pair score as robust.
 - [x] Repeat state-index, actor, global-only, last-state, mask, and permutation diagnostics on equal-duration V2 data.
 - [x] Compare pure self-supervised/two-stage RSSM against jointly supervised frozen/unfrozen training.
 

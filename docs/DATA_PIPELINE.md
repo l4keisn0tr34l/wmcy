@@ -642,9 +642,13 @@ Screens KL weights/free-nats on train/validation only, enforces predeclared vali
 
 Loads a saved RSSM checkpoint and reproducibly recomputes validation-thresholded episode alerts and Monte Carlo LM predictions. It is used to increase the tuned candidate's rollout count without retraining or changing model selection.
 
+# 24. `21_audit_pair_equivariance.py`
+
+Applies all six consistent host relabelings to observable context, remaps evaluation targets, and measures whether state, edge, LM, ATT&CK, and pair predictions transform consistently. It performs no training or model selection and exposes fixed-slot pair shortcuts that identity-order top-1 hides.
+
 ---
 
-# 24. Where each datapoint resides
+# 25. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -714,7 +718,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 25. What will actually be fed to the model
+# 26. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -750,7 +754,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 26. How this becomes a world model
+# 27. How this becomes a world model
 
 After the state layer is correct:
 

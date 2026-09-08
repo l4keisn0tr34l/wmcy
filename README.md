@@ -14,7 +14,7 @@ For the current verified MVP checkpoint, implementation status, file map, datase
 docs/MVP_STATUS.md
 ```
 
-**Current status:** equal-duration V2 is complete and removes the original late-negative censoring shortcut. An independent compact RSSM now performs six-step stochastic prior rollout: test state MAE is 0.280 versus 0.354 Ridge and 0.384 persistence; future-LM F1 is 0.800 versus 0.645 Ridge. A validation-only lower-KL candidate improves several point estimates, but its 9/14 pair result still needs permutation/new-data validation. See `docs/RSSM_RESULTS.md`, `docs/RSSM_ABLATIONS.md`, `docs/KL_TUNING.md`, `docs/MVP_STATUS.md`, and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
+**Current status:** equal-duration V2 is complete and removes the original late-negative censoring shortcut. An independent compact RSSM now performs six-step stochastic prior rollout: test state MAE is 0.280 versus 0.354 Ridge and 0.384 persistence; future-LM F1 is 0.800 versus 0.645 Ridge. A validation-only lower-KL candidate improves several point estimates, but its 9/14 pair result still needs permutation/new-data validation. See `docs/RSSM_RESULTS.md`, `docs/RSSM_ABLATIONS.md`, `docs/KL_TUNING.md`, `docs/PAIR_EQUIVARIANCE_AUDIT.md`, `docs/MVP_STATUS.md`, and `docs/SHORTCUT_AUDIT.md`; this remains controlled-lab evidence, not enterprise generalization.
 
 ## Permanent data flow
 
