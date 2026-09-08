@@ -1,4 +1,4 @@
-# Current State — 2026-09-06
+# Current State — 2026-09-07
 
 This file records the current verified implementation. See `docs/MVP_STATUS.md` for the complete plain-language checkpoint, file map, dataset inventory, hardware assessment, and MVP timeline.
 
@@ -176,6 +176,8 @@ RSSM LM-pair top-1:        0.143
 
 Twenty stochastic rollouts produce mean state spread 0.076; spread/error correlation is 0.613. Host-permutation mean score range is 0.111, but individual outliers remain. Episode evaluation detects 2/2 progressing test episodes before LM with mean exact lead 26.4 seconds; scan-only and failed-guessing produce alerts while benign ping and legitimate SSH do not. See `docs/RSSM_RESULTS.md`.
 
+A matched representation-training ablation is also complete. Frozen telemetry-pretrained RSSM features reach LM F1 0.757; unfreezing raises LM F1 to 0.800, pre-first-LM F1 from 0.727 to 0.815, and pair top-1 from 0.071 to 0.214. A zero-KL model improves several point metrics but reduces mean rollout spread from 0.076 to 0.025, so it is not promoted as the selected model. See `docs/RSSM_ABLATIONS.md`.
+
 Not yet implemented:
 
 - learned graph message-passing encoder;
@@ -185,6 +187,6 @@ Not yet implemented:
 
 ## Immediate next milestone
 
-The V2 RSSM replay is complete for selected held-out `lab_048`, context state 6: 87.8% ± 5.1% LM probability, correct top `srv1 -> ws1` pair, and exact first LM 28.7 seconds later. Next improve edge/pair decoding and false alerts, then run a pure self-supervised versus jointly supervised RSSM ablation. Action-conditioned defensive intervention remains later work.
+The replay, standalone report, and frozen/unfrozen/KL ablations are complete. Next tune KL weight/free nats on validation while preserving useful rollout spread, improve edge/pair decoding, and add matched scan/guessing hard negatives. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

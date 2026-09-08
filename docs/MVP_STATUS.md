@@ -280,6 +280,7 @@ scripts/14_audit_mvp_shortcuts.py     identity/timing shortcut audit
 scripts/15_train_rssm.py              stochastic recurrent world model
 scripts/16_replay_rssm.py             V2 RSSM JSON/HTML replay
 scripts/17_build_rssm_report.py        standalone EOD HTML report
+scripts/18_run_rssm_ablations.py       frozen/unfrozen/zero-KL study
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -433,6 +434,8 @@ LM-pair top-1                         0.143       0.000
 
 Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test F1 is 0.683/0.772/0.839 for T1046/T1110.001/T1021.004. RSSM materially improves state and LM forecasting, but edge AP is slightly worse and pair prediction remains weak. Episode evaluation detects 2/2 progressing test episodes before LM with mean exact lead 26.4 seconds; scan-only and failed-guessing alert while benign ping and legitimate SSH do not. See `docs/RSSM_RESULTS.md`.
 
+The matched representation ablation is complete. Frozen self-supervised features reach LM F1 0.757; unfreezing improves it to 0.800 and pre-first-LM F1 from 0.727 to 0.815. Zero-KL improves several point metrics but reduces mean rollout spread from 0.076 to 0.025, so it remains an ablation rather than the selected model. See `docs/RSSM_ABLATIONS.md`.
+
 Still missing:
 
 - a learned graph message-passing encoder;
@@ -475,11 +478,10 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. visually inspect and send the standalone RSSM HTML report;
+1. tune KL weight/free nats while preserving useful stochastic spread;
 2. improve future edge/pair ranking and false-alert behavior;
-3. run pure self-supervised versus joint semantic-loss ablation;
-4. prepare the concise EOD architecture/results narrative;
-5. present active/quiet and per-horizon results with limitations.
+3. add matched hard-negative episodes;
+4. present active/quiet and per-horizon results with limitations.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.
 
@@ -489,8 +491,7 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 
 ## 11. Immediate next steps
 
-1. Open/send `outputs/mvp_v2/report/rssm_eod_report.html`.
-2. Improve edge and exact LM-pair decoding.
-3. Reduce scan-only/failed-guessing false alerts.
-4. Run pure self-supervised/two-stage versus joint-loss RSSM ablation.
-5. Freeze the EOD architecture/results narrative with honest limitations.
+1. Open/send the updated `outputs/mvp_v2/report/rssm_eod_report.html`.
+2. Tune KL regularization, then improve edge and exact LM-pair decoding.
+3. Reduce scan-only/failed-guessing false alerts with matched hard negatives.
+4. Freeze the architecture/results narrative with honest limitations.

@@ -91,11 +91,17 @@ outputs/mvp_v2/rssm/metrics.json
 outputs/mvp_v2/rssm/predictions.npz
 outputs/mvp_v2/rssm/sample_predictions.csv
 outputs/mvp_v2/rssm/episode_alerts.csv
+outputs/mvp_v2/rssm/ablations.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 outputs/mvp_v2/report/rssm_eod_report.html
 models/mvp_v2_baseline.joblib
 models/mvp_v2_rssm.pt
+models/mvp_v2_rssm_selfsupervised.pt
+models/mvp_v2_rssm_frozen_heads.pt
+models/mvp_v2_rssm_pretrained_unfrozen.pt
+models/mvp_v2_rssm_joint_matched.pt
+models/mvp_v2_rssm_zero_kl.pt
 ```
 
 ## Status and methodology
@@ -106,6 +112,7 @@ docs/CURRENT_STATE.md
 docs/DATA_PIPELINE.md
 docs/SHORTCUT_AUDIT.md
 docs/RSSM_RESULTS.md
+docs/RSSM_ABLATIONS.md
 ```
 
 ## External raw datasets

@@ -2,54 +2,54 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Current verified project result
+## Completed experiment
 
-- Equal-duration V2: 24 episodes, duration shortcut removed.
-- Compact hybrid RSSM: state MAE 0.280 vs Ridge 0.354/persistence 0.384; LM F1 0.800; pre-first LM F1 0.769.
-- RSSM forecasting is strong relative to baselines, but edge AP 0.222 and pair top-1 0.143 remain weak.
-- Episode test: 2/2 progressing detected, mean exact lead 26.4 s; scan-only and failed guessing create false alerts.
-- Standalone report: `/home/paprika/Downloads/rssm_eod_report.html`.
+A matched V2 representation-training ablation is complete in `outputs/mvp_v2/rssm/ablations.json`.
 
-## New independent senior context
+Regimes use identical architecture/data/splits and validation-only selection:
 
-The senior independently reported that transformers failed on limited data, RSSM forecasting was better, downstream classes remained weak, and allowing downstream losses to unfreeze/adapt the RSSM improved most rare classes. They also reported RSSM+DANN and KL ablations. Their repository, data contract, splits, checkpoints, and metrics are unavailable, so these are external hypotheses only and must never be merged with or numerically compared to our results.
+1. published joint model selected on validation dynamics;
+2. self-supervised telemetry/edge/KL pretraining, frozen RSSM, identical internal PyTorch semantic heads;
+3. same pretraining followed by full unfreezing;
+4. joint from scratch with matched joint validation selection;
+5. joint zero-KL with matched selection.
 
-Our current RSSM is already analogous to an unfrozen joint model because LM/ATT&CK/pair losses backpropagate through the latent dynamics. This may contribute to its stronger semantic results. It is not evidence that a frozen self-supervised RSSM would perform equally well.
+Key test values:
 
-## Next code batch: representation-training ablation
+```text
+regime                              state active edgeAP LM-F1 LM-AP pre-F1 pair  spread
+published joint                      .280  1.031   .222  .800  .910   .769 .143   .076
+frozen two-stage                     .279  1.047   .240  .757  .816   .727 .071   .079
+pretrained then unfrozen             .275  1.040   .210  .800  .869   .815 .214   .067
+joint scratch, matched selection     .293  1.041   .152  .839  .839   .815 .071   .085
+joint zero-KL                        .280   .984   .316  .839  .904   .846 .286   .025
+```
 
-Implement the following on identical V2 splits, architecture, seeds, and validation-only selection:
+Interpretation:
+- Frozen self-supervised latents support nontrivial semantics, but unfreezing improves LM F1, pre-first-LM F1, and pair ranking relative to the matched frozen condition.
+- Pretraining improves dynamics/edge/pair relative to matched-selection joint-from-scratch, but not every thresholded semantic metric.
+- Zero-KL gives strong point metrics but collapses mean stochastic spread by about 67% versus the published joint model and has a worst host-permutation LM range of 0.814. It is an ablation, not the new selected model. The result motivates KL-weight/free-nats tuning, not immediate KL removal.
+- Only 14 positive test windows and 14 pair-positive windows exist; differences are fragile.
 
-1. **Joint/unfrozen RSSM — current reference**
-   - telemetry prediction + reconstruction + KL + semantic losses;
-   - full model trainable.
+## Current code-writing batch
 
-2. **Frozen two-stage RSSM**
-   - pretrain only telemetry prediction + reconstruction + edge + KL;
-   - freeze encoder, GRU, prior/posterior, and decoder;
-   - train LM/ATT&CK/pair heads on imagined future latents only.
+1. Add `docs/RSSM_ABLATIONS.md` with methods, inputs/outputs, leakage controls, exact metrics, interpretation, and limitations.
+2. Extend `scripts/17_build_rssm_report.py` to add an inline ablation table and conclusions from verified JSON.
+3. Regenerate/parse-check the standalone report and copy it to Downloads.
+4. Update commands, output locations, status, roadmap, decisions, TODO, and memory.
+5. Compile scripts, inspect artifacts, run `git diff --check`, commit, and push.
 
-3. **Unfrozen fine-tuned two-stage RSSM**
-   - initialize from the same self-supervised checkpoint;
-   - attach heads and fine-tune the full model jointly;
-   - compare against training jointly from scratch.
+## Next experimental batch after documentation
 
-4. **KL ablation**
-   - same joint model but KL weight zero;
-   - check forecasting, latent stochastic spread, and downstream semantics.
+1. Tune KL weight/free-nats on validation only (small grid), monitoring point forecasting, spread, host sensitivity, and LM/edge ranking.
+2. Improve edge/pair prediction with a shared-weight pair decoder rather than independent fixed-slot output weights.
+3. Add matched scan/guessing non-progression episodes before claiming reduced false alerts.
+4. Defer transformer, DANN, ensemble, and action conditioning for the reasons already recorded.
 
-Report forecasting separately from downstream security metrics. Select checkpoints on validation only and evaluate test once per frozen experiment definition. Use the same active/quiet/per-horizon, LM/pre-first-LM, ATT&CK, edge, pair, uncertainty, false-alert, and host-permutation metrics.
+## Epistemic constraints
 
-## Explicit deferrals
-
-- **Transformer:** do not add with only 24 episodes; no evidence it is appropriate.
-- **DANN:** defer until there are meaningful source domains (for example lab versus public telemetry) and a valid domain label. Scenario is not a safe substitute for domain.
-- **Fusion/ensemble:** first measure validation error correlation and oracle gain. Do not combine Ridge/RSSM merely because one edge AP differs by 0.008; fusion requires complementary validated signal.
-- **Action conditioning:** defer until intervention/no-intervention tuples exist.
-
-## Interpretation gate
-
-- If frozen two-stage semantics approach the joint model, self-supervised dynamics carry useful security information.
-- If unfreezing is much better, semantic supervision is shaping the latent representation and the supervision bottleneck remains important.
-- If KL removal improves point prediction but destroys useful spread/generalization, retain stochastic regularization.
-- Never describe the senior’s independent scores as project results or compare their class F1 numerically to our horizon/multi-label metrics.
+- Do not call zero-KL categorically superior.
+- Do not claim spread is calibrated uncertainty.
+- Do not treat overlapping test windows as independent events.
+- Do not merge senior-reported results with project results.
+- Keep the published joint RSSM as the current report headline until broader data and calibration support replacement.

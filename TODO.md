@@ -68,6 +68,8 @@
 - [x] Add baseline future-state reconstruction.
 - [x] Evaluate baseline future-edge presence decoded from predicted future state.
 - [x] Add Monte Carlo RSSM rollout spread and error-correlation diagnostics.
+- [x] Run matched frozen/unfrozen and zero-KL representation-training ablations.
+- [ ] Tune KL weight/free nats without collapsing useful rollout spread.
 - [ ] Calibrate RSSM predictive uncertainty.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
@@ -93,7 +95,7 @@
 - [ ] Cross-dataset/domain-shift tests.
 - [x] Run provisional global-only, last-state, identity-mask, state-index, and host-permutation shortcut diagnostics.
 - [x] Repeat state-index, actor, global-only, last-state, mask, and permutation diagnostics on equal-duration V2 data.
-- [ ] Compare pure self-supervised/two-stage RSSM against current jointly supervised auxiliary-loss training.
+- [x] Compare pure self-supervised/two-stage RSSM against jointly supervised frozen/unfrozen training.
 
 ## EXPLAINABILITY / DEMO
 

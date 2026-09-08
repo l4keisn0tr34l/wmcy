@@ -628,11 +628,15 @@ Loads saved RSSM Monte Carlo predictions rather than rerunning or selecting the 
 
 # 20. `17_build_rssm_report.py`
 
-Builds one standalone senior-facing HTML report from verified V2 manifests, Ridge/RSSM metrics, shortcut audits, and replay JSON. CSS, pipeline/RSSM SVG diagrams, charts, tables, disclosures, and limitations are inline; no external assets or runtime network access are required.
+Builds one standalone senior-facing HTML report from verified V2 manifests, Ridge/RSSM metrics, shortcut audits, ablations, and replay JSON. CSS, pipeline/RSSM SVG diagrams, charts, tables, disclosures, and limitations are inline; no external assets or runtime network access are required.
+
+# 21. `18_run_rssm_ablations.py`
+
+Runs validation-selected frozen two-stage, pretrained/unfrozen, matched joint-from-scratch, and zero-KL comparisons using the same RSSM architecture and whole-episode V2 split. Frozen and unfrozen conditions use identical internal linear semantic heads. It keeps future telemetry and semantic targets outside context input and writes a structured metrics JSON plus local checkpoints.
 
 ---
 
-# 21. Where each datapoint resides
+# 22. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -702,7 +706,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 22. What will actually be fed to the model
+# 23. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -738,7 +742,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 23. How this becomes a world model
+# 24. How this becomes a world model
 
 After the state layer is correct:
 

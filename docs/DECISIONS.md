@@ -173,3 +173,13 @@ Telemetry reconstruction, prior prediction, and KL dynamics losses are self-supe
 On identical V2 splits, compare: current joint/unfrozen training, self-supervised pretraining with frozen downstream heads, self-supervised initialization followed by full fine-tuning, and zero-KL ablation. Report dynamics and semantic metrics separately. The senior independently reported that unfreezing helped their downstream classes, but their protocol is unavailable and remains an external hypothesis.
 
 Do not add DANN without meaningful domain labels, and do not ensemble models until validation error correlation/oracle-gain analysis shows complementary signal. A marginal Ridge/RSSM edge-AP difference alone is not evidence for fusion.
+
+---
+
+## D020 — Retain KL model while tuning stochastic regularization
+
+**Status:** Accepted after V2 ablation.
+
+A zero-KL joint model improves several small-split point metrics (active-state MAE 0.984, edge AP 0.316, pre-first-LM F1 0.846, pair top-1 0.286), but mean rollout spread falls from 0.076 to 0.025 and worst-case host-relabeling LM score range is 0.814. Removing KL also abandons explicit posterior/prior alignment.
+
+Therefore zero-KL is not promoted as the selected RSSM. Run a validation-only KL-weight/free-nats grid and require a useful forecasting/semantics/stochasticity trade-off. Never interpret lower Monte Carlo spread as better calibrated uncertainty.

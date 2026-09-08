@@ -2,6 +2,8 @@
 
 Date: 2026-09-07
 
+> Follow-up frozen/unfrozen and zero-KL experiments are reported in `docs/RSSM_ABLATIONS.md`; the selected-model benchmark below remains unchanged.
+
 ## Purpose
 
 Test a genuine recurrent stochastic latent world model over chronological network graph states. This is not a current-flow attack classifier and is independent of the unavailable senior implementation.

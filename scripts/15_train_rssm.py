@@ -303,7 +303,8 @@ def move(batch: tuple[torch.Tensor, ...], device: torch.device) -> tuple[torch.T
 
 def validate_objective(model: CompactRSSM, loader: DataLoader, context_steps: int,
                        group_slices: list[slice], weights: dict[str, float],
-                       pos_weights: dict[str, torch.Tensor], device: torch.device) -> dict[str, float]:
+                       pos_weights: dict[str, torch.Tensor], device: torch.device,
+                       selection_mode: str = "dynamics") -> dict[str, float]:
     model.eval()
     totals: dict[str, float] = {}
     count = 0
@@ -315,7 +316,17 @@ def validate_objective(model: CompactRSSM, loader: DataLoader, context_steps: in
             for name, value in terms.items():
                 totals[name] = totals.get(name, 0.0) + float(value) * size
     averaged = {name: value / count for name, value in totals.items()}
-    averaged["selection"] = averaged["future_state"] + weights["edge"] * averaged["edge"]
+    dynamics = averaged["future_state"] + weights["edge"] * averaged["edge"]
+    semantics = (weights["lm"] * averaged["lm"] + weights["technique"] * averaged["technique"]
+                 + weights["pair"] * averaged["pair"])
+    if selection_mode == "dynamics":
+        averaged["selection"] = dynamics
+    elif selection_mode == "semantics":
+        averaged["selection"] = semantics
+    elif selection_mode == "joint":
+        averaged["selection"] = dynamics + semantics
+    else:
+        raise ValueError(f"unknown selection mode: {selection_mode}")
     return averaged
 
 
@@ -360,11 +371,22 @@ def train_seed(seed: int, train_loader: DataLoader, validation_loader: DataLoade
                model_config: dict[str, int], context_steps: int, group_slices: list[slice],
                weights: dict[str, float], pos_weights: dict[str, torch.Tensor],
                state_indices: torch.Tensor, edge_indices: torch.Tensor,
-               device: torch.device, max_epochs: int, patience: int, learning_rate: float
+               device: torch.device, max_epochs: int, patience: int, learning_rate: float,
+               initial_state: dict[str, torch.Tensor] | None = None,
+               selection_mode: str = "dynamics", freeze_backbone: bool = False,
                ) -> tuple[dict[str, torch.Tensor], dict[str, Any]]:
     seed_everything(seed)
     model = CompactRSSM(**model_config).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    if initial_state is not None:
+        model.load_state_dict(initial_state)
+    if freeze_backbone:
+        semantic_prefixes = ("lm_head.", "technique_head.", "pair_head.")
+        for name, parameter in model.named_parameters():
+            parameter.requires_grad = name.startswith(semantic_prefixes)
+    trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
+    if not trainable:
+        raise ValueError("training regime has no trainable parameters")
+    optimizer = torch.optim.Adam(trainable, lr=learning_rate)
     best_state = deepcopy(model.state_dict())
     best_validation = math.inf
     best_epoch = 0
@@ -381,7 +403,8 @@ def train_seed(seed: int, train_loader: DataLoader, validation_loader: DataLoade
             optimizer.step()
             train_total += float(terms["total"].detach()) * len(batch[0]); count += len(batch[0])
         validation = validate_objective(
-            model, validation_loader, context_steps, group_slices, weights, pos_weights, device
+            model, validation_loader, context_steps, group_slices, weights, pos_weights, device,
+            selection_mode=selection_mode,
         )
         history.append({"epoch": epoch, "train_total": train_total / count, **validation})
         if validation["selection"] < best_validation - 1e-5:
@@ -395,6 +418,7 @@ def train_seed(seed: int, train_loader: DataLoader, validation_loader: DataLoade
             break
     return best_state, {"seed": seed, "best_epoch": best_epoch,
                         "best_validation_selection": best_validation,
+                        "selection_mode": selection_mode, "freeze_backbone": freeze_backbone,
                         "epochs_run": len(history), "history": history}
 
 

@@ -200,7 +200,7 @@ Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground tru
 
 # Phase 5 — First real latent world model
 
-**Status (2026-09-07):** Equal-duration V2 removes the original state-index/capture-length shortcut. A compact stochastic RSSM is implemented and improves test state MAE to 0.280 (Ridge 0.354; persistence 0.384) and LM F1 to 0.800 (Ridge 0.645). Edge AP remains slightly below Ridge and pair ranking remains weak. Next: episode replay/reporting, decoder improvement, and self-supervised/joint-loss ablation.
+**Status (2026-09-07):** Equal-duration V2 removes the original state-index/capture-length shortcut. A compact stochastic RSSM is implemented and improves test state MAE to 0.280 (Ridge 0.354; persistence 0.384) and LM F1 to 0.800 (Ridge 0.645). Replay/reporting and matched frozen/unfrozen/zero-KL ablations are complete. Frozen telemetry-pretrained features carry useful semantic signal, while unfreezing improves pre-first-LM and pair results. Zero-KL improves several point metrics but collapses rollout spread, motivating KL tuning rather than immediate removal. Next: decoder improvement and hard-negative data.
 
 ## Provisional architecture
 

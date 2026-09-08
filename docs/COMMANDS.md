@@ -234,7 +234,24 @@ Build the standalone senior-facing HTML report with inline diagrams:
 .venv/bin/python scripts/17_build_rssm_report.py
 ```
 
-Send/open:
+Run the matched frozen/unfrozen/zero-KL experiment:
+
+```bash
+.venv/bin/python scripts/18_run_rssm_ablations.py
+```
+
+Read:
+
+```text
+outputs/mvp_v2/rssm/ablations.json
+docs/RSSM_ABLATIONS.md
+```
+
+Build the updated report and send/open it:
+
+```bash
+.venv/bin/python scripts/17_build_rssm_report.py
+```
 
 ```text
 outputs/mvp_v2/report/rssm_eod_report.html
