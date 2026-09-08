@@ -2,40 +2,33 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Current verified checkpoint
+## Verified checkpoint
 
-Committed at `512488b`:
+Public graph pretraining is complete at commit `89e0980`:
 
-- 2,540,047 UNSW rows canonicalized without label leakage;
-- 1,481 January train and 1,383 February validation graph samples;
-- exact 141-feature lab-compatible layout;
-- context-only roster selection and anonymized slots;
-- two capture groups kept disjoint.
+```text
+validation: state MAE 0.260, edge AP 0.430, LM AP/F1 0.819/0.813, pair 9/13
+V2 diagnostic test: state/active MAE 0.251/0.877, edge AP 0.405,
+                    LM AP/F1 0.785/0.778, pair 10/14 under every relabeling
+```
 
-## Current batch: public dynamics pretraining and controlled-lab fine-tuning
+Trade-off: 3/4 negative test episodes alert and spread/error correlation falls to 0.199. Report SHA-256 is `f7d9cb52f04fc0f056cf46806756efc058d89306ae132d425267a45218703d4e`.
 
-Implement `scripts/28_pretrain_graph_rssm_unsw.py`.
+## Current batch: matched hard-negative data and fresh holdout
 
-1. Fit public normalization on UNSW January contexts only.
-2. Pretrain one equivariant GraphRSSM on future state, context reconstruction, future edge presence, and KL only.
-3. Select public checkpoint epoch on February public dynamics validation only.
-4. Never load UNSW row ground truth.
-5. Refit normalization on controlled-lab V2 training contexts only before transfer/fine-tuning.
-6. Initialize graph dynamics weights from the selected public model; semantic heads begin effectively untrained and are learned from controlled lab truth.
-7. Fine-tune matched seeds 7/17/27 on lab train, selecting seed/epoch on lab validation joint objective only.
-8. Load the already-inspected lab test only after selection and report it diagnostically against the original graph RSSM.
-9. Audit deterministic equivariance and save checkpoints/metrics.
+1. Add controlled `scan_guess_then_stop` scenario to `lab/run_episode.sh`.
+2. It executes the exact discovery + failed-password prefix of `one_hop`, with the same seeded role/timing machinery, but deliberately performs no successful SSH lateral movement.
+3. Preserve T1046/T1110.001 truth while LM truth remains zero; this is not benign traffic.
+4. Add a 24-episode paired plan: each seed has one stopped precursor and one one-hop progression episode.
+5. Assign six seed pairs to train, three to validation, and three to a fresh sealed test; keep all six role permutations in the new training pairs.
+6. Define V3 manifests so all previously inspected V2 episodes become development training, while only newly generated episodes populate V3 validation/test.
+7. Add a generation script/command with resume behavior through the existing corpus runner.
+8. Run shell/config validation and document exact split semantics.
 
-## Gates
+## Interactive blocker
 
-- public train/validation capture groups remain disjoint;
-- public semantic loss weights exactly zero;
-- no label-bearing public arrays exist or are loaded;
-- causality and equivariance below 2e-6;
-- public validation objective improves over initialization;
-- lab test remains unavailable until fine-tune selection is frozen;
-- output clearly reports whether transfer helps or hurts lab validation/dynamics/semantics.
+Host packet capture needs `sudo -v`, and the sudo timestamp is currently unavailable. After code/config validation, ask the user once to run the foreground generation command. Docker can be started without sudo if needed. Do not fabricate episode outputs before capture.
 
-## After this experiment
+## After generation
 
-Do not repeatedly tune against V2 test. Preserve the result, then add matched scan-only/failed-guessing hard negatives and create a fresh sealed graph-model holdout.
+Process/validate all new episodes, build V3 manifests/sequences, train the public-pretrained graph RSSM using V3 train/validation only, and open fresh V3 test once. Compare false alerts, robust pair ranking, state/edge forecasts, and stochastic diagnostics.

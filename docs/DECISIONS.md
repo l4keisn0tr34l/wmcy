@@ -253,3 +253,13 @@ Use observable UNSW flows for graph-dynamics pretraining and domain diagnostics.
 UNSW observable-only pretraining improves lab-validation edge AP 0.361→0.430, LM AP 0.728→0.819, and exactly equivariant pair top-1 0.357→0.692. Diagnostic test point metrics also improve. But test false-alert episodes worsen from 2/4 to 3/4 and stochastic spread/error correlation falls from 0.722 to 0.199.
 
 Therefore retain the checkpoint as evidence that public graph dynamics transfer, especially for edge/pair structure. Do not replace the stable headline model or claim calibrated uncertainty. Resolve the trade-off with matched hard negatives and a fresh sealed holdout, not further optimization on V2 test.
+
+---
+
+## D028 — Build V3 from seed-matched stopped/progressing prefixes
+
+**Status:** Plan validated; capture pending interactive sudo.
+
+Pair every `scan_guess_then_stop` episode with a same-seed `one_hop` episode. Both execute identical randomized discovery/guessing prefixes; only the progressing member performs successful SSH. Keep each pair within one split.
+
+All 24 previously inspected V2 episodes become declared V3 development training. New episodes supply 12 train, 6 validation, and 6 sealed-test episodes. This prevents the repeatedly inspected V2 test from being presented as fresh evidence and directly tests whether the model distinguishes dangerous but stalled precursors from imminent LM.

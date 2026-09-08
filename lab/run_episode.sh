@@ -13,7 +13,8 @@ Usage: ./run_episode.sh EPISODE_ID [options]
 
 Options:
   --scenario NAME   benign_ping | legitimate_ssh | scan_only |
-                    failed_guessing | one_hop | two_hop (default: two_hop)
+                    failed_guessing | scan_guess_then_stop | one_hop | two_hop
+                    (default: two_hop)
   --seed INTEGER       Seed for host-role and timing randomization (default: epoch time)
   --duration-seconds N Common capture duration for every scenario (default: 120)
   --out-dir PATH       Output directory (default: lab/episodes/EPISODE_ID)
@@ -47,7 +48,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$SCENARIO" in
-  benign_ping|legitimate_ssh|scan_only|failed_guessing|one_hop|two_hop) ;;
+  benign_ping|legitimate_ssh|scan_only|failed_guessing|scan_guess_then_stop|one_hop|two_hop) ;;
   *) echo "invalid scenario: $SCENARIO" >&2; usage >&2; exit 2 ;;
 esac
 if [[ ! "$SEED" =~ ^[0-9]+$ ]]; then
@@ -215,6 +216,16 @@ case "$SCENARIO" in
   failed_guessing)
     sleep "$(random_delay 4 9)"
     run_guessing
+    ;;
+  scan_guess_then_stop)
+    # Matched hard negative: preserve the same discovery + password-guessing
+    # prefix and seeded delays as one_hop, then deliberately do not perform a
+    # successful SSH movement. This is malicious precursor truth, not benign.
+    sleep "$(random_delay 4 9)"
+    run_discovery
+    sleep "$(random_delay 5 10)"
+    run_guessing
+    sleep "$(random_delay 5 10)"
     ;;
   one_hop)
     sleep "$(random_delay 4 9)"

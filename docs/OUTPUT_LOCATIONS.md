@@ -162,6 +162,7 @@ docs/GRAPH_SEMANTIC_RESULTS.md
 docs/UNSW_ADAPTER.md
 docs/UNSW_GRAPH_SEQUENCES.md
 docs/PUBLIC_PRETRAINING_RESULTS.md
+docs/V3_HARD_NEGATIVE_PLAN.md
 ```
 
 ## External raw datasets

@@ -198,6 +198,7 @@ Actor, pivot, target, timing, baseline length, and attempt count vary from a rec
 35. UNSW temporal adapter processed all 2,540,047 host-rich rows into five sorted/gap-bounded segments and separate truth. Raw files have 52k–108k time inversions. Overlapping file intervals form only two connected capture groups and must not be split independently. No TCP flags, ATT&CK, or LM truth is fabricated. See `docs/UNSW_ADAPTER.md`.
 36. Context-only roster extraction yields 1,481 January train and 1,383 February validation samples with the exact 141-feature lab graph layout. Rosters use the most frequent context edge plus a third context host and deterministic slot anonymization; no future or truth is consulted. See `docs/UNSW_GRAPH_SEQUENCES.md`.
 37. UNSW observable-only pretraining (public semantic weights exactly zero) transfers: validation edge AP 0.430, LM AP 0.819, robust pair 9/13; diagnostic test state/active MAE 0.251/0.877, edge AP 0.405, LM F1/AP 0.778/0.785, robust pair 10/14. But false-alert episodes worsen to 3/4 and spread/error correlation to 0.199. Candidate, not unconditional replacement. See `docs/PUBLIC_PRETRAINING_RESULTS.md`.
+38. V3 plan adds 12 seed-matched `scan_guess_then_stop`/`one_hop` pairs. Old V2 becomes development train; only new episodes form 6-episode validation and 6-episode sealed test. New train includes six pairs/all role permutations. Capture awaits interactive sudo. See `docs/V3_HARD_NEGATIVE_PLAN.md`.
 
 ---
 

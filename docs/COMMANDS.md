@@ -330,6 +330,16 @@ Pretrain graph dynamics on UNSW and fine-tune semantics on controlled V2:
 
 Public semantic loss weights are zero; V2 test loads only after public and lab-validation selection.
 
+## V3 matched hard-negative plan
+
+```bash
+.venv/bin/python scripts/29_validate_v3_plan.py
+docker compose -f lab/docker-compose.yml up -d
+./lab/generate_mvp_corpus.sh configs/mvp_v3_new_episode_plan.csv
+```
+
+Capture requires interactive sudo. See `docs/V3_HARD_NEGATIVE_PLAN.md` before building V3 manifests.
+
 ## Shortcut/leakage audit
 
 ```bash

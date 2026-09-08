@@ -202,6 +202,8 @@ Observable-only UNSW pretraining followed by controlled semantic fine-tuning imp
 
 ## Immediate next milestone
 
-Add matched scan/guessing hard negatives and create a fresh sealed graph-model holdout. Then retest public-pretrained transfer without current-test selection. Action-conditioned defensive intervention remains later work.
+The V3 matched-prefix design and validated 24-episode plan are ready. `scan_guess_then_stop` executes the same seeded discovery/guessing prefix as paired `one_hop` but no successful SSH. Six train pairs cover all role permutations; three new pairs each form validation and sealed test. Capture is pending interactive sudo. See `docs/V3_HARD_NEGATIVE_PLAN.md`.
+
+After capture, build V3 and retest public-pretrained transfer without current-test selection. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.

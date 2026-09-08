@@ -36,6 +36,7 @@ benign_ping
 legitimate_ssh
 scan_only
 failed_guessing
+scan_guess_then_stop
 one_hop
 two_hop
 ```
@@ -97,6 +98,14 @@ For the equal-duration, role/pair-balanced replacement corpus:
 ```
 
 The V2 plan writes only new `lab_025`-`lab_048` IDs and never overwrites the original smoke-test corpus.
+
+For V3 matched prefixes and a fresh sealed holdout:
+
+```bash
+./lab/generate_mvp_corpus.sh configs/mvp_v3_new_episode_plan.csv
+```
+
+Each seed is paired: `scan_guess_then_stop` executes the same discovery/guessing prefix as `one_hop` but no successful SSH. The new plan writes `lab_049`–`lab_072` only.
 
 ### Pause safely between episodes
 
