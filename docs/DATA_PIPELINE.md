@@ -670,7 +670,13 @@ Reads original host-rich UNSW files using their 49-field definition, separates o
 
 ---
 
-# 30. Where each datapoint resides
+# 30. `27_build_unsw_graph_sequences.py`
+
+Merges source segments by connected capture group and creates 45-second three-host induced-graph samples. Each roster is selected from the first 15 seconds only, then held fixed across the 30-second future. Slot order is anonymized. Output tensors use the exact 141-feature lab layout and contain observable state/edge targets only.
+
+---
+
+# 31. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -740,7 +746,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 31. What will actually be fed to the model
+# 32. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -776,7 +782,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 32. How this becomes a world model
+# 33. How this becomes a world model
 
 After the state layer is correct:
 

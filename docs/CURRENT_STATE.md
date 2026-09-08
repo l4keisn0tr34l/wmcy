@@ -195,7 +195,9 @@ Not yet implemented:
 
 ## Public temporal integration
 
-All 2,540,047 original host-rich UNSW-NB15 rows are now canonicalized into five sorted, gap-bounded segments. Observable events and raw attack labels are separate. The segments form only two connected capture groups because source-file times overlap; they cannot be randomly split. UNSW supplies public graph dynamics/background diversity, not exact LM/ATT&CK truth. See `docs/UNSW_ADAPTER.md`.
+All 2,540,047 original host-rich UNSW-NB15 rows are now canonicalized into five sorted, gap-bounded segments. Observable events and raw attack labels are separate. The segments form only two connected capture groups because source-file times overlap; they cannot be randomly split.
+
+Context-only roster extraction produced 1,481 January training and 1,383 February validation sequences in the same 141-feature, 3-context/6-future graph contract as the lab. The public tensors contain no attack/ATT&CK/LM targets. UNSW supplies public graph dynamics/background diversity, not exact LM/ATT&CK truth. See `docs/UNSW_ADAPTER.md` and `docs/UNSW_GRAPH_SEQUENCES.md`.
 
 ## Immediate next milestone
 

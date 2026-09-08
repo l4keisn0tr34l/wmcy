@@ -126,6 +126,15 @@ outputs/unsw/canonical/<segment>/row_ground_truth.csv.gz
 
 Five segments belong to only two connected capture groups; see `docs/UNSW_ADAPTER.md`.
 
+```text
+outputs/unsw/graph_sequences/train.npz
+outputs/unsw/graph_sequences/validation.npz
+outputs/unsw/graph_sequences/sample_manifest.csv
+outputs/unsw/graph_sequences/feature_metadata.json
+```
+
+These contain 1,481 January and 1,383 February context/future graph samples; see `docs/UNSW_GRAPH_SEQUENCES.md`.
+
 ## Status and methodology
 
 ```text
@@ -141,6 +150,7 @@ docs/SHARED_PAIR_DECODER.md
 docs/GRAPH_RSSM_RESULTS.md
 docs/GRAPH_SEMANTIC_RESULTS.md
 docs/UNSW_ADAPTER.md
+docs/UNSW_GRAPH_SEQUENCES.md
 ```
 
 ## External raw datasets

@@ -47,7 +47,8 @@
 - [ ] Decide portable feature set shared across lab/public data.
 - [x] Preserve raw data immutably in the current lab processing path.
 - [x] Add a leakage-safe temporal canonical adapter for original host-rich UNSW-NB15 files.
-- [ ] Build UNSW induced-subgraph dynamics sequences and add CSE-CIC-IDS2018 adapter where useful.
+- [x] Build context-only, anonymized UNSW induced-subgraph dynamics sequences.
+- [ ] Evaluate UNSW dynamics pretraining and add CSE-CIC-IDS2018 adapter where useful.
 - [ ] Version MITRE Enterprise ATT&CK STIX locally.
 - [ ] Validate technique/tactic IDs automatically against that version.
 

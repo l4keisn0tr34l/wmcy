@@ -315,6 +315,13 @@ outputs/mvp_v2/report/rssm_eod_report.html
 
 This writes observable events and raw attack truth separately, sorts out-of-order rows, and keeps overlapping source segments in two capture groups.
 
+Build public three-host graph-dynamics sequences without loading truth:
+
+```bash
+.venv/bin/python scripts/27_build_unsw_graph_sequences.py \
+  --out-dir outputs/unsw/graph_sequences
+```
+
 ## Shortcut/leakage audit
 
 ```bash
