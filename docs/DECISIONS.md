@@ -183,3 +183,13 @@ Do not add DANN without meaningful domain labels, and do not ensemble models unt
 A zero-KL joint model improves several small-split point metrics (active-state MAE 0.984, edge AP 0.316, pre-first-LM F1 0.846, pair top-1 0.286), but mean rollout spread falls from 0.076 to 0.025 and worst-case host-relabeling LM score range is 0.814. Removing KL also abandons explicit posterior/prior alignment.
 
 Therefore zero-KL is not promoted as the selected RSSM. Run a validation-only KL-weight/free-nats grid and require a useful forecasting/semantics/stochasticity trade-off. Never interpret lower Monte Carlo spread as better calibrated uncertainty.
+
+---
+
+## D021 — Use KL 0.01/free 0 only as the next research candidate
+
+**Status:** Accepted after validation-only grid; not promoted as independent evidence.
+
+Nine settings were screened without loading test, and the top two eligible settings were confirmed across seeds 7/17/27. KL 0.01/free-nats 0/seed 7 narrowly won the declared validation score and passed state, edge, LM, spread, and host-sensitivity gates. It improves the 20-rollout test point estimates to state MAE 0.276, edge AP 0.285, LM AP 0.926, and pair top-1 0.643 while retaining spread 0.068.
+
+Use this checkpoint to initialize pair-decoder experiments, but retain the published RSSM as the stable headline. The selected score was close to KL 0.03, pair top-1 is only 9/14 windows, and the test split has been inspected repeatedly. Require permutation auditing and new episodes before treating the pair gain as robust.

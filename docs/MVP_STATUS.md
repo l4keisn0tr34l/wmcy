@@ -281,6 +281,8 @@ scripts/15_train_rssm.py              stochastic recurrent world model
 scripts/16_replay_rssm.py             V2 RSSM JSON/HTML replay
 scripts/17_build_rssm_report.py        standalone EOD HTML report
 scripts/18_run_rssm_ablations.py       frozen/unfrozen/zero-KL study
+scripts/19_tune_rssm_kl.py              validation-only KL/free-nats grid
+scripts/20_evaluate_rssm_checkpoint.py saved-checkpoint episode evaluation
 src/cyberwm/common.py                  shared utility functions
 ```
 
@@ -436,6 +438,8 @@ Twenty prior rollouts produce state-spread/error correlation 0.613. ATT&CK test 
 
 The matched representation ablation is complete. Frozen self-supervised features reach LM F1 0.757; unfreezing improves it to 0.800 and pre-first-LM F1 from 0.727 to 0.815. Zero-KL improves several point metrics but reduces mean rollout spread from 0.076 to 0.025, so it remains an ablation rather than the selected model. See `docs/RSSM_ABLATIONS.md`.
 
+A test-isolated KL grid selected KL 0.01/free-nats 0/seed 7. Its 20-rollout test state MAE is 0.276, edge AP 0.285, LM AP 0.926, pair top-1 0.643, and spread 0.068. A 100-rollout checkpoint evaluation retains 2/2 progressing episode detection and 2/4 negative episode alerts. The candidate is not promoted until its 9/14 pair result passes permutation and new-data tests. See `docs/KL_TUNING.md`.
+
 Still missing:
 
 - a learned graph message-passing encoder;
@@ -478,7 +482,7 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. tune KL weight/free nats while preserving useful stochastic spread;
+1. audit pair-ranking equivariance and improve the pair decoder;
 2. improve future edge/pair ranking and false-alert behavior;
 3. add matched hard-negative episodes;
 4. present active/quiet and per-horizon results with limitations.
@@ -492,6 +496,6 @@ Strong unseen-playbook generalization, calibrated multimodal uncertainty, multip
 ## 11. Immediate next steps
 
 1. Open/send the updated `outputs/mvp_v2/report/rssm_eod_report.html`.
-2. Tune KL regularization, then improve edge and exact LM-pair decoding.
+2. Audit the KL-tuned pair result, then improve edge and exact LM-pair decoding.
 3. Reduce scan-only/failed-guessing false alerts with matched hard negatives.
 4. Freeze the architecture/results narrative with honest limitations.

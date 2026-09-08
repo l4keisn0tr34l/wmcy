@@ -634,9 +634,17 @@ Builds one standalone senior-facing HTML report from verified V2 manifests, Ridg
 
 Runs validation-selected frozen two-stage, pretrained/unfrozen, matched joint-from-scratch, and zero-KL comparisons using the same RSSM architecture and whole-episode V2 split. Frozen and unfrozen conditions use identical internal linear semantic heads. It keeps future telemetry and semantic targets outside context input and writes a structured metrics JSON plus local checkpoints.
 
+# 22. `19_tune_rssm_kl.py`
+
+Screens KL weights/free-nats on train/validation only, enforces predeclared validation gates for dynamics, semantics, spread, and host sensitivity, confirms a shortlist across three seeds, and loads test only after freezing the setting and seed. It records raw posterior/prior KL and avoids equating low spread with calibrated confidence.
+
+# 23. `20_evaluate_rssm_checkpoint.py`
+
+Loads a saved RSSM checkpoint and reproducibly recomputes validation-thresholded episode alerts and Monte Carlo LM predictions. It is used to increase the tuned candidate's rollout count without retraining or changing model selection.
+
 ---
 
-# 22. Where each datapoint resides
+# 24. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -706,7 +714,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 23. What will actually be fed to the model
+# 25. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -742,7 +750,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 24. How this becomes a world model
+# 26. How this becomes a world model
 
 After the state layer is correct:
 

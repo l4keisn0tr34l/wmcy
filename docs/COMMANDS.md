@@ -247,6 +247,20 @@ outputs/mvp_v2/rssm/ablations.json
 docs/RSSM_ABLATIONS.md
 ```
 
+Tune KL/free-nats with test-isolated screening and evaluate the selected checkpoint:
+
+```bash
+.venv/bin/python scripts/19_tune_rssm_kl.py
+.venv/bin/python scripts/20_evaluate_rssm_checkpoint.py --mc-samples 100
+```
+
+Read:
+
+```text
+outputs/mvp_v2/rssm/kl_tuning.json
+docs/KL_TUNING.md
+```
+
 Build the updated report and send/open it:
 
 ```bash

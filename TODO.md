@@ -69,7 +69,7 @@
 - [x] Evaluate baseline future-edge presence decoded from predicted future state.
 - [x] Add Monte Carlo RSSM rollout spread and error-correlation diagnostics.
 - [x] Run matched frozen/unfrozen and zero-KL representation-training ablations.
-- [ ] Tune KL weight/free nats without collapsing useful rollout spread.
+- [x] Tune KL weight/free nats with validation-only gates; retain lower-KL result as a candidate pending new-data validation.
 - [ ] Calibrate RSSM predictive uncertainty.
 - [ ] Add StageFinder-inspired next-step + contrastive pretraining if validated.
 
