@@ -135,6 +135,16 @@ outputs/unsw/graph_sequences/feature_metadata.json
 
 These contain 1,481 January and 1,383 February context/future graph samples; see `docs/UNSW_GRAPH_SEQUENCES.md`.
 
+```text
+models/unsw_graph_rssm_pretrained.pt
+models/mvp_v2_graph_rssm_unsw_pretrained.pt
+outputs/mvp_v2/graph_rssm/public_pretraining.json
+outputs/mvp_v2/graph_rssm/public_pretraining_episode_alerts.csv
+outputs/mvp_v2/graph_rssm/public_pretraining_sample_predictions.csv
+```
+
+See `docs/PUBLIC_PRETRAINING_RESULTS.md`.
+
 ## Status and methodology
 
 ```text
@@ -151,6 +161,7 @@ docs/GRAPH_RSSM_RESULTS.md
 docs/GRAPH_SEMANTIC_RESULTS.md
 docs/UNSW_ADAPTER.md
 docs/UNSW_GRAPH_SEQUENCES.md
+docs/PUBLIC_PRETRAINING_RESULTS.md
 ```
 
 ## External raw datasets

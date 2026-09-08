@@ -288,6 +288,9 @@ scripts/22_train_shared_pair_decoder.py frozen shared-pair diagnostic
 scripts/23_train_graph_rssm.py         equivariant graph RSSM
 scripts/24_tune_graph_semantic_heads.py frozen pooled-head follow-up
 scripts/25_train_graph_rich_semantic.py decoded-future invariant readout
+scripts/26_canonicalize_unsw.py          public temporal canonicalization
+scripts/27_build_unsw_graph_sequences.py public graph sequence extraction
+scripts/28_pretrain_graph_rssm_unsw.py   public dynamics transfer experiment
 src/cyberwm/common.py
 src/cyberwm/graph_rssm.py              structured graph RSSM module                  shared utility functions
 ```
@@ -448,7 +451,9 @@ A test-isolated KL grid selected KL 0.01/free-nats 0/seed 7. Its 20-rollout test
 
 The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 8/14 across equivalent permutations, and non-identity top choices almost never map back to the identity choice. Reject it as robust evidence. A frozen shared pair head lowers score equivariance MAE but worsens permutation-mean AP/top-1, showing that the flattened upstream representation is the bottleneck. See `docs/PAIR_EQUIVARIANCE_AUDIT.md` and `docs/SHARED_PAIR_DECODER.md`.
 
-The graph RSSM resolves that bottleneck: state MAE 0.252, active MAE 0.895, edge AP 0.394, and pair top-1 0.357 exactly stable under relabeling. An invariant decoded-future semantic readout gives LM F1/AP 0.667/0.744 and 2/2 episode detection at 23.9 s lead, but does not match the flattened model's test semantics. See `docs/GRAPH_RSSM_RESULTS.md` and `docs/GRAPH_SEMANTIC_RESULTS.md`.
+The graph RSSM resolves that bottleneck: state MAE 0.252, active MAE 0.895, edge AP 0.394, and pair top-1 0.357 exactly stable under relabeling. An invariant decoded-future semantic readout gives LM F1/AP 0.667/0.744.
+
+Observable-only UNSW pretraining improves validation edge AP to 0.430, validation LM AP to 0.819, and robust pair top-1 to 9/13. Diagnostic test state/active MAE is 0.251/0.877, edge AP 0.405, LM F1/AP 0.778/0.785, and pair top-1 10/14 under every relabeling. It also worsens false-alert episodes to 3/4 and spread/error correlation to 0.199, so it remains a transfer candidate. See `docs/PUBLIC_PRETRAINING_RESULTS.md`.
 
 Still missing:
 
@@ -492,9 +497,9 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. integrate host-rich public telemetry for graph-dynamics pretraining;
-2. improve semantic false-alert behavior with matched hard negatives;
-3. create a fresh holdout for the graph model;
+1. improve semantic false-alert behavior with matched hard negatives;
+2. create a fresh holdout for the graph model;
+3. retest public transfer without current-test selection;
 4. present active/quiet and per-horizon results with limitations.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.

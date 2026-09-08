@@ -322,6 +322,14 @@ Build public three-host graph-dynamics sequences without loading truth:
   --out-dir outputs/unsw/graph_sequences
 ```
 
+Pretrain graph dynamics on UNSW and fine-tune semantics on controlled V2:
+
+```bash
+.venv/bin/python scripts/28_pretrain_graph_rssm_unsw.py
+```
+
+Public semantic loss weights are zero; V2 test loads only after public and lab-validation selection.
+
 ## Shortcut/leakage audit
 
 ```bash

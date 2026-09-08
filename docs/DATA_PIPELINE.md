@@ -676,7 +676,13 @@ Merges source segments by connected capture group and creates 45-second three-ho
 
 ---
 
-# 31. Where each datapoint resides
+# 31. `28_pretrain_graph_rssm_unsw.py`
+
+Fits public normalization on January context observations only, pretrains graph future/reconstruction/edge/KL dynamics with all semantic weights zero, and selects the public epoch on February dynamics. It then refits preprocessing on controlled lab train, fine-tunes telemetry plus semantic heads, selects on lab validation, and only then loads diagnostic V2 test.
+
+---
+
+# 32. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -746,7 +752,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 32. What will actually be fed to the model
+# 33. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -782,7 +788,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 33. How this becomes a world model
+# 34. How this becomes a world model
 
 After the state layer is correct:
 

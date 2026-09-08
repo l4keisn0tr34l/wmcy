@@ -243,3 +243,13 @@ The graph model's validation/test LM AP are both near 0.74, while the flattened 
 UNSW original rows preserve host identities and Unix-second time but are heavily out of order. After sorting and one-hour gap segmentation, five source segments form only two connected capture groups because file times overlap. Never randomly split rows/segments across those groups.
 
 Use observable UNSW flows for graph-dynamics pretraining and domain diagnostics. Keep raw categories separate and do not infer exact ATT&CK or lateral-movement progression from them. Missing TCP flag counts remain unavailable rather than fabricated.
+
+---
+
+## D027 — Retain public-pretrained graph RSSM as a transfer candidate, not unconditional replacement
+
+**Status:** Accepted after validation-only public/lab selection.
+
+UNSW observable-only pretraining improves lab-validation edge AP 0.361→0.430, LM AP 0.728→0.819, and exactly equivariant pair top-1 0.357→0.692. Diagnostic test point metrics also improve. But test false-alert episodes worsen from 2/4 to 3/4 and stochastic spread/error correlation falls from 0.722 to 0.199.
+
+Therefore retain the checkpoint as evidence that public graph dynamics transfer, especially for edge/pair structure. Do not replace the stable headline model or claim calibrated uncertainty. Resolve the trade-off with matched hard negatives and a fresh sealed holdout, not further optimization on V2 test.

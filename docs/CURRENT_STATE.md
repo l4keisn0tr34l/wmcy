@@ -188,19 +188,20 @@ The first permutation-equivariant graph RSSM is now trained. It improves test st
 
 Not yet implemented:
 
-- learned graph message-passing encoder;
 - calibrated uncertainty;
 - action-conditioned dynamics;
-- cross-domain evaluation.
+- fresh cross-domain or sealed-holdout evaluation.
 
 ## Public temporal integration
 
 All 2,540,047 original host-rich UNSW-NB15 rows are now canonicalized into five sorted, gap-bounded segments. Observable events and raw attack labels are separate. The segments form only two connected capture groups because source-file times overlap; they cannot be randomly split.
 
-Context-only roster extraction produced 1,481 January training and 1,383 February validation sequences in the same 141-feature, 3-context/6-future graph contract as the lab. The public tensors contain no attack/ATT&CK/LM targets. UNSW supplies public graph dynamics/background diversity, not exact LM/ATT&CK truth. See `docs/UNSW_ADAPTER.md` and `docs/UNSW_GRAPH_SEQUENCES.md`.
+Context-only roster extraction produced 1,481 January training and 1,383 February validation sequences in the same 141-feature, 3-context/6-future graph contract as the lab. The public tensors contain no attack/ATT&CK/LM targets.
+
+Observable-only UNSW pretraining followed by controlled semantic fine-tuning improves validation edge AP 0.361→0.430, validation LM AP 0.728→0.819, and robust pair top-1 0.357→0.692. Diagnostic test state MAE is 0.251, active MAE 0.877, edge AP 0.405, LM F1/AP 0.778/0.785, and pair top-1 0.714 under every host relabeling. However, false-alert episodes worsen to 3/4 and stochastic spread/error correlation falls to 0.199. Treat this as a strong transfer candidate, not an unconditional replacement. See `docs/PUBLIC_PRETRAINING_RESULTS.md`.
 
 ## Immediate next milestone
 
-The graph-equivariant RSSM and invariant semantic follow-ups are complete. Next integrate host-rich UNSW dynamics and add matched scan/guessing hard negatives; further V2-only head tuning is unlikely to resolve semantic generalization. Action-conditioned defensive intervention remains later work.
+Add matched scan/guessing hard negatives and create a fresh sealed graph-model holdout. Then retest public-pretrained transfer without current-test selection. Action-conditioned defensive intervention remains later work.
 
 See `docs/MVP_STATUS.md` for full details.
