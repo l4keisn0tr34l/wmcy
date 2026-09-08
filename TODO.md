@@ -33,7 +33,8 @@
 - [x] Balance all six directed LM pairs within V2 training; a separate unseen-pair test remains future work.
 - [x] Capture and validate planned V2 episodes `lab_025`-`lab_048`.
 - [x] Define a seeded matched-prefix hard negative and fresh V3 split plan.
-- [ ] Capture/process 24 paired V3 episodes (interactive sudo required), then evaluate once on sealed test.
+- [x] Capture/process 24 paired V3 episodes and run prespecified scratch/public-init comparison.
+- [ ] Define branching-risk and exact-outcome metrics separately; do not tune further on V3 test.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.

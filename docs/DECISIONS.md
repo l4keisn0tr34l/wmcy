@@ -263,3 +263,21 @@ Therefore retain the checkpoint as evidence that public graph dynamics transfer,
 Pair every `scan_guess_then_stop` episode with a same-seed `one_hop` episode. Both execute identical randomized discovery/guessing prefixes; only the progressing member performs successful SSH. Keep each pair within one split.
 
 All 24 previously inspected V2 episodes become declared V3 development training. New episodes supply 12 train, 6 validation, and 6 sealed-test episodes. This prevents the repeatedly inspected V2 test from being presented as fresh evidence and directly tests whether the model distinguishes dangerous but stalled precursors from imminent LM.
+
+---
+
+## D029 — Reject public initialization as the V3 selection
+
+**Status:** Accepted from prespecified V3 validation comparison.
+
+Scratch wins the V3 validation joint objective (0.952 versus 1.060), state/edge metrics, and stochastic diagnostics. UNSW initialization has slightly higher fresh-test LM F1/AP, but worse fresh-test state MAE and edge AP. Do not select a model from that test difference. Retain scratch as the V3 comparison winner and public pretraining as a useful but distribution-sensitive V2 result.
+
+---
+
+## D030 — Treat matched-prefix LM as a branching-risk problem
+
+**Status:** Accepted after fresh V3 paired audit.
+
+Both models detect all 3 progressing test episodes but alert on all 3 stopped-prefix episodes. Scratch episode maximum probabilities differ by only 0.0027 on average within pairs. At the shared prefix, the future scenario-controller decision to execute successful SSH is not observable.
+
+Do not claim a passive model can deterministically infer unobserved attacker intent. Separate dangerous-progression risk from exact eventual-outcome scoring, expose probabilistic branching, and collect action/intervention variables before counterfactual defense claims.

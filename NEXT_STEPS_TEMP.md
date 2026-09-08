@@ -2,33 +2,36 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Verified checkpoint
+## Verified V3 experiment
 
-Public graph pretraining is complete at commit `89e0980`:
+All 48 episodes and 720 sequences pass. The prespecified scratch/public-initialized GraphRSSMs were selected independently on V3 validation; thresholds frozen before model test predictions.
 
 ```text
-validation: state MAE 0.260, edge AP 0.430, LM AP/F1 0.819/0.813, pair 9/13
-V2 diagnostic test: state/active MAE 0.251/0.877, edge AP 0.405,
-                    LM AP/F1 0.785/0.778, pair 10/14 under every relabeling
+Fresh test               Scratch       UNSW init
+state MAE                 0.294         0.321
+active MAE                0.556         0.579
+edge AP                   0.808         0.796
+LM F1 / AP                0.560/0.477   0.596/0.504
+pre-first-LM F1           0.571         0.596
+pair top-1                0.333         0.333
+progress episodes found   3/3           3/3
+stopped episodes alert    3/3           3/3
+mean lead                 23.5s         23.5s
+spread/error corr         0.768         0.533
 ```
 
-Trade-off: 3/4 negative test episodes alert and spread/error correlation falls to 0.199. Report SHA-256 is `f7d9cb52f04fc0f056cf46806756efc058d89306ae132d425267a45218703d4e`.
+UNSW initialization does not transfer positively under the fresh matched distribution: scratch is better for state/edge/uncertainty; UNSW is slightly better for LM point scores. Exact score equivariance remains around 1e-8, but near-tied argmax pair choices can vary under floating-point/MC perturbations.
 
-## Current batch: matched hard-negative data and fresh holdout
+Important interpretation: same-seed stopped/progressing episodes intentionally share the observable discovery/guessing prefix. Whether the external scenario controller performs later SSH is not in passive telemetry. Alerting on both can represent valid compromise risk; exact binary eventual-outcome discrimination is partly unidentifiable without action/intent/intervention variables.
 
-1. Add controlled `scan_guess_then_stop` scenario to `lab/run_episode.sh`.
-2. It executes the exact discovery + failed-password prefix of `one_hop`, with the same seeded role/timing machinery, but deliberately performs no successful SSH lateral movement.
-3. Preserve T1046/T1110.001 truth while LM truth remains zero; this is not benign traffic.
-4. Add a 24-episode paired plan: each seed has one stopped precursor and one one-hop progression episode.
-5. Assign six seed pairs to train, three to validation, and three to a fresh sealed test; keep all six role permutations in the new training pairs.
-6. Define V3 manifests so all previously inspected V2 episodes become development training, while only newly generated episodes populate V3 validation/test.
-7. Add a generation script/command with resume behavior through the existing corpus runner.
-8. Run shell/config validation and document exact split semantics.
+Disclosure: before training, test NPZ was opened only for schema/finiteness/count integrity, not model predictions. Model test predictions occurred only after both regimes and thresholds were frozen.
 
-## Interactive blocker
+## Current batch
 
-Host packet capture needs `sudo -v`, and the sudo timestamp is currently unavailable. After code/config validation, ask the user once to run the foreground generation command. Docker can be started without sudo if needed. Do not fabricate episode outputs before capture.
-
-## After generation
-
-Process/validate all new episodes, build V3 manifests/sequences, train the public-pretrained graph RSSM using V3 train/validation only, and open fresh V3 test once. Compare false alerts, robust pair ranking, state/edge forecasts, and stochastic diagnostics.
+1. Implement `scripts/31_audit_v3_matched_pairs.py`.
+2. Pair stopped/progressing episode summaries by seed and split.
+3. Report max-risk overlap, paired ordering, both-alert rate, action timing mismatch, and per-regime differences.
+4. Do not alter model, threshold, or test selection.
+5. Document the observed identifiability boundary and public-transfer result.
+6. Update standalone HTML with fresh-holdout results and limitations.
+7. Compile, integrity-check, commit, and push.

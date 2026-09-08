@@ -163,6 +163,20 @@ docs/UNSW_ADAPTER.md
 docs/UNSW_GRAPH_SEQUENCES.md
 docs/PUBLIC_PRETRAINING_RESULTS.md
 docs/V3_HARD_NEGATIVE_PLAN.md
+docs/V3_RESULTS.md
+```
+
+## V3 fresh matched-prefix evaluation
+
+```text
+outputs/mvp_v3/episode_manifest.csv
+outputs/mvp_v3/sequences/
+outputs/mvp_v3/graph_rssm/comparison.json
+outputs/mvp_v3/graph_rssm/paired_prefix_audit.json
+outputs/mvp_v3/graph_rssm/scratch_episode_alerts.csv
+outputs/mvp_v3/graph_rssm/unsw_pretrained_episode_alerts.csv
+models/mvp_v3_graph_rssm_scratch.pt
+models/mvp_v3_graph_rssm_unsw_pretrained.pt
 ```
 
 ## External raw datasets

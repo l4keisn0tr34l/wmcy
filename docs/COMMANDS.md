@@ -340,6 +340,20 @@ docker compose -f lab/docker-compose.yml up -d
 
 Capture requires interactive sudo. See `docs/V3_HARD_NEGATIVE_PLAN.md` before building V3 manifests.
 
+Build and evaluate V3 (already completed; do not rerun to tune against test):
+
+```bash
+.venv/bin/python scripts/09_build_episode_manifests.py \
+  --plan configs/mvp_v3_episode_plan.csv \
+  --splits configs/mvp_v3_split_assignments.csv \
+  --out-dir outputs/mvp_v3
+.venv/bin/python scripts/10_build_mvp_sequences.py \
+  --episode-manifest outputs/mvp_v3/episode_manifest.csv \
+  --out-dir outputs/mvp_v3/sequences
+.venv/bin/python scripts/30_train_graph_rssm_v3.py
+.venv/bin/python scripts/31_audit_v3_matched_pairs.py
+```
+
 ## Shortcut/leakage audit
 
 ```bash

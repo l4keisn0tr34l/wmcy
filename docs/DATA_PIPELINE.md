@@ -682,7 +682,19 @@ Fits public normalization on January context observations only, pretrains graph 
 
 ---
 
-# 32. Where each datapoint resides
+# 32. `29_validate_v3_plan.py`
+
+Checks that every new stopped/progressing seed pair remains in one split, old inspected V2 episodes are development train only, validation/test contain only new IDs, and new training pairs cover all six role permutations.
+
+# 33. `30_train_graph_rssm_v3.py`
+
+Fits preprocessing on V3 train only and compares matched scratch versus public-dynamics initialization. Semantic-head initial tensors are identical per seed; only non-semantic dynamics differ. Both seeds/epochs and LM thresholds are frozen on V3 validation before any model test prediction.
+
+# 34. `31_audit_v3_matched_pairs.py`
+
+Post-selection only: compares episode-level maximum risk and alerts within same-seed stopped/progressing pairs. It changes no model or threshold and exposes whether the passive prefix identifies eventual controller action.
+
+# 35. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -752,7 +764,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 33. What will actually be fed to the model
+# 36. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -788,7 +800,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 34. How this becomes a world model
+# 37. How this becomes a world model
 
 After the state layer is correct:
 

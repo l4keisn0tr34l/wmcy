@@ -291,6 +291,9 @@ scripts/25_train_graph_rich_semantic.py decoded-future invariant readout
 scripts/26_canonicalize_unsw.py          public temporal canonicalization
 scripts/27_build_unsw_graph_sequences.py public graph sequence extraction
 scripts/28_pretrain_graph_rssm_unsw.py   public dynamics transfer experiment
+scripts/29_validate_v3_plan.py            paired split invariants
+scripts/30_train_graph_rssm_v3.py         fresh V3 matched comparison
+scripts/31_audit_v3_matched_pairs.py      stopped/progressing audit
 src/cyberwm/common.py
 src/cyberwm/graph_rssm.py              structured graph RSSM module                  shared utility functions
 ```
@@ -453,7 +456,9 @@ The pair gain fails host-relabeling audit: tuned pair top-1 ranges from 2/14 to 
 
 The graph RSSM resolves that bottleneck: state MAE 0.252, active MAE 0.895, edge AP 0.394, and pair top-1 0.357 exactly stable under relabeling. An invariant decoded-future semantic readout gives LM F1/AP 0.667/0.744.
 
-Observable-only UNSW pretraining improves validation edge AP to 0.430, validation LM AP to 0.819, and robust pair top-1 to 9/13. Diagnostic test state/active MAE is 0.251/0.877, edge AP 0.405, LM F1/AP 0.778/0.785, and pair top-1 10/14 under every relabeling. It also worsens false-alert episodes to 3/4 and spread/error correlation to 0.199, so it remains a transfer candidate. See `docs/PUBLIC_PRETRAINING_RESULTS.md`.
+Observable-only UNSW pretraining improves V2 validation edge/LM AP and diagnostic V2 pair ranking, but worsens false alerts/stochastic diagnostics.
+
+Fresh V3 matched-prefix evaluation changes the conclusion: scratch beats UNSW initialization on validation joint objective (0.952 vs 1.060) and fresh-test state/edge/stochastic metrics. Both detect 3/3 progressing episodes about 23.5 seconds early, but both alert on 3/3 same-prefix stopped episodes. Scratch/UNSW LM F1 is 0.560/0.596; scratch pair maximum risk differs only 0.0027 on average within stopped/progressing pairs. This exposes an observability boundary for future external attacker action. See `docs/V3_RESULTS.md`.
 
 Still missing:
 
@@ -497,9 +502,9 @@ The compact RSSM trained in approximately 76 seconds on CPU, so a remote GPU is 
 
 Corpus capture, whole-episode splits, fixed-shape arrays, honest baselines, and compact stochastic RSSM rollout are complete. Remaining judge-facing work is:
 
-1. improve semantic false-alert behavior with matched hard negatives;
-2. create a fresh holdout for the graph model;
-3. retest public transfer without current-test selection;
+1. separate branching-risk from exact eventual-outcome metrics;
+2. improve stochastic multimodal future representation;
+3. collect explicit action/intervention variables;
 4. present active/quiet and per-horizon results with limitations.
 
 The end-to-end MVP exists, but current metrics are not final judge evidence.

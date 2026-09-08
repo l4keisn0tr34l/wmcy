@@ -53,6 +53,8 @@ def main() -> int:
     graph_rssm = json.loads((v2 / "graph_rssm/metrics.json").read_text())
     graph_rich = json.loads((v2 / "graph_rssm/rich_semantic.json").read_text())
     public_graph = json.loads((v2 / "graph_rssm/public_pretraining.json").read_text())
+    v3 = json.loads((ROOT / "outputs/mvp_v3/graph_rssm/comparison.json").read_text())
+    v3_pairs = json.loads((ROOT / "outputs/mvp_v3/graph_rssm/paired_prefix_audit.json").read_text())
     replay = json.loads(Path(args.replay).read_text())
     episodes = pd.read_csv(v2 / "episode_manifest.csv")
 
@@ -69,6 +71,10 @@ def main() -> int:
     actor_v2 = shortcut["shortcut_baselines"]["forbidden_actor_metadata_only"]["test"]
     techniques = rssm["future_techniques"]
     parameter_count = 79_421
+    v3_scratch = v3["results"]["scratch"]
+    v3_public = v3["results"]["unsw_pretrained"]
+    v3_test_episode = v3_scratch["episode_alert_summary"]["splits"]["test"]
+    v3_pair_test = v3_pairs["regimes"]["scratch"]["summary"]["test"]
 
     duration_min = episodes.capture_duration_seconds.min()
     duration_max = episodes.capture_duration_seconds.max()
@@ -172,15 +178,15 @@ table{{width:100%;border-collapse:collapse;background:var(--panel);border-radius
 .bar-row{{display:grid;grid-template-columns:120px 1fr 55px;align-items:center;gap:10px;margin:9px 0}}.bar-track{{height:14px;background:#26384d;border-radius:999px;overflow:hidden}}.bar{{height:100%;border-radius:999px}}
 code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@media(max-width:700px){{main{{padding:18px}}h1{{font-size:1.8rem}}.bar-row{{grid-template-columns:95px 1fr 48px}}}}
 </style></head><body><main>
-<span class="badge">EOD research report</span><span class="badge">Equal-duration V2</span><span class="badge">Passive RSSM</span>
+<span class="badge">Research report</span><span class="badge">Fresh matched V3</span><span class="badge">Graph RSSM</span>
 <h1>Predictive Cyber World Model</h1>
-<p class="subtitle">A stochastic recurrent model that observes 15 seconds of graph-structured network telemetry and imagines the next 30 seconds before interpreting likely attacker progression.</p>
+<p class="subtitle">A stochastic recurrent graph model that observes 15 seconds of network telemetry and imagines the next 30 seconds before interpreting branching compromise risk.</p>
 
 <div class="grid">
-<div class="card"><div class="muted">RSSM future-state MAE</div><div class="value">{rssm_state['normalized_mae']:.3f}</div><div>Ridge {ridge_state['normalized_mae']:.3f} · persistence {rssm_state['persistence_normalized_mae']:.3f}</div></div>
-<div class="card"><div class="muted">Future lateral-movement F1</div><div class="value">{rssm_lm['f1']:.3f}</div><div>Validation {rssm['future_lateral_movement']['validation']['f1']:.3f} · Ridge {ridge_lm['f1']:.3f}</div></div>
-<div class="card"><div class="muted">Pre-first-LM F1</div><div class="value">{rssm_pre['f1']:.3f}</div><div>Forecasts before movement is observed</div></div>
-<div class="card"><div class="muted">Mean exact warning lead</div><div class="value">{episode['mean_exact_warning_lead_seconds']:.1f}s</div><div>{episode['progressing_detected_before_first_lm']}/{episode['progressing_episodes']} progressing test episodes detected</div></div>
+<div class="card"><div class="muted">Fresh V3 state MAE</div><div class="value">{v3_scratch['state_prediction']['test']['normalized_mae']:.3f}</div><div>Active {v3_scratch['state_prediction']['test']['active_normalized_mae']:.3f} · edge AP {v3_scratch['future_edge_presence']['test']['average_precision']:.3f}</div></div>
+<div class="card"><div class="muted">Fresh V3 LM F1 / AP</div><div class="value">{v3_scratch['future_lateral_movement']['test']['f1']:.3f}</div><div>AP {v3_scratch['future_lateral_movement']['test']['average_precision']:.3f} · threshold fixed on validation</div></div>
+<div class="card"><div class="muted">Progressing episodes detected</div><div class="value">{v3_test_episode['progressing_detected_before_first_lm']}/{v3_test_episode['progressing_episodes']}</div><div>Mean exact lead {v3_test_episode['mean_exact_warning_lead_seconds']:.1f}s</div></div>
+<div class="card"><div class="muted">Stopped-prefix episodes alerting</div><div class="value">{v3_test_episode['nonprogressing_episodes_with_any_30s_false_alert']}/{v3_test_episode['nonprogressing_episodes']}</div><div>Shared precursor cannot reveal future controller intent</div></div>
 </div>
 
 <h2>1. What this system does</h2>
@@ -266,9 +272,21 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <tr><td>LM F1 / AP ↑</td><td>{graph_rich['future_lateral_movement']['test']['f1']:.3f} / {graph_rich['future_lateral_movement']['test']['average_precision']:.3f}</td><td>{public_graph['future_lateral_movement']['test']['f1']:.3f} / {public_graph['future_lateral_movement']['test']['average_precision']:.3f}</td><td><strong>{rssm_lm['f1']:.3f}</strong> / <strong>{rssm_lm['average_precision']:.3f}</strong></td><td>{ridge_lm['f1']:.3f} / {ridge_lm['average_precision']:.3f}</td></tr></table>
 <div class="callout good"><strong>Architectural result:</strong> graph forecasting is substantially better and equivariance is numerical-exact. Public pretraining reaches robust pair top-1 9/13 on validation and 10/14 on diagnostic test under every host relabeling.</div>
 <div class="callout"><strong>Public transfer:</strong> 2,540,047 UNSW flows produced 1,481 January train and 1,383 disconnected-February validation graph samples. Public semantic weights were exactly zero. Validation edge AP rises 0.361→0.430 and LM AP 0.728→0.819 after lab fine-tuning.</div>
-<div class="callout bad"><strong>Transfer trade-off:</strong> public pretraining increases alerting negatives from 2/4 to 3/4 on diagnostic test and reduces spread/error correlation from 0.722 to 0.199. It is a strong candidate, not an unconditional replacement.</div>
+<div class="callout bad"><strong>Transfer trade-off:</strong> public pretraining increases alerting negatives from 2/4 to 3/4 on diagnostic V2 test and reduces spread/error correlation from 0.722 to 0.199.</div>
 
-<h2>4. Primary future-state results</h2>
+<h2>3f. Fresh V3 matched-prefix evaluation</h2>
+<p>We generated 12 seed-matched pairs: discovery and guessing either stop or continue to successful SSH. Old V2 became development train; only new episodes formed six-episode validation and six-episode test. Scratch/public models and thresholds were frozen before model test prediction.</p>
+<table><tr><th>Fresh-test metric</th><th>Graph scratch</th><th>UNSW initialized</th></tr>
+<tr><td>State / active MAE ↓</td><td><strong>{v3_scratch['state_prediction']['test']['normalized_mae']:.3f} / {v3_scratch['state_prediction']['test']['active_normalized_mae']:.3f}</strong></td><td>{v3_public['state_prediction']['test']['normalized_mae']:.3f} / {v3_public['state_prediction']['test']['active_normalized_mae']:.3f}</td></tr>
+<tr><td>Edge AP ↑</td><td><strong>{v3_scratch['future_edge_presence']['test']['average_precision']:.3f}</strong></td><td>{v3_public['future_edge_presence']['test']['average_precision']:.3f}</td></tr>
+<tr><td>LM F1 / AP ↑</td><td>{v3_scratch['future_lateral_movement']['test']['f1']:.3f} / {v3_scratch['future_lateral_movement']['test']['average_precision']:.3f}</td><td><strong>{v3_public['future_lateral_movement']['test']['f1']:.3f} / {v3_public['future_lateral_movement']['test']['average_precision']:.3f}</strong></td></tr>
+<tr><td>Pair top-1</td><td>{v3_scratch['future_lateral_pair_ranking']['test']['top1_accuracy_any_true_lm_pair']:.3f}</td><td>{v3_public['future_lateral_pair_ranking']['test']['top1_accuracy_any_true_lm_pair']:.3f}</td></tr>
+<tr><td>Spread/error correlation</td><td><strong>{v3_scratch['uncertainty']['state_std_absolute_error_correlation']:.3f}</strong></td><td>{v3_public['uncertainty']['state_std_absolute_error_correlation']:.3f}</td></tr></table>
+<div class="callout"><strong>Selection:</strong> scratch wins the validation joint objective 0.952 versus 1.060 and is retained. The small public-model test LM increase is not used to override validation.</div>
+<div class="grid"><div class="card"><div class="muted">Stopped mean max risk</div><div class="value">{v3_pair_test['mean_stopped_max_probability']:.3f}</div></div><div class="card"><div class="muted">Progress mean max risk</div><div class="value">{v3_pair_test['mean_progress_max_probability']:.3f}</div></div><div class="card"><div class="muted">Mean absolute pair gap</div><div class="value">{v3_pair_test['mean_absolute_pair_probability_difference']:.4f}</div></div></div>
+<div class="callout bad"><strong>Observed observability boundary:</strong> both models detect all 3 progressing episodes and alert on all 3 stopped episodes. At the shared prefix, the later scenario-controller SSH decision is absent from passive telemetry. This is a branching-risk problem, not deterministic intent recovery.</div>
+
+<h2>4. Historical V2 future-state results</h2>
 <p>Lower state MAE is better. All models use the same train-context normalization.</p><div class="card">{state_bars}</div>
 <table><tr><th>State subset</th><th>RSSM</th><th>PCA/Ridge</th><th>Persistence</th></tr>
 <tr><td>All future states</td><td><strong>{rssm_state['normalized_mae']:.3f}</strong></td><td>{ridge_state['normalized_mae']:.3f}</td><td>{rssm_state['persistence_normalized_mae']:.3f}</td></tr>
@@ -303,14 +321,14 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <h3>Top pair candidates</h3><table><tr><th>Pair</th><th>Score</th></tr>{replay_pairs}</table><p>Actual pair: <strong>{escape(', '.join(replay['actual_lateral_pairs_within_horizon']))}</strong></p>
 
 <h2>8. Interpretation and limitations</h2>
-<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Permutation-equivariant graph state, edge, and pair forecasts.</li><li>Telemetry-only public pretraining transfers useful edge/pair structure.</li><li>Future ATT&amp;CK interpretation without labels as inference input.</li></ul></div>
-<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Reliable pair accuracy beyond 13–14 correlated positive windows.</li><li>Calibrated operational uncertainty.</li><li>Low false-alert operation across diverse hard negatives.</li><li>Action-conditioned firewall counterfactuals.</li></ul></div></div>
-<p>Only 24 controlled episodes and 12 LM events exist. Overlapping windows are correlated. V2 test has been inspected repeatedly and is diagnostic. Public pretraining uses two capture groups, not many independent public episodes. The selected replay is illustrative.</p>
+<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Score-level permutation-equivariant graph forecasts.</li><li>Fresh same-prefix stopped/progressing evaluation.</li><li>A concrete passive-telemetry observability boundary.</li></ul></div>
+<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Reliable pair accuracy beyond 18 correlated positive windows.</li><li>Calibrated multimodal uncertainty.</li><li>Exact future intent discrimination from an identical prefix.</li><li>Action-conditioned firewall counterfactuals.</li></ul></div></div>
+<p>V3 has 48 controlled episodes and 24 LM events; only six new episodes each form validation/test. Overlapping windows are correlated. Public pretraining uses two capture groups. Test arrays received a pretraining schema/count integrity check, but model predictions occurred only after model/threshold freeze. V3 test is now inspected and must not be tuned further.</p>
 
 <h2>9. Next experiment</h2>
-<ol><li>Add matched scan-only and failed-guessing non-progression episodes with the same timing/intensity as progressing episodes.</li><li>Create a fresh sealed, role-balanced graph-model holdout.</li><li>Retest the public-pretrained graph RSSM without selecting against the current V2 test.</li><li>Evaluate false-alert and stochasticity trade-offs before promoting the transfer checkpoint.</li><li>Collect paired intervention/no-intervention episodes before action-conditioned modeling.</li></ol>
+<ol><li>Separate dangerous-progression risk from exact eventual-LM outcome metrics.</li><li>Represent stopped/movement futures as explicit stochastic branches rather than forcing one binary answer.</li><li>Evaluate calibration and branch coverage on new paired episodes.</li><li>Add attacker/defender action variables and paired intervention/no-intervention trajectories.</li><li>Do not tune further against the now-inspected V3 test.</li></ol>
 
-<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details: <code>docs/RSSM_RESULTS.md</code>, <code>docs/RSSM_ABLATIONS.md</code>, <code>docs/KL_TUNING.md</code>, <code>docs/PAIR_EQUIVARIANCE_AUDIT.md</code>, <code>docs/SHARED_PAIR_DECODER.md</code>, <code>docs/GRAPH_RSSM_RESULTS.md</code>, <code>docs/GRAPH_SEMANTIC_RESULTS.md</code>, and <code>docs/PUBLIC_PRETRAINING_RESULTS.md</code>.</p>
+<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details: <code>docs/RSSM_RESULTS.md</code>, <code>docs/RSSM_ABLATIONS.md</code>, <code>docs/KL_TUNING.md</code>, <code>docs/PAIR_EQUIVARIANCE_AUDIT.md</code>, <code>docs/SHARED_PAIR_DECODER.md</code>, <code>docs/GRAPH_RSSM_RESULTS.md</code>, <code>docs/GRAPH_SEMANTIC_RESULTS.md</code>, <code>docs/PUBLIC_PRETRAINING_RESULTS.md</code>, and <code>docs/V3_RESULTS.md</code>.</p>
 </main></body></html>"""
 
     output = Path(args.out)

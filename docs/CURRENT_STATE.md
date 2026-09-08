@@ -202,8 +202,10 @@ Observable-only UNSW pretraining followed by controlled semantic fine-tuning imp
 
 ## Immediate next milestone
 
-The V3 matched-prefix design and validated 24-episode plan are ready. `scan_guess_then_stop` executes the same seeded discovery/guessing prefix as paired `one_hop` but no successful SSH. Six train pairs cover all role permutations; three new pairs each form validation and sealed test. Capture is pending interactive sudo. See `docs/V3_HARD_NEGATIVE_PLAN.md`.
+V3 is complete: 48 validated episodes and 720 sequences. `scan_guess_then_stop` shares the seeded discovery/guessing control flow of paired `one_hop` but no successful SSH. Old V2 is development train; validation/test each contain three new stopped/progressing pairs.
 
-After capture, build V3 and retest public-pretrained transfer without current-test selection. Action-conditioned defensive intervention remains later work.
+On fresh test, scratch/public-initialized graph RSSMs reach state MAE 0.294/0.321, edge AP 0.808/0.796, LM F1 0.560/0.596, and both detect 3/3 progressing episodes 23.5 s early—but both alert on 3/3 stopped episodes. Episode maximum risks are nearly identical within scratch pairs (mean absolute gap 0.0027). Public initialization is not selected because scratch wins the validation joint objective and dynamics/edge/stochastic metrics. See `docs/V3_RESULTS.md`.
+
+The paired result exposes an observability boundary: a future scenario-controller decision to perform SSH is not present in the shared passive-telemetry prefix. Next work must represent branching risk/uncertainty and eventually action/intervention variables rather than promise deterministic recovery of unobserved intent.
 
 See `docs/MVP_STATUS.md` for full details.

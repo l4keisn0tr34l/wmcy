@@ -1,5 +1,7 @@
 # V3 Matched Hard Negatives and Fresh Holdout
 
+**Status:** all 24 planned episodes captured, processed, and validated; fresh evaluation complete. See `docs/V3_RESULTS.md`.
+
 ## Motivation
 
 Current graph models alert on scan-only/failed-guessing episodes because those precursors often precede successful movement in the small lab corpus. Public pretraining improves ranking but worsens negative-episode alerting to 3/4. More semantic-head tuning on the inspected V2 test would not resolve this data ambiguity.
