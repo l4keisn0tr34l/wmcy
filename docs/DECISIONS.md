@@ -375,3 +375,13 @@ Train both ActionGraphRSSM initializations for exactly 400 epochs with seed 4300
 Reason: V4 has no independent action validation split, and training objectives cannot establish transfer. Carrying both models preserves the prespecified scratch-versus-public-initialization comparison without test-driven selection.
 
 Guardrail: checkpoint hashes and evaluator metrics are fixed before creating test arrays. Report fixed 0.5 and frozen train-derived LM thresholds, graph-state effects as well as semantics, and paired-prefix mismatch.
+
+---
+
+## D039 — Exclude the complete `action_7002` pair for capture-boundary insufficiency
+
+**Status:** Applied after explicit test unlock but before any model prediction.
+
+The first test build found that `lab_090` had only five complete post-action states; the frozen action model requires six. Do not pad a partial window, shorten the horizon, or move the intervention backward. Exclude both `lab_089` and `lab_090` so paired permit/block analysis remains symmetric.
+
+Reason: complete capture-bounded state targets are a causal temporal invariant. The exclusion is based solely on action/capture timing and was made before model results existed. The sealed cohort is reduced from six to five pairs and this protocol deviation must remain visible.

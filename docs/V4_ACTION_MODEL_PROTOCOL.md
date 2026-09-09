@@ -2,7 +2,7 @@
 
 ## Status
 
-**Protocol and two checkpoints frozen before V4 action-test access.** Training used only 12 action-train samples. No V4 test array or episode was loaded by the training script.
+**Protocol and two checkpoints were frozen before V4 action-test access.** Training used only 12 action-train samples. No V4 test array or episode was loaded by the training script. The subsequent one-shot result is documented separately in `docs/V4_ACTION_RESULTS.md`.
 
 ## Architecture
 

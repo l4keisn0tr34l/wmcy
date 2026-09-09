@@ -184,7 +184,8 @@ def main() -> int:
     with np.load(directory / "test.npz") as loaded: data = {name: loaded[name] for name in loaded.files}
     metadata = json.loads((directory / "test_feature_metadata.json").read_text())
     audit = pd.read_csv(directory / "test_sample_manifest.csv")
-    if len(data["context_states"]) != 12 or len(audit) != 12: raise ValueError("sealed test must have 12 samples")
+    if len(data["context_states"]) != 10 or len(audit) != 10: raise ValueError("sealed test must have 10 samples after timing-only paired-family exclusion")
+    if set(audit.episode_id) & {"lab_089", "lab_090"}: raise ValueError("temporally invalid paired family entered test")
     module = load_training(); state_permutations, pair_permutations = module.state_and_edge_permutation_indices(metadata)
     device = resolve_device(args.device); results = {}
     for regime, path in paths.items():
@@ -199,15 +200,20 @@ def main() -> int:
         )
     report = {
         "scope": "one-shot V4 sealed action-test evaluation",
-        "checkpoint_hashes": FROZEN_HASHES, "test_samples": 12,
-        "test_pairs": 6, "model_selection": "none; both prespecified initializations reported",
+        "checkpoint_hashes": FROZEN_HASHES, "test_samples": 10,
+        "test_pairs": 5, "model_selection": "none; both prespecified initializations reported",
+        "post_unlock_protocol_deviation": {
+            "prediction_before_deviation": False,
+            "reason": "lab_090 had only five complete post-action windows for the frozen six-state horizon",
+            "resolution": "exclude the complete predefined lab_089/lab_090 permit-block family using timing only",
+        },
         "results": results,
         "comparison": {
             "friday_minus_scratch_state_mae": results["friday_initialized"]["state"]["normalized_mae"] - results["scratch"]["state"]["normalized_mae"],
             "friday_minus_scratch_edge_ap": results["friday_initialized"]["future_edge"]["average_precision"] - results["scratch"]["future_edge"]["average_precision"],
             "friday_minus_scratch_lm_brier": results["friday_initialized"]["lm_fixed_threshold_0_5"]["brier"] - results["scratch"]["lm_fixed_threshold_0_5"]["brier"],
         },
-        "limitations": ["six correlated permit/block seed pairs", "one fixed three-container topology",
+        "limitations": ["five correlated permit/block seed pairs after one timing-only family exclusion", "one fixed three-container topology",
                         "action deterministically controls SSH outcome", "matched prefixes are not exact clones",
                         "counterfactual unfactual outcomes follow lab design and are not separately observed"],
     }

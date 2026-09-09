@@ -42,8 +42,8 @@
 - [x] Validate all V4 action timing and completed-versus-attempted LM semantics.
 - [x] Build V4 action-train-only intervention-aligned sequences with an explicit test lock.
 - [x] Freeze scratch/Friday action-model settings, checkpoints, hashes, thresholds, and evaluator before V4 test access.
-- [ ] Build/unlock V4 action test once and run the frozen two-model evaluation.
-- [ ] Evaluate the already-frozen passive branch model only on predetermined V4 test rows.
+- [x] Build/unlock V4 action test once and run the frozen two-model evaluation; exclude one complete timing-invalid pair before prediction.
+- [ ] Evaluate the already-frozen passive branch model once on predetermined V4 passive/direct and pre-action rows.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.

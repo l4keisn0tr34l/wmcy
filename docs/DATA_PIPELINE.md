@@ -734,7 +734,11 @@ Loads V4 action train only and fits two fixed-protocol action-conditioned graph 
 
 Verifies frozen checkpoint hashes before one-shot test access. The pre-unlock protocol check requires test arrays to be absent. Its fixed contract covers state/edge/LM/pair prediction, same-context action effects, factual-versus-opposite state error, and host/action-pair equivariance.
 
-# 45. Where each datapoint resides
+# 45. `45_evaluate_passive_branch_v4.py`
+
+Applies the already-frozen V3 outcome-branch checkpoint without training to all sliding windows from V4 passive-branching/direct-credential episodes and separately to the eligible pre-action contexts without action input. It uses the V3 validation-frozen threshold and reports expected/oracle branch coverage, edge/LM forecasts, episode alerts, and the passive observability boundary.
+
+# 46. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -804,7 +808,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 46. What will actually be fed to the model
+# 47. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -840,7 +844,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 47. How this becomes a world model
+# 48. How this becomes a world model
 
 After the state layer is correct:
 

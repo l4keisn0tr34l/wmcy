@@ -404,7 +404,18 @@ All 36 captures pass. The sequence builder loads action-train episodes only by d
 .venv/bin/python scripts/44_evaluate_action_graph_rssm_v4.py --protocol-check-only
 ```
 
-`--split test` intentionally fails unless `--unlock-test` is supplied after this protocol is committed.
+`--split test` intentionally fails unless `--unlock-test` is supplied after this protocol is committed. The one-shot action evaluation used:
+
+```bash
+.venv/bin/python scripts/42_build_v4_action_sequences.py --split test --unlock-test
+.venv/bin/python scripts/44_evaluate_action_graph_rssm_v4.py --device cuda
+```
+
+The first build identified one timing-invalid pair, which is excluded before prediction as documented in `docs/V4_ACTION_RESULTS.md`. Evaluate the already-frozen passive branch checkpoint once with:
+
+```bash
+.venv/bin/python scripts/45_evaluate_passive_branch_v4.py --device cuda
+```
 
 ## V3 matched hard-negative plan
 

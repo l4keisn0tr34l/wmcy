@@ -74,6 +74,27 @@ def main() -> int:
     selected = plan[plan.cohort.eq("action_conditioning") & plan.split.eq(args.split)].copy()
     if len(selected) != 12: raise ValueError(f"expected 12 {args.split} action episodes, found {len(selected)}")
     module = load_sequence_module(); episodes = Path(args.episodes_dir)
+    # Determine temporal eligibility without reading outcomes or running a model.
+    # If one member lacks the fixed six complete future windows, remove its
+    # whole predefined permit/block family so paired analysis remains balanced.
+    ineligible_families: dict[str, list[str]] = {}
+    for planned in selected.itertuples(index=False):
+        action_rows = pd.read_csv(episodes / planned.episode_id / "defender_actions.csv")
+        grid = pd.DatetimeIndex(pd.to_datetime(
+            pd.read_csv(episodes / planned.episode_id / "states/global_states.csv").window_start, utc=True
+        ))
+        action_grid = pd.to_datetime(action_rows.start_time.iloc[0], utc=True).floor("5s")
+        matches = np.flatnonzero(grid == action_grid)
+        eligible = len(matches) == 1 and int(matches[0]) >= args.context and int(matches[0]) + args.horizon <= len(grid)
+        if not eligible:
+            ineligible_families.setdefault(planned.paired_family, []).append(planned.episode_id)
+    if ineligible_families:
+        if args.split != "test" or ineligible_families != {"action_7002": ["lab_090"]}:
+            raise ValueError(f"unexpected action-alignment exclusions: {ineligible_families}")
+        selected = selected[~selected.paired_family.isin(ineligible_families)].copy()
+    expected_samples = len(selected)
+    if expected_samples not in ({12} if args.split == "train" else {10, 12}):
+        raise ValueError(f"unexpected eligible {args.split} sample count: {expected_samples}")
     first_episode = episodes / selected.episode_id.iloc[0]
     global_features, node_features, edge_features, state_names = feature_contract(module, first_episode)
     stores: dict[str, list[np.ndarray]] = {
@@ -152,20 +173,23 @@ def main() -> int:
         })
     arrays = {name: np.stack(values).astype(np.float32) for name, values in stores.items()}
     expected_shapes = {
-        "context_states": (12, 3, 141), "action_type": (12, 2), "action_pair": (12, 6),
-        "future_states": (12, 6, 141), "future_edge_presence": (12, 6, 6),
-        "future_lateral_movement": (12, 6), "future_techniques": (12, 6, 3),
-        "future_lateral_edges": (12, 6, 6), "lateral_movement_within_horizon": (12,),
+        "context_states": (expected_samples, 3, 141), "action_type": (expected_samples, 2), "action_pair": (expected_samples, 6),
+        "future_states": (expected_samples, 6, 141), "future_edge_presence": (expected_samples, 6, 6),
+        "future_lateral_movement": (expected_samples, 6), "future_techniques": (expected_samples, 6, 3),
+        "future_lateral_edges": (expected_samples, 6, 6), "lateral_movement_within_horizon": (expected_samples,),
     }
     for name, shape in expected_shapes.items():
         if arrays[name].shape != shape or not np.isfinite(arrays[name]).all():
             raise ValueError(f"invalid {name}: {arrays[name].shape}")
-    if not np.allclose(arrays["action_type"].sum(axis=0), [6, 6]): raise ValueError("action types not balanced")
-    if int(arrays["lateral_movement_within_horizon"].sum()) != 6: raise ValueError("LM outcomes not balanced")
+    per_action = expected_samples // 2
+    if not np.allclose(arrays["action_type"].sum(axis=0), [per_action, per_action]): raise ValueError("action types not balanced")
+    if int(arrays["lateral_movement_within_horizon"].sum()) != per_action: raise ValueError("LM outcomes not balanced")
     metadata_out = {
         "source": "controlled Docker V4 action-conditioning episodes",
         "split": args.split, "samples": len(selected), "context_states": args.context,
         "future_horizon_states": args.horizon, "window_seconds": 5,
+        "timing_excluded_families": ineligible_families,
+        "timing_exclusion_policy": "exclude both predefined paired-family members if either lacks six complete post-action windows; uses timing only before prediction",
         "state_feature_count": len(state_names), "state_feature_names": state_names,
         "global_feature_names": global_features, "node_feature_names": node_features + ["activity_mask"],
         "edge_feature_names": edge_features + ["presence_mask"],

@@ -2,39 +2,27 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Frozen V4 action protocol
+## V4 action test completed once
 
-The action model and evaluator are complete using V4 action train only. V4 test arrays still do not exist.
-
-```text
-architecture: ActionGraphRSSM, 372,947 parameters
-train samples: 12
-protocol: seed43001, batch12, Adam3e-4, exactly400 epochs
-selection: none; carry both candidates
-```
-
-Frozen checkpoints:
+The one-shot action test ran after excluding the timing-invalid `action_7002` family. No retraining/tuning occurred.
 
 ```text
-scratch SHA-256:
-f69ece2d24ac07593d35666a83ea52ef8a768d1f51d4dcab13e7c1dc9f1c876f
-
-Friday initialized SHA-256:
-6b4cf070da873f04cd1fecb17cf351b9f9ba07bcbf45275b80aa69a8b100e351
+eligible test: 10 episodes / 5 paired families
+scratch: state MAE .0603, active .2327, edge AP1.0, LM F1@.5 1.0, Brier8.91e-7
+Friday:  state MAE .0719, active .2475, edge AP1.0, LM F1@.5 1.0, Brier1.60e-4
+both: pair top1 1.0, factual action lower state error 10/10
 ```
 
-Train-only state MAE scratch/Friday is 0.047/0.043; active MAE 0.157/0.108. Both perfectly fit train LM/edge/pair targets and strongly separate permit/block risk. This is overfit training evidence only.
+The frozen train-derived thresholds were too extreme: scratch/Friday F1 .750/.889 despite perfect AP. Do not call 10-window ECE calibrated uncertainty. Scratch beat Friday state/active MAE and Brier; edge/pair/F1@.5 tied.
 
-## Next batch: one-shot action-test unlock
+## Current batch: frozen passive branch V4 evaluation
 
-Only after the protocol/evaluator commit:
-
-1. Run `scripts/42_build_v4_action_sequences.py --split test --unlock-test` once.
-2. Inspect only schema/finiteness/counts before prediction.
-3. Run `scripts/44_evaluate_action_graph_rssm_v4.py --device cuda` once.
-4. Do not rerun/tune either model against resulting test metrics.
-5. Document factual state/edge/LM/pair results, action-effect direction, factual-versus-opposite state error, initialization trade-off, and six-pair limitation.
-6. Then build/evaluate the already-frozen passive outcome-branch model on predetermined V4 passive/direct/action test rows under a separately frozen script.
-7. Regenerate report, commit, and push.
+1. Add one no-training evaluator for checkpoint SHA `4f0524...`.
+2. Evaluate all sliding windows from predetermined passive-branching and direct-credential cohorts (`lab_097`–`lab_108`).
+3. Separately evaluate the same 10 pre-action contexts used by the action-test model, but without action input.
+4. Use V3 validation-frozen LM threshold `0.3707732260` and also report threshold-free AP/Brier.
+5. Report expected/oracle/conditioned state coverage, expected edge AP, branch diversity, matched episode alert behavior, and cohort counts.
+6. Do not tune or retrain the passive model and do not rerun the action evaluator.
+7. Document both results, timing exclusion, limitations, report, commit, push.
 
 Do not reopen V3 test.
