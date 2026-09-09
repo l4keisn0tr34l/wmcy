@@ -51,13 +51,13 @@ Window-level cohort AP was `0.619` for passive branching and only `0.089` for di
 On the same 10 pre-action contexts used for action evaluation, but without supplying the chosen action:
 
 ```text
-passive branch state MAE: 0.141
-passive LM AP/F1/Brier:    0.519 / 0.400 / 0.329
-action scratch state MAE: 0.060
-action scratch LM AP/F1:  1.000 / 1.000
+passive LM AP/F1/Brier:   0.519 / 0.400 / 0.329
+action scratch LM AP/F1: 1.000 / 1.000
 ```
 
-Passive permit/block pair probabilities differ because matched captures are not exact clones, but the differences do not recover outcomes reliably. With the already-chosen intervention supplied, the action model forecasts the controlled outcome and gives lower factual future-state error on 10/10 contexts.
+The passive/action state MAEs on these contexts are `0.141/0.060`, but each uses its own frozen training scaler (V3 versus V4 action train), so they must not be treated as a direct improvement ratio. Within the action model's common scaler, the factual chosen action gives lower future-state error than the opposite action on 10/10 contexts.
+
+Passive permit/block pair probabilities differ because matched captures are not exact clones, but the differences do not recover outcomes reliably. With the already-chosen intervention supplied, the action model forecasts the controlled outcome.
 
 This is direct evidence for the project's observability claim:
 

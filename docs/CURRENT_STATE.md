@@ -220,6 +220,6 @@ The already-frozen passive outcome-branch model was then evaluated without tunin
 
 The full 8.839 GB Friday PCAPNG is now canonicalized by a native disk-bounded adapter: 9,997,874 packets, 9,915,680 IPv4 packets, 7,094 small timestamp inversions, and 2,102,560 chronological directed one-second events in 1m20.72s with 47 MB maximum RSS. Labels remain absent/separate. A causal context-only three-host builder produces 5,775 train-only `[3,141]→[6,141]` graph sequences with real TCP flags. No validation/test split is fabricated inside the one connected capture. A fixed seed/100-epoch observable-only GraphRSSM pretraining run reduces its training dynamics expression 1.174→0.350; all semantic weights are zero. This is only a candidate initializer for V4, not transfer evidence. See `docs/FRIDAY_PCAP_ADAPTER.md` and `docs/FRIDAY_GRAPH_SEQUENCES.md`.
 
-The standalone senior report now includes explicit branching, complete V4 chosen-action/passive results, and Friday scale evidence. Current report SHA-256: `b341b5a103aef28614731b2f5d14150c5dc9c33dfdbe7668b85b7b511c61e208`.
+The standalone senior report now includes explicit branching, complete V4 chosen-action/passive results, and Friday scale evidence. Current report SHA-256: `7b886a2d0da7bbc856deda7a621f33d9ff34eda22197bcc79698ba1597fe25e5`.
 
 See `docs/MVP_STATUS.md` for full details.

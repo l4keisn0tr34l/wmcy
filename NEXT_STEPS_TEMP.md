@@ -6,45 +6,25 @@
 
 Action and passive evaluations are frozen and inspected. Do not retrain, retune thresholds, or rerun either sealed evaluator.
 
-### Chosen-action model: 10 episodes / five pairs
+Key action result: on five eligible permit/block pairs, scratch state MAE is `.0603`, edge/LM/pair AP is `1.0`, and the factual action has lower state error than the opposite action on `10/10` contexts. Friday initialization has worse state MAE `.0719`.
 
-```text
-scratch state/active MAE: .0603/.2327
-Friday state/active MAE:  .0719/.2475
-both edge AP / LM AP / pair top1: 1.0 / 1.0 / 1.0
-factual action lower state error: 10/10 for both
-```
+Key passive result: across 12 passive/direct episodes, the frozen branch model alerts on `3/3` stopped prefixes but `0/3` progressing prefixes before a positive horizon and `0/3` direct-credential progressions. Window LM F1/AP is `.483/.472`.
 
-`lab_090` had only five complete post-action states. The complete `action_7002` family (`lab_089/090`) was excluded using timing only before prediction.
-
-### Frozen passive branch: 180 windows / 12 episodes
-
-```text
-expected/oracle state MAE: .248/.237
-edge AP: .556
-LM F1/AP/Brier: .483/.472/.107
-stopped scan/guess alerted: 3/3
-progressing scan/guess pre-positive alerted: 0/3
-direct credential pre-positive alerted: 0/3
-matched legitimate alerted: 1/3
-```
-
-On the same 10 pre-action contexts without action: state MAE .141 and LM F1/AP .400/.519. This supports the observability boundary and chosen-action conditioning; it is not calibrated or enterprise evidence.
+On the same 10 action contexts, passive/action LM F1 is directly comparable at `.400/1.000`. Passive/action normalized state MAEs `.141/.060` use different V3/V4 training scalers and must not be presented as a direct improvement ratio. The within-action-model factual-versus-opposite comparison is valid.
 
 ## Report
 
 ```text
 /home/paprika/Downloads/rssm_eod_report.html
 outputs/mvp_v2/report/rssm_eod_report.html
-SHA-256 b341b5a103aef28614731b2f5d14150c5dc9c33dfdbe7668b85b7b511c61e208
+SHA-256 7b886a2d0da7bbc856deda7a621f33d9ff34eda22197bcc79698ba1597fe25e5
 ```
 
 ## Next work
 
-1. Run final integrity/docs checks, commit, and push this V4 consolidation.
-2. Visually inspect the standalone report in a browser; content/assets checks already pass.
-3. Do not tune against V3 or V4.
-4. Design a new corpus with additional topologies, host counts, background processes, direct-credential paths, and interventions.
-5. Create topology/scenario-disjoint train/validation/test before model changes.
-6. Evaluate public initialization across multiple disconnected precise captures.
-7. Add calibration only after enough independent validation episodes exist.
+1. Do not tune against V3 or V4.
+2. Design a new corpus with additional topologies, host counts, background processes, direct-credential paths, and interventions.
+3. Create topology/scenario-disjoint train/validation/test before model changes.
+4. Obtain additional precise raw PCAP/Zeek captures with disconnected capture groups; avoid label-only shuffled IDS CSVs.
+5. Evaluate public initialization across multiple captures.
+6. Add calibration only after enough independent validation episodes exist.
