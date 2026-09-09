@@ -2,7 +2,7 @@
 
 ## Status
 
-All 36 planned V4 episodes are captured, processed, and validated. No V4 test model prediction has occurred yet.
+All 36 planned V4 episodes are captured, processed, and validated. At this capture milestone no V4 test prediction had occurred; the later frozen evaluations are in `docs/V4_ACTION_RESULTS.md` and `docs/V4_PASSIVE_BRANCH_RESULTS.md`.
 
 Two battery/interruption remnants (`lab_088` and `lab_090`) were quarantined under ignored `_quarantine_*` directories and regenerated from scratch. They are not present in any plan or model dataset.
 

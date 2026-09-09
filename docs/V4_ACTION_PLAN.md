@@ -2,7 +2,7 @@
 
 ## Status
 
-Plan and capture code are implemented. **All 36 V4 episodes are now captured, processed, and validated.** No V4 test model prediction has occurred. See `docs/V4_CAPTURE_RESULTS.md`.
+Plan and capture code are implemented. **All 36 V4 episodes are captured, processed, and validated.** The model protocol was subsequently frozen and evaluated once; see `docs/V4_ACTION_RESULTS.md` and `docs/V4_PASSIVE_BRANCH_RESULTS.md`.
 
 Frozen passive branching checkpoint:
 

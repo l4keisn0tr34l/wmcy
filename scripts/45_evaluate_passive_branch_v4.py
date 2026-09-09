@@ -78,6 +78,11 @@ def build_passive_data(plan_path: Path, episodes: Path, metadata: dict[str, Any]
     return arrays, pd.DataFrame(rows)
 
 
+def normalize(scaler: GraphFeatureScaler, values: np.ndarray) -> np.ndarray:
+    shape = values.shape
+    return scaler.transform(values.reshape(-1, shape[-1])).reshape(shape).astype(np.float32)
+
+
 def predict(model: BranchingGraphRSSM, context: torch.Tensor) -> dict[str, np.ndarray]:
     outputs = []; model.eval()
     with torch.no_grad():
@@ -87,7 +92,7 @@ def predict(model: BranchingGraphRSSM, context: torch.Tensor) -> dict[str, np.nd
 
 def metrics(module: Any, data: dict[str, np.ndarray], audit: pd.DataFrame,
             output: dict[str, np.ndarray], scaler: GraphFeatureScaler) -> dict[str, Any]:
-    target = module.normalize(scaler, data["future_states"])
+    target = normalize(scaler, data["future_states"])
     weights = output["branch_weights"]; decoded = output["decoded"]
     expected = (weights[..., None, None] * decoded).sum(axis=1)
     branch_error = np.abs(decoded - target[:, None]).mean(axis=(2, 3))
@@ -102,8 +107,8 @@ def metrics(module: Any, data: dict[str, np.ndarray], audit: pd.DataFrame,
         alert = pre_lm[probability[pre_lm] >= FROZEN_LM_THRESHOLD]
         episodes.append({"episode_id": episode, "cohort": rows.cohort.iloc[0], "scenario": rows.scenario.iloc[0],
                          "positive_windows": int(labels[indices].sum()), "max_pre_lm_probability": float(probability[pre_lm].max()),
-                         "alert_before_or_at_first_positive": bool(len(alert)),
-                         "first_alert_sample": int(alert[0]) if len(alert) else None})
+                         "alert_before_first_positive_or_any_negative": bool(len(alert)),
+                         "first_operational_alert_sample": int(alert[0]) if len(alert) else None})
     groups = {}
     for cohort, rows in audit.groupby("cohort", sort=False):
         idx = rows.index.to_numpy(); y = labels[idx]; p = probability[idx]
@@ -112,7 +117,7 @@ def metrics(module: Any, data: dict[str, np.ndarray], audit: pd.DataFrame,
                           "oracle_state_mae": float(branch_error[idx].min(axis=1).mean()),
                           "lm_brier": float(np.mean((p-y)**2)),
                           "lm_average_precision": float(average_precision_score(y, p)) if len(np.unique(y)) == 2 else None,
-                          "alerts_by_episode": int(sum(e["alert_before_or_at_first_positive"] for e in episodes if e["cohort"] == cohort))}
+                          "operational_alert_episodes": int(sum(e["alert_before_first_positive_or_any_negative"] for e in episodes if e["cohort"] == cohort))}
     return {
         "samples": len(labels), "positive_windows": int(labels.sum()),
         "expected_state_mae": float(np.abs(expected-target).mean()),
@@ -143,7 +148,9 @@ def main() -> int:
     if output_path.exists(): raise FileExistsError("passive V4 test output already exists")
     checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     if not checkpoint["validation_only"] or checkpoint["v3_test_loaded"]: raise ValueError("checkpoint provenance changed")
-    metadata = checkpoint["feature_metadata"]; module = load_script("passive_v4_base", ROOT / "scripts/10_build_mvp_sequences.py")
+    metadata = checkpoint["feature_metadata"]
+    module = load_script("passive_v4_base", ROOT / "scripts/10_build_mvp_sequences.py")
+    metric_module = load_script("passive_v4_metrics", ROOT / "scripts/15_train_rssm.py")
     data, audit = build_passive_data(Path(args.plan), Path(args.episodes_dir), metadata, module)
     action_dir = Path(args.action_sequences)
     with np.load(action_dir / "test.npz") as loaded: action_data = {name: loaded[name] for name in loaded.files}
@@ -152,10 +159,10 @@ def main() -> int:
     scaler = scaler_from(checkpoint); device = resolve_device(args.device)
     model = BranchingGraphRSSM(**checkpoint["model_config"]).to(device)
     model.load_state_dict(checkpoint["model_state_dict"]); model.eval()
-    passive_context = torch.from_numpy(module.normalize(scaler, data["context_states"])).to(device)
-    action_context = torch.from_numpy(module.normalize(scaler, action_data["context_states"])).to(device)
-    passive_result = metrics(module, data, audit, predict(model, passive_context), scaler)
-    action_result = metrics(module, action_data, action_audit.assign(cohort="action_aligned"),
+    passive_context = torch.from_numpy(normalize(scaler, data["context_states"])).to(device)
+    action_context = torch.from_numpy(normalize(scaler, action_data["context_states"])).to(device)
+    passive_result = metrics(metric_module, data, audit, predict(model, passive_context), scaler)
+    action_result = metrics(metric_module, action_data, action_audit.assign(cohort="action_aligned"),
                             predict(model, action_context), scaler)
     paired = []
     action_probability = predict(model, action_context)["branch_weights"][:, 1]
@@ -168,6 +175,7 @@ def main() -> int:
     report = {
         "scope": "one-shot frozen passive outcome-branch evaluation on fresh V4 cohorts",
         "checkpoint_sha256": CHECKPOINT_SHA256, "training_or_tuning": "none",
+        "execution_note": "two wiring-error retries preceded the first complete report; one failed before prediction and one after tensor prediction but before metrics; neither changed model/protocol",
         "frozen_lm_threshold_from_v3_validation": FROZEN_LM_THRESHOLD,
         "passive_and_direct_sliding_windows": passive_result,
         "pre_action_aligned_contexts_without_action_input": action_result,

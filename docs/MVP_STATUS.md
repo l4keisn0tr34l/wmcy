@@ -1,7 +1,9 @@
 # MVP Status — Predictive Cyber World Model
 
-**Verified:** 2026-09-06  
+**Verified baseline chronology:** 2026-09-06
 **Repository:** `/home/paprika/Documents/153/wm`
+
+> This document preserves detailed V1/V2 chronology. For current V3/V4 findings, including the completed chosen-action and passive-branch evaluations, use `docs/CURRENT_STATE.md`, `docs/V4_ACTION_RESULTS.md`, and `docs/V4_PASSIVE_BRANCH_RESULTS.md`.
 
 ## 1. Objective in plain language
 

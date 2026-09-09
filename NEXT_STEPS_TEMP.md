@@ -2,27 +2,49 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## V4 action test completed once
+## V4 milestone complete
 
-The one-shot action test ran after excluding the timing-invalid `action_7002` family. No retraining/tuning occurred.
+Action and passive evaluations are frozen and inspected. Do not retrain, retune thresholds, or rerun either sealed evaluator.
+
+### Chosen-action model: 10 episodes / five pairs
 
 ```text
-eligible test: 10 episodes / 5 paired families
-scratch: state MAE .0603, active .2327, edge AP1.0, LM F1@.5 1.0, Brier8.91e-7
-Friday:  state MAE .0719, active .2475, edge AP1.0, LM F1@.5 1.0, Brier1.60e-4
-both: pair top1 1.0, factual action lower state error 10/10
+scratch state/active MAE: .0603/.2327
+Friday state/active MAE:  .0719/.2475
+both edge AP / LM AP / pair top1: 1.0 / 1.0 / 1.0
+factual action lower state error: 10/10 for both
 ```
 
-The frozen train-derived thresholds were too extreme: scratch/Friday F1 .750/.889 despite perfect AP. Do not call 10-window ECE calibrated uncertainty. Scratch beat Friday state/active MAE and Brier; edge/pair/F1@.5 tied.
+`lab_090` had only five complete post-action states. The complete `action_7002` family (`lab_089/090`) was excluded using timing only before prediction.
 
-## Current batch: frozen passive branch V4 evaluation
+### Frozen passive branch: 180 windows / 12 episodes
 
-1. Add one no-training evaluator for checkpoint SHA `4f0524...`.
-2. Evaluate all sliding windows from predetermined passive-branching and direct-credential cohorts (`lab_097`–`lab_108`).
-3. Separately evaluate the same 10 pre-action contexts used by the action-test model, but without action input.
-4. Use V3 validation-frozen LM threshold `0.3707732260` and also report threshold-free AP/Brier.
-5. Report expected/oracle/conditioned state coverage, expected edge AP, branch diversity, matched episode alert behavior, and cohort counts.
-6. Do not tune or retrain the passive model and do not rerun the action evaluator.
-7. Document both results, timing exclusion, limitations, report, commit, push.
+```text
+expected/oracle state MAE: .248/.237
+edge AP: .556
+LM F1/AP/Brier: .483/.472/.107
+stopped scan/guess alerted: 3/3
+progressing scan/guess pre-positive alerted: 0/3
+direct credential pre-positive alerted: 0/3
+matched legitimate alerted: 1/3
+```
 
-Do not reopen V3 test.
+On the same 10 pre-action contexts without action: state MAE .141 and LM F1/AP .400/.519. This supports the observability boundary and chosen-action conditioning; it is not calibrated or enterprise evidence.
+
+## Report
+
+```text
+/home/paprika/Downloads/rssm_eod_report.html
+outputs/mvp_v2/report/rssm_eod_report.html
+SHA-256 b341b5a103aef28614731b2f5d14150c5dc9c33dfdbe7668b85b7b511c61e208
+```
+
+## Next work
+
+1. Run final integrity/docs checks, commit, and push this V4 consolidation.
+2. Visually inspect the standalone report in a browser; content/assets checks already pass.
+3. Do not tune against V3 or V4.
+4. Design a new corpus with additional topologies, host counts, background processes, direct-credential paths, and interventions.
+5. Create topology/scenario-disjoint train/validation/test before model changes.
+6. Evaluate public initialization across multiple disconnected precise captures.
+7. Add calibration only after enough independent validation episodes exist.

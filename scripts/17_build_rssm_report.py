@@ -59,6 +59,8 @@ def main() -> int:
     branching = json.loads((ROOT / "outputs/mvp_v3/branching/outcome_two_branch_validation.json").read_text())
     friday = json.loads((ROOT / "outputs/cic2017_friday_pcap/canonical/manifest.json").read_text())
     friday_pretrain = json.loads((ROOT / "outputs/cic2017_friday_pcap/pretraining/fixed_pretraining.json").read_text())
+    v4_action = json.loads((ROOT / "outputs/mvp_v4/action_model/sealed_test.json").read_text())
+    v4_passive = json.loads((ROOT / "outputs/mvp_v4/passive_branch/sealed_test.json").read_text())
     v4_plan = pd.read_csv(ROOT / "configs/mvp_v4_episode_plan.csv")
     replay = json.loads(Path(args.replay).read_text())
     episodes = pd.read_csv(v2 / "episode_manifest.csv")
@@ -85,6 +87,10 @@ def main() -> int:
     branch_lm = branch_validation["exact_lm"]
     branch_interpretation = branch_validation["branch_interpretation"]
     branch_matched = branch_validation["dangerous_precursor_operational_view"]["matched_summary"]
+    action_scratch = v4_action["results"]["scratch"]
+    action_friday = v4_action["results"]["friday_initialized"]
+    passive_v4 = v4_passive["passive_and_direct_sliding_windows"]
+    passive_action = v4_passive["pre_action_aligned_contexts_without_action_input"]
 
     duration_min = episodes.capture_duration_seconds.min()
     duration_max = episodes.capture_duration_seconds.max()
@@ -188,7 +194,7 @@ table{{width:100%;border-collapse:collapse;background:var(--panel);border-radius
 .bar-row{{display:grid;grid-template-columns:120px 1fr 55px;align-items:center;gap:10px;margin:9px 0}}.bar-track{{height:14px;background:#26384d;border-radius:999px;overflow:hidden}}.bar{{height:100%;border-radius:999px}}
 code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@media(max-width:700px){{main{{padding:18px}}h1{{font-size:1.8rem}}.bar-row{{grid-template-columns:95px 1fr 48px}}}}
 </style></head><body><main>
-<span class="badge">Research report</span><span class="badge">Fresh matched V3</span><span class="badge">Explicit future branches</span><span class="badge">Precise Friday PCAP</span>
+<span class="badge">Research report</span><span class="badge">Fresh V4 interventions</span><span class="badge">Explicit future branches</span><span class="badge">Precise Friday PCAP</span>
 <h1>Predictive Cyber World Model</h1>
 <p class="subtitle">A stochastic recurrent graph model that observes 15 seconds of network telemetry and imagines the next 30 seconds before interpreting branching compromise risk.</p>
 
@@ -197,7 +203,9 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <div class="card"><div class="muted">Fresh V3 LM F1 / AP</div><div class="value">{v3_scratch['future_lateral_movement']['test']['f1']:.3f}</div><div>AP {v3_scratch['future_lateral_movement']['test']['average_precision']:.3f} · threshold fixed on validation</div></div>
 <div class="card"><div class="muted">Progressing episodes detected</div><div class="value">{v3_test_episode['progressing_detected_before_first_lm']}/{v3_test_episode['progressing_episodes']}</div><div>Mean exact lead {v3_test_episode['mean_exact_warning_lead_seconds']:.1f}s</div></div>
 <div class="card"><div class="muted">Stopped-prefix episodes alerting</div><div class="value">{v3_test_episode['nonprogressing_episodes_with_any_30s_false_alert']}/{v3_test_episode['nonprogressing_episodes']}</div><div>Shared precursor cannot reveal future controller intent</div></div>
-<div class="card"><div class="muted">Two-branch validation coverage</div><div class="value">{branch_future['oracle_best_branch_mae']:.3f}</div><div>Expected MAE {branch_future['expected_forecast_mae']:.3f} · validation only</div></div>
+<div class="card"><div class="muted">V4 chosen-action state MAE</div><div class="value">{action_scratch['state']['normalized_mae']:.3f}</div><div>Active {action_scratch['state']['active_normalized_mae']:.3f} · scratch sealed test</div></div>
+<div class="card"><div class="muted">V4 factual action preferred</div><div class="value">10/10</div><div>lower state error than opposite action</div></div>
+<div class="card"><div class="muted">V4 passive LM F1 / AP</div><div class="value">{passive_v4['lm_at_frozen_v3_validation_threshold']['f1']:.3f}</div><div>AP {passive_v4['lm_at_frozen_v3_validation_threshold']['average_precision']:.3f} · frozen V3 threshold</div></div>
 <div class="card"><div class="muted">Friday precise-PCAP events</div><div class="value">{friday['canonical_rows'] / 1_000_000:.2f}M</div><div>{friday['capture_packets_read'] / 1_000_000:.2f}M packets · observables only</div></div>
 </div>
 
@@ -317,7 +325,27 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <div class="grid"><div class="card"><div class="muted">Capture packets</div><div class="value">{friday['capture_packets_read']:,}</div><div>{friday['ipv4_packets']:,} IPv4 aggregated</div></div><div class="card"><div class="muted">Canonical one-second events</div><div class="value">{friday['canonical_rows']:,}</div><div>directed five-tuples</div></div><div class="card"><div class="muted">Timestamp inversions</div><div class="value">{friday['timestamp_inversions']:,}</div><div>maximum adjacent reversal {friday['maximum_adjacent_backward_seconds'] * 1_000_000:.0f} μs</div></div><div class="card"><div class="muted">Conversion resources</div><div class="value">80.7s</div><div>47 MB maximum RSS · 64 disk partitions</div></div></div>
 <div class="callout good"><strong>Integrity:</strong> 2,102,560 chronological rows reaggregate exactly 9,915,680 IPv4 packets. Native timestamps retain true microsecond precision, and the output contains no label, ATT&amp;CK, or LM fields.</div>
 <p class="callout"><strong>Graph sequences:</strong> context-only induced-subgraph construction yields 5,775 train-only samples shaped [3,141]→[6,141], with real TCP flags and capture-causal novelty. No validation/test split is fabricated inside this one connected capture.</p>
-<p class="callout"><strong>Fixed dynamics pretraining:</strong> a 358,115-parameter GraphRSSM trained for exactly 100 epochs with semantic weights zero. Its same-data training dynamics expression fell {friday_pretrain['initial_training_objective']['selection']:.3f}→{friday_pretrain['final_training_objective']['selection']:.3f}. This is a candidate initialization—not validation or demonstrated transfer.</p>
+<p class="callout"><strong>Fixed dynamics pretraining:</strong> a 358,115-parameter GraphRSSM trained for exactly 100 epochs with semantic weights zero. Its same-data training dynamics expression fell {friday_pretrain['initial_training_objective']['selection']:.3f}→{friday_pretrain['final_training_objective']['selection']:.3f}. This produced a candidate initialization; the independent V4 comparison below found no benefit over scratch.</p>
+
+<h2>3i. Chosen-action conditioned V4 forecast</h2>
+<p>Two 372,947-parameter ActionGraphRSSMs were frozen using 12 action-train episodes, then evaluated once. One complete permit/block family was excluded before prediction because its block capture contained only five complete future windows; five test pairs remained. The selected action is supplied separately only because it is known before its packet consequences.</p>
+<table><tr><th>Sealed V4 action metric</th><th>Scratch</th><th>Friday initialized</th></tr>
+<tr><td>State / active MAE ↓</td><td><strong>{action_scratch['state']['normalized_mae']:.3f} / {action_scratch['state']['active_normalized_mae']:.3f}</strong></td><td>{action_friday['state']['normalized_mae']:.3f} / {action_friday['state']['active_normalized_mae']:.3f}</td></tr>
+<tr><td>Future-edge AP</td><td>{action_scratch['future_edge']['average_precision']:.3f}</td><td>{action_friday['future_edge']['average_precision']:.3f}</td></tr>
+<tr><td>LM F1 / AP at 0.5</td><td>{action_scratch['lm_fixed_threshold_0_5']['f1']:.3f} / {action_scratch['lm_fixed_threshold_0_5']['average_precision']:.3f}</td><td>{action_friday['lm_fixed_threshold_0_5']['f1']:.3f} / {action_friday['lm_fixed_threshold_0_5']['average_precision']:.3f}</td></tr>
+<tr><td>Pair top-1</td><td>{action_scratch['pair']['top1_accuracy_positive_samples']:.3f}</td><td>{action_friday['pair']['top1_accuracy_positive_samples']:.3f}</td></tr>
+<tr><td>Opposite−factual state MAE</td><td>{action_scratch['same_context_action_effect']['mean_opposite_minus_factual_state_mae']:.3f}</td><td>{action_friday['same_context_action_effect']['mean_opposite_minus_factual_state_mae']:.3f}</td></tr></table>
+<div class="callout good"><strong>Observed intervention result:</strong> the factual permit/block action has lower graph-state error than the opposite action for 10/10 contexts. Both models recover outcome and pair ranks; scratch forecasts state dynamics better, so Friday initialization did not help here.</div>
+<div class="callout"><strong>Threshold warning:</strong> overfit train-derived thresholds reduce test F1 to 0.750/0.889 despite AP 1.000. Fixed-threshold success on 10 samples is not deployment calibration. Action deterministically controls SSH completion in this lab.</div>
+
+<h2>3j. Frozen passive branches on fresh V4</h2>
+<table><tr><th>Passive/direct V4 metric</th><th>Frozen outcome-branch model</th></tr>
+<tr><td>Expected / oracle state MAE</td><td>{passive_v4['expected_state_mae']:.3f} / {passive_v4['oracle_state_mae']:.3f}</td></tr>
+<tr><td>Branch diversity / edge AP</td><td>{passive_v4['branch_state_diversity']:.3f} / {passive_v4['future_edge_average_precision_expected']:.3f}</td></tr>
+<tr><td>LM F1 / AP / Brier</td><td>{passive_v4['lm_at_frozen_v3_validation_threshold']['f1']:.3f} / {passive_v4['lm_at_frozen_v3_validation_threshold']['average_precision']:.3f} / {passive_v4['lm_at_frozen_v3_validation_threshold']['brier']:.3f}</td></tr>
+<tr><td>Same pre-action contexts without action: LM F1 / AP</td><td>{passive_action['lm_at_frozen_v3_validation_threshold']['f1']:.3f} / {passive_action['lm_at_frozen_v3_validation_threshold']['average_precision']:.3f}</td></tr></table>
+<div class="callout bad"><strong>Fresh-test failure:</strong> at the V3-frozen threshold, passive warning alerts on 3/3 stopped scan/guess episodes but 0/3 progressing ones before a positive horizon; it also misses 3/3 direct-credential progressions and alerts on 1/3 matched legitimate episodes. Do not retune against V4.</div>
+<div class="callout good"><strong>Observability result:</strong> alternative branch specialization transfers, but the gate does not recover hidden future decisions. On identical evaluation contexts, supplying the already-chosen action improves scratch state MAE 0.141→0.060 and LM F1 0.400→1.000.</div>
 
 <h2>4. Historical V2 future-state results</h2>
 <p>Lower state MAE is better. All models use the same train-context normalization.</p><div class="card">{state_bars}</div>
@@ -354,15 +382,15 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <h3>Top pair candidates</h3><table><tr><th>Pair</th><th>Score</th></tr>{replay_pairs}</table><p>Actual pair: <strong>{escape(', '.join(replay['actual_lateral_pairs_within_horizon']))}</strong></p>
 
 <h2>8. Interpretation and limitations</h2>
-<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Score-level permutation-equivariant graph forecasts.</li><li>Explicit no-LM/LM future candidates with context-only probabilities.</li><li>Fresh same-prefix stopped/progressing evaluation and a concrete observability boundary.</li><li>Disk-bounded full Friday-PCAP canonicalization.</li></ul></div>
-<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Reliable pair accuracy beyond 18 correlated positive windows.</li><li>Calibrated multimodal uncertainty.</li><li>Exact future intent discrimination from an identical prefix.</li><li>Action-conditioned firewall counterfactual performance; V4 test remains sealed.</li></ul></div></div>
+<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Permutation-equivariant passive and action-conditioned graph forecasts.</li><li>Explicit no-LM/LM future candidates with context-only probabilities.</li><li>Fresh passive alert-transfer failure and a concrete observability boundary.</li><li>Chosen permit/block actions materially improve factual future-state forecasts.</li><li>Disk-bounded full Friday-PCAP canonicalization and an independently tested initializer.</li></ul></div>
+<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Calibrated multimodal uncertainty or action probabilities.</li><li>Exact future intent/intervention discrimination from passive telemetry.</li><li>General firewall-policy effects beyond deterministic TCP/22 lab actions.</li><li>A benefit from Friday initialization on V4; scratch state dynamics won.</li></ul></div></div>
 <p>V3 has 48 controlled episodes and 24 LM events; only six new episodes each form validation/test. Overlapping windows are correlated. Public pretraining uses two capture groups. Test arrays received a pretraining schema/count integrity check, but model predictions occurred only after model/threshold freeze. V3 test is now inspected and must not be tuned further.</p>
 
 <h2>9. Next experiment</h2>
-<p>The frozen 36-episode V4 corpus is now fully captured and validated: 12 action-training episodes, 12 sealed role-balanced permit/block test episodes, three sealed stopped/progressing pairs, and three network-matched legitimate/direct-credential pairs. It contains 828 complete states, 2,559 observations, and 24 recorded interventions. <strong>No V4 test model prediction has occurred.</strong></p>
-<ol><li>Freeze the action-conditioned architecture, initialization comparison, epoch budget, and thresholds using only 12 action-train samples.</li><li>Open the V4 action-test cohort once and report factual plus same-context permit/block counterfactual forecasts.</li><li>Evaluate the already-frozen passive branch checkpoint only on predetermined V4 test rows.</li><li>Compare scratch with the fixed Friday dynamics initializer without test-driven reselection.</li><li>Report that matched capture prefixes differ numerically and avoid randomized-trial claims.</li><li>Do not tune further against the now-inspected V3 test.</li></ol>
+<p>V4 is now frozen and inspected. Its strongest result is not perfect lab LM classification; it is the contrast between weak passive decision recovery and materially better chosen-action-conditioned graph futures. Further V4 threshold or architecture tuning is prohibited.</p>
+<ol><li>Design new train/validation episodes spanning more topologies, host counts, background processes, intervention types, and direct-credential paths.</li><li>Preserve an untouched topology/scenario-level test corpus rather than creating more overlapping windows.</li><li>Train branch gates on broader precursor diversity and evaluate early warning at episode level.</li><li>Test public initialization across multiple precise disconnected captures; Friday lost this one V4 comparison.</li><li>Add uncertainty calibration only with enough independent validation episodes.</li><li>Do not retune against inspected V3 or V4 tests.</li></ol>
 
-<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details include <code>docs/V3_RESULTS.md</code>, <code>docs/BRANCHING_CONTRACT.md</code>, <code>docs/BRANCHING_RESULTS.md</code>, <code>docs/V4_ACTION_PLAN.md</code>, <code>docs/V4_CAPTURE_RESULTS.md</code>, <code>docs/FRIDAY_PCAP_ADAPTER.md</code>, <code>docs/FRIDAY_GRAPH_SEQUENCES.md</code>, <code>docs/FRIDAY_PRETRAINING.md</code>, and the historical V2/RSSM result documents.</p>
+<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details include <code>docs/V3_RESULTS.md</code>, <code>docs/BRANCHING_RESULTS.md</code>, <code>docs/V4_ACTION_MODEL_PROTOCOL.md</code>, <code>docs/V4_ACTION_RESULTS.md</code>, <code>docs/V4_PASSIVE_BRANCH_RESULTS.md</code>, <code>docs/FRIDAY_PCAP_ADAPTER.md</code>, <code>docs/FRIDAY_GRAPH_SEQUENCES.md</code>, <code>docs/FRIDAY_PRETRAINING.md</code>, and the historical V2/RSSM result documents.</p>
 </main></body></html>"""
 
     output = Path(args.out)

@@ -385,3 +385,14 @@ Guardrail: checkpoint hashes and evaluator metrics are fixed before creating tes
 The first test build found that `lab_090` had only five complete post-action states; the frozen action model requires six. Do not pad a partial window, shorten the horizon, or move the intervention backward. Exclude both `lab_089` and `lab_090` so paired permit/block analysis remains symmetric.
 
 Reason: complete capture-bounded state targets are a causal temporal invariant. The exclusion is based solely on action/capture timing and was made before model results existed. The sealed cohort is reduced from six to five pairs and this protocol deviation must remain visible.
+
+
+---
+
+## D040 — Treat failed V4 passive alert transfer as a result, not a tuning target
+
+**Status:** Adopted after one-shot frozen-checkpoint evaluation.
+
+Do not adjust the V3 validation threshold or retrain the passive branch model against V4. Report that it alerted 3/3 stopped scan/guess episodes but 0/3 progressing episodes before a positive horizon, and missed 3/3 direct-credential progressions.
+
+Reason: V4 is a fresh test corpus. Retuning would erase the generalization evidence. The state branches still show outcome specialization and oracle coverage, while the gate and precursor-specific alert behavior do not transfer reliably. Future improvement requires new train/validation episodes and broader scenarios/topologies.

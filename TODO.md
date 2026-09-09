@@ -25,7 +25,7 @@
 
 - [x] Convert `run_episode.sh` into parameterized scenario generation.
 - [x] Implement benign-ping, legitimate-SSH, scan-only, failed-guessing, one-hop, and two-hop scenario branches.
-- [x] Add valid-credential malicious SSH scenario support without prior scan (V4 capture pending).
+- [x] Add and evaluate valid-credential malicious SSH scenarios without prior scan.
 - [x] Randomize action timing, baseline length, and attempt count from a recorded seed.
 - [x] Randomize actor/pivot/target host roles.
 - [x] Audit fixed-IP, role, timing, capture-length, and model shortcut risks (`docs/SHORTCUT_AUDIT.md`).
@@ -43,7 +43,7 @@
 - [x] Build V4 action-train-only intervention-aligned sequences with an explicit test lock.
 - [x] Freeze scratch/Friday action-model settings, checkpoints, hashes, thresholds, and evaluator before V4 test access.
 - [x] Build/unlock V4 action test once and run the frozen two-model evaluation; exclude one complete timing-invalid pair before prediction.
-- [ ] Evaluate the already-frozen passive branch model once on predetermined V4 passive/direct and pre-action rows.
+- [x] Evaluate the already-frozen passive branch model once on predetermined V4 passive/direct and pre-action rows; document failed early-warning transfer.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.
@@ -63,7 +63,7 @@
 - [x] Canonicalize the full Friday PCAPNG with a disk-bounded, order-independent adapter.
 - [x] Define/build causal context-only three-host induced graph sequences for Friday.
 - [x] Pretrain Friday dynamics with fixed settings and no fabricated in-capture validation.
-- [ ] Evaluate Friday initialization transfer only under the frozen V4 action-training/test protocol.
+- [x] Evaluate Friday initialization under the frozen V4 action protocol; record that scratch won sealed state dynamics.
 - [ ] Add CSE-CIC-IDS2018 adapter where useful.
 - [ ] Version MITRE Enterprise ATT&CK STIX locally.
 - [ ] Validate technique/tactic IDs automatically against that version.
@@ -125,13 +125,13 @@
 - [x] Show ATT&CK interpretation derived from predicted future latent states.
 - [x] Show model score, validation-selected threshold, forecast horizon, and non-calibration warning.
 - [x] Generate a selected held-out V2 RSSM HTML/JSON replay with uncertainty and explicit selection disclosure.
-- [x] Generate a standalone senior-facing HTML report with inline pipeline/RSSM diagrams and verified metrics.
+- [x] Regenerate the standalone senior-facing HTML report with complete V4 action/passive results and inline diagrams.
 - [ ] Visually inspect/polish and freeze the judge-facing HTML replay/report.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 
 ## LATER — only after predictive model is credible
 
-- [x] Define V4 action records/splits for defensive-action conditioning `P(S_(t+1)|S_t,a_t)` (capture pending).
-- [ ] Train/evaluate counterfactual defensive rollouts only after V4 action data is captured.
+- [x] Define V4 action records/splits for defensive-action conditioning `P(S_(t+1)|S_t,a_t)`.
+- [x] Train/evaluate chosen-action-conditioned rollouts under a frozen V4 protocol; retain counterfactual caveats.
 - [ ] Consider policy/control layer; do not let RL replace the world model.
