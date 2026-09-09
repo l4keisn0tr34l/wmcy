@@ -315,3 +315,15 @@ V4 records `permit_ssh`/`block_ssh` in `defender_actions.csv`, separate from pas
 Reason: identical dangerous prefixes can diverge because of an explicit defender decision. Without the action variable, the passive process is genuinely multimodal; with it, counterfactual rollouts can ask what changes under permit versus block.
 
 Guardrail: a blocked valid-credential SSH is `Lateral Movement Attempt`, not completed LM. Action train/test pairs use fresh disjoint seeds and both cover all six host-role permutations. The frozen passive branch checkpoint cannot be changed after V4 test capture is inspected.
+
+---
+
+## D034 — Partition precise PCAP by time bucket before aggregation
+
+**Status:** Accepted and verified on full Friday capture.
+
+Use fixed-width disk partitions selected by `bucket_index mod P`, aggregate each partition independently, then sort/k-way merge. Parse integer PCAP/PCAPNG timestamps directly rather than converting through float.
+
+Reason: all packets for a directed five-tuple bucket land together even when capture records are out of order, while peak memory is bounded by one partition. Full Friday conversion processed 9,997,874 packets in 1m20.72s at 47,480 KB maximum RSS.
+
+Guardrail: output is observable IPv4 packet-derived telemetry only. CIC labels remain separate; bucket duration is not whole-connection duration; Ethernet/IPv4 parser limitations are explicit.

@@ -357,6 +357,21 @@ This loads V3 validation only and writes coverage/diversity/calibration diagnost
 
 This loads only V3 train/validation. `--resume-candidates` reuses compatible per-seed checkpoints after an interrupted post-training audit. Do not use that flag after changing model/loss settings.
 
+## Friday PCAPNG canonicalization
+
+```bash
+.venv/bin/python scripts/37_canonicalize_pcap_scalable.py \
+  /home/paprika/Documents/153/ds/Friday-WorkingHours.pcap \
+  --dataset-id cicids2017_friday_working_hours_pcap \
+  --bucket-seconds 1 --partitions 64 \
+  --out outputs/cic2017_friday_pcap/canonical/observations.csv.gz \
+  --manifest outputs/cic2017_friday_pcap/canonical/manifest.json
+
+.venv/bin/python scripts/38_test_scalable_pcap_adapter.py
+```
+
+Use `--max-packets 100000` for a bounded smoke test. Existing outputs are protected unless `--force` is explicit. Labels are never read.
+
 ## V4 plan validation and interactive capture
 
 ```bash

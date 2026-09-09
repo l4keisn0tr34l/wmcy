@@ -710,7 +710,11 @@ Loads V3 train/validation only. An invariant context latent predicts two outcome
 
 `run_episode.sh` writes chosen defender actions to separate `defender_actions.csv`. Permit/block action scenarios align the decision after a five-second boundary, enabling a context that ends before the intervention. `35_validate_v4_plan.py` validates pair/split/role invariants before capture; `36_validate_v4_actions.py` validates action timing and completed-versus-attempted LM semantics afterward. No V4 data exists yet.
 
-# 39. Where each datapoint resides
+# 39. `37_canonicalize_pcap_scalable.py` + `38_test_scalable_pcap_adapter.py`
+
+Streams classic PCAP/PCAPNG through fixed-width disk partitions, aggregates complete one-second directed 5-tuples despite packet-order inversions, and k-way merges chronological observable events. Full Friday conversion produces 2,102,560 events with no labels. The regression script matches the small Scapy adapter's packet/byte/flag aggregates while preserving exact microsecond ticks. See `docs/FRIDAY_PCAP_ADAPTER.md`.
+
+# 40. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -780,7 +784,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 40. What will actually be fed to the model
+# 41. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -816,7 +820,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 41. How this becomes a world model
+# 42. How this becomes a world model
 
 After the state layer is correct:
 

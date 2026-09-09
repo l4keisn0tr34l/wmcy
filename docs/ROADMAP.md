@@ -194,7 +194,7 @@ Potential addition:
 
 temporal contrastive loss so the history representation is closer to the true next state than unrelated future negatives.
 
-Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground truth is weak.
+Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground truth is weak. The full precise Friday PCAPNG is now available as 2,102,560 observable one-second events through a 47 MB-RSS disk-bounded adapter; causal many-host graph construction remains next.
 
 ---
 

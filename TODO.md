@@ -25,7 +25,7 @@
 
 - [x] Convert `run_episode.sh` into parameterized scenario generation.
 - [x] Implement benign-ping, legitimate-SSH, scan-only, failed-guessing, one-hop, and two-hop scenario branches.
-- [ ] Add valid-credential malicious SSH movement without prior scan.
+- [x] Add valid-credential malicious SSH scenario support without prior scan (V4 capture pending).
 - [x] Randomize action timing, baseline length, and attempt count from a recorded seed.
 - [x] Randomize actor/pivot/target host roles.
 - [x] Audit fixed-IP, role, timing, capture-length, and model shortcut risks (`docs/SHORTCUT_AUDIT.md`).
@@ -56,6 +56,8 @@
 - [x] Add a leakage-safe temporal canonical adapter for original host-rich UNSW-NB15 files.
 - [x] Build context-only, anonymized UNSW induced-subgraph dynamics sequences.
 - [x] Evaluate observable-only UNSW graph-dynamics pretraining and controlled semantic fine-tuning.
+- [x] Canonicalize the full Friday PCAPNG with a disk-bounded, order-independent adapter.
+- [ ] Define a causal many-host roster/state contract for the 2,102,560 Friday events.
 - [ ] Add CSE-CIC-IDS2018 adapter where useful.
 - [ ] Version MITRE Enterprise ATT&CK STIX locally.
 - [ ] Validate technique/tactic IDs automatically against that version.
@@ -124,6 +126,6 @@
 
 ## LATER — only after predictive model is credible
 
-- [ ] Consider defensive-action conditioning `P(S_(t+1)|S_t,a_t)`.
-- [ ] Consider counterfactual defensive rollouts.
+- [x] Define V4 action records/splits for defensive-action conditioning `P(S_(t+1)|S_t,a_t)` (capture pending).
+- [ ] Train/evaluate counterfactual defensive rollouts only after V4 action data is captured.
 - [ ] Consider policy/control layer; do not let RL replace the world model.

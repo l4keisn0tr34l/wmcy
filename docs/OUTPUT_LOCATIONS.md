@@ -168,6 +168,7 @@ docs/GPU_EXECUTION.md
 docs/BRANCHING_CONTRACT.md
 docs/BRANCHING_RESULTS.md
 docs/V4_ACTION_PLAN.md
+docs/FRIDAY_PCAP_ADAPTER.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -194,6 +195,15 @@ models/mvp_v3_outcome_branching_graph_rssm_validation.pt
 ```
 
 See `docs/BRANCHING_CONTRACT.md` and `docs/BRANCHING_RESULTS.md`. V3 test is not loaded.
+
+## Friday precise-PCAP canonical output
+
+```text
+outputs/cic2017_friday_pcap/canonical/observations.csv.gz
+outputs/cic2017_friday_pcap/canonical/manifest.json
+```
+
+See `docs/FRIDAY_PCAP_ADAPTER.md`.
 
 ## V4 intervention plan (not captured yet)
 
