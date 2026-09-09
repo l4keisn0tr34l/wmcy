@@ -363,3 +363,15 @@ For each action episode, use the three complete five-second states ending at the
 Reason: all recorded actions begin about 0.21 seconds after a five-second boundary, so passive context excludes action/result packets while the first target captures the intervention and SSH result.
 
 Guardrail: action type/pair is known input; outcome and scenario truth are not. Test episode reading requires an explicit unlock after model settings freeze. Matched captures are not identical (train paired context normalized MAE mean 0.164), so causal claims must remain qualified.
+
+---
+
+## D038 — Carry scratch and Friday action models to V4 test without selection
+
+**Status:** Frozen before V4 action-test access.
+
+Train both ActionGraphRSSM initializations for exactly 400 epochs with seed 43001, full batch 12, and Adam 3e-4. Do not choose a winner from training fit; report both once on the sealed action-test pairs.
+
+Reason: V4 has no independent action validation split, and training objectives cannot establish transfer. Carrying both models preserves the prespecified scratch-versus-public-initialization comparison without test-driven selection.
+
+Guardrail: checkpoint hashes and evaluator metrics are fixed before creating test arrays. Report fixed 0.5 and frozen train-derived LM thresholds, graph-state effects as well as semantics, and paired-prefix mismatch.

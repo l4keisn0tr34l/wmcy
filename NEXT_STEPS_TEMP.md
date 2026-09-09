@@ -2,32 +2,39 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## V4 capture verified
+## Frozen V4 action protocol
 
-All 36 planned `lab_073`–`lab_108` raw and derived episode files exist. General episode validation plus V4 action semantics pass for 36/36. Containers have no residual firewall rules. Corpus totals:
+The action model and evaluator are complete using V4 action train only. V4 test arrays still do not exist.
 
 ```text
-episodes:          36
-five-second states:828 (23 each)
-observations:      2,559
-ATT&CK events:     90
-chosen actions:    24
-zero-traffic states:399
-capture duration:  ~120.007–120.014 s
+architecture: ActionGraphRSSM, 372,947 parameters
+train samples: 12
+protocol: seed43001, batch12, Adam3e-4, exactly400 epochs
+selection: none; carry both candidates
 ```
 
-The pandas `metadata.pivot` validator bug was fixed to bracket-based column access; it was not a data error.
+Frozen checkpoints:
 
-## Current batch: V4 action-train sequences only
+```text
+scratch SHA-256:
+f69ece2d24ac07593d35666a83ea52ef8a768d1f51d4dcab13e7c1dc9f1c876f
 
-1. Add `scripts/42_build_v4_action_sequences.py`.
-2. Default to `--split train`; load only the 12 V4 action-training episode directories.
-3. Require explicit `--unlock-test` before any V4 action-test episode can be read.
-4. For each action, use the three complete five-second states ending immediately before the intervention boundary.
-5. Put the action/result window and next five windows in the six-state target.
-6. Emit observable context plus separately known action type `[permit,block]` and action directed-pair one-hot.
-7. Emit future graph/edge/LM/ATT&CK/pair targets separately.
-8. Assert no completed LM in context, action time is about 0.2 s after the future grid boundary, action precedes SSH outcome, permit completes LM, and block records attempt but not completion.
-9. Preserve graph feature contract and host/pair equivariance; action-pair augmentation must later follow host relabeling.
-10. Write train arrays/audit atomically and inspect shapes/finiteness/pair balance.
-11. Do not load, build, or predict on the 12 action-test or 12 passive/direct test episodes yet.
+Friday initialized SHA-256:
+6b4cf070da873f04cd1fecb17cf351b9f9ba07bcbf45275b80aa69a8b100e351
+```
+
+Train-only state MAE scratch/Friday is 0.047/0.043; active MAE 0.157/0.108. Both perfectly fit train LM/edge/pair targets and strongly separate permit/block risk. This is overfit training evidence only.
+
+## Next batch: one-shot action-test unlock
+
+Only after the protocol/evaluator commit:
+
+1. Run `scripts/42_build_v4_action_sequences.py --split test --unlock-test` once.
+2. Inspect only schema/finiteness/counts before prediction.
+3. Run `scripts/44_evaluate_action_graph_rssm_v4.py --device cuda` once.
+4. Do not rerun/tune either model against resulting test metrics.
+5. Document factual state/edge/LM/pair results, action-effect direction, factual-versus-opposite state error, initialization trade-off, and six-pair limitation.
+6. Then build/evaluate the already-frozen passive outcome-branch model on predetermined V4 passive/direct/action test rows under a separately frozen script.
+7. Regenerate report, commit, and push.
+
+Do not reopen V3 test.

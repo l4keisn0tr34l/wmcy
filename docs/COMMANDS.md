@@ -397,7 +397,14 @@ The script enforces seed 41001, batch 128, 100 epochs, and learning rate 3e-4. I
 .venv/bin/python scripts/42_build_v4_action_sequences.py --split train
 ```
 
-All 36 captures pass. The sequence builder loads action-train episodes only by default. `--split test` intentionally fails unless `--unlock-test` is supplied after model/protocol freeze.
+All 36 captures pass. The sequence builder loads action-train episodes only by default. Freeze both action models and verify the sealed evaluator before test unlock:
+
+```bash
+.venv/bin/python scripts/43_train_action_graph_rssm_v4.py --device cuda
+.venv/bin/python scripts/44_evaluate_action_graph_rssm_v4.py --protocol-check-only
+```
+
+`--split test` intentionally fails unless `--unlock-test` is supplied after this protocol is committed.
 
 ## V3 matched hard-negative plan
 

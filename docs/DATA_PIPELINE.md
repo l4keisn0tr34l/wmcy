@@ -726,7 +726,15 @@ Loads Friday train only and enforces seed 41001, CUDA batch128, Adam3e-4, and ex
 
 Defaults to V4 action train and refuses test access without an explicit unlock. It extracts three passive states ending at the intervention grid boundary, separate chosen action type/pair inputs, and six future graph/edge/security targets. Train output contains 12 balanced intervention samples. See `docs/V4_CAPTURE_RESULTS.md`.
 
-# 43. Where each datapoint resides
+# 43. `43_train_action_graph_rssm_v4.py` + `src/cyberwm/action_graph_rssm.py`
+
+Loads V4 action train only and fits two fixed-protocol action-conditioned graph models from scratch and Friday initialization. Action type/pair shifts graph latents equivariantly before rollout. Both checkpoints are frozen without winner selection. See `docs/V4_ACTION_MODEL_PROTOCOL.md`.
+
+# 44. `44_evaluate_action_graph_rssm_v4.py`
+
+Verifies frozen checkpoint hashes before one-shot test access. The pre-unlock protocol check requires test arrays to be absent. Its fixed contract covers state/edge/LM/pair prediction, same-context action effects, factual-versus-opposite state error, and host/action-pair equivariance.
+
+# 45. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -796,7 +804,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 44. What will actually be fed to the model
+# 46. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -832,7 +840,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 45. How this becomes a world model
+# 47. How this becomes a world model
 
 After the state layer is correct:
 

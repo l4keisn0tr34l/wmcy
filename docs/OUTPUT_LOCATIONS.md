@@ -169,6 +169,7 @@ docs/BRANCHING_CONTRACT.md
 docs/BRANCHING_RESULTS.md
 docs/V4_ACTION_PLAN.md
 docs/V4_CAPTURE_RESULTS.md
+docs/V4_ACTION_MODEL_PROTOCOL.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
 docs/FRIDAY_PRETRAINING.md
@@ -222,6 +223,10 @@ lab/episodes/lab_073 ... lab_108
 outputs/mvp_v4/action_sequences/train.npz
 outputs/mvp_v4/action_sequences/train_sample_manifest.csv
 outputs/mvp_v4/action_sequences/train_feature_metadata.json
+outputs/mvp_v4/action_model/train_protocol.json
+outputs/mvp_v4/action_model/checkpoint_hashes.json
+models/mvp_v4_action_graph_rssm_scratch.pt
+models/mvp_v4_action_graph_rssm_friday_initialized.pt
 ```
 
 All captures validate. V4 test arrays do not exist yet. See `docs/V4_ACTION_PLAN.md` and `docs/V4_CAPTURE_RESULTS.md`.

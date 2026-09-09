@@ -41,7 +41,9 @@
 - [x] Interactively rebuild the lab and capture/process `lab_073`–`lab_108`.
 - [x] Validate all V4 action timing and completed-versus-attempted LM semantics.
 - [x] Build V4 action-train-only intervention-aligned sequences with an explicit test lock.
-- [ ] Freeze action-model settings before opening the V4 action-test cohort; evaluate the passive branch model only on V4 test rows.
+- [x] Freeze scratch/Friday action-model settings, checkpoints, hashes, thresholds, and evaluator before V4 test access.
+- [ ] Build/unlock V4 action test once and run the frozen two-model evaluation.
+- [ ] Evaluate the already-frozen passive branch model only on predetermined V4 test rows.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.
