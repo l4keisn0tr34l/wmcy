@@ -339,6 +339,14 @@ Public semantic loss weights are zero; V2 test loads only after public and lab-v
 
 Primary training scripts default to `--device auto`. Use larger prespecified batches on this small model; batch 32 is slower on the RTX 3050. See `docs/GPU_EXECUTION.md`.
 
+## Branch-aware validation contract
+
+```bash
+.venv/bin/python scripts/33_evaluate_branching_contract.py --device cuda
+```
+
+This loads V3 validation only and writes coverage/diversity/calibration diagnostics. Oracle best-branch MAE is coverage, not deployable point accuracy.
+
 ## V3 matched hard-negative plan
 
 ```bash

@@ -210,4 +210,6 @@ The paired result exposes an observability boundary: a future scenario-controlle
 
 CUDA execution is now verified on the local RTX 3050. PyTorch 2.9.1+cu128, device-portable training, finite backward gradients, and graph equivariance all pass. Batch 128 is 1.78× faster per forward/backward step with only ~202 MB peak allocated VRAM; batch 32 is slightly slower than CPU, so future GPU runs should use larger prespecified batches. See `docs/GPU_EXECUTION.md`.
 
+A validation-only branch-aware contract is implemented. Twenty ordinary RSSM draws improve expected-to-oracle state MAE only 0.325→0.313, with pairwise diversity 0.034 and mean LM draw spread 0.011. Best-draw assignments use 18.2 effective draws, indicating diffuse perturbations rather than two interpretable futures. Exact-LM Brier/ECE are 0.205/0.229. See `docs/BRANCHING_CONTRACT.md`.
+
 See `docs/MVP_STATUS.md` for full details.

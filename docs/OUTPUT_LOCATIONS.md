@@ -165,6 +165,7 @@ docs/PUBLIC_PRETRAINING_RESULTS.md
 docs/V3_HARD_NEGATIVE_PLAN.md
 docs/V3_RESULTS.md
 docs/GPU_EXECUTION.md
+docs/BRANCHING_CONTRACT.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -179,6 +180,14 @@ outputs/mvp_v3/graph_rssm/unsw_pretrained_episode_alerts.csv
 models/mvp_v3_graph_rssm_scratch.pt
 models/mvp_v3_graph_rssm_unsw_pretrained.pt
 ```
+
+## Branch-aware validation
+
+```text
+outputs/mvp_v3/branching/contract_baseline_validation.json
+```
+
+See `docs/BRANCHING_CONTRACT.md`. V3 test is not loaded.
 
 ## Hardware validation
 

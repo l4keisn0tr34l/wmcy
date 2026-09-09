@@ -694,7 +694,15 @@ Fits preprocessing on V3 train only and compares matched scratch versus public-d
 
 Post-selection only: compares episode-level maximum risk and alerts within same-seed stopped/progressing pairs. It changes no model or threshold and exposes whether the passive prefix identifies eventual controller action.
 
-# 35. Where each datapoint resides
+# 35. `32_test_torch_devices.py`
+
+Loads V3 train only and validates CPU/CUDA deterministic parity, graph equivariance, finite gradients, peak VRAM, and forward/backward speed. It cannot consume validation/test evidence.
+
+# 36. `33_evaluate_branching_contract.py` + `src/cyberwm/branch_metrics.py`
+
+Loads V3 validation only and treats existing stochastic rollouts as uniformly weighted candidate futures. It separates inference-weighted forecast error from oracle coverage, audits diversity/utilization, reports exact-outcome proper scores/calibration, and separately summarizes stopped/progressing precursor alert burden.
+
+# 37. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -764,7 +772,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 36. What will actually be fed to the model
+# 38. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -800,7 +808,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 37. How this becomes a world model
+# 39. How this becomes a world model
 
 After the state layer is correct:
 
