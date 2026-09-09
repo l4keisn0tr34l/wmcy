@@ -218,4 +218,6 @@ V4 is now specified but not captured: 36 fresh equal-duration episodes, includin
 
 The full 8.839 GB Friday PCAPNG is now canonicalized by a native disk-bounded adapter: 9,997,874 packets, 9,915,680 IPv4 packets, 7,094 small timestamp inversions, and 2,102,560 chronological directed one-second events in 1m20.72s with 47 MB maximum RSS. Labels remain absent/separate. See `docs/FRIDAY_PCAP_ADAPTER.md`.
 
+The standalone senior report now includes explicit branching, V4 protocol, and Friday scale evidence. Current report SHA-256: `7c62926c14e3053663e90cffc622668dd3877dfc4b1af53bd81da203bddd1b5a`.
+
 See `docs/MVP_STATUS.md` for full details.

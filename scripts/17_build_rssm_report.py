@@ -55,6 +55,10 @@ def main() -> int:
     public_graph = json.loads((v2 / "graph_rssm/public_pretraining.json").read_text())
     v3 = json.loads((ROOT / "outputs/mvp_v3/graph_rssm/comparison.json").read_text())
     v3_pairs = json.loads((ROOT / "outputs/mvp_v3/graph_rssm/paired_prefix_audit.json").read_text())
+    branch_contract = json.loads((ROOT / "outputs/mvp_v3/branching/contract_baseline_validation.json").read_text())
+    branching = json.loads((ROOT / "outputs/mvp_v3/branching/outcome_two_branch_validation.json").read_text())
+    friday = json.loads((ROOT / "outputs/cic2017_friday_pcap/canonical/manifest.json").read_text())
+    v4_plan = pd.read_csv(ROOT / "configs/mvp_v4_episode_plan.csv")
     replay = json.loads(Path(args.replay).read_text())
     episodes = pd.read_csv(v2 / "episode_manifest.csv")
 
@@ -75,6 +79,11 @@ def main() -> int:
     v3_public = v3["results"]["unsw_pretrained"]
     v3_test_episode = v3_scratch["episode_alert_summary"]["splits"]["test"]
     v3_pair_test = v3_pairs["regimes"]["scratch"]["summary"]["test"]
+    branch_validation = branching["validation"]
+    branch_future = branch_validation["future_graph"]
+    branch_lm = branch_validation["exact_lm"]
+    branch_interpretation = branch_validation["branch_interpretation"]
+    branch_matched = branch_validation["dangerous_precursor_operational_view"]["matched_summary"]
 
     duration_min = episodes.capture_duration_seconds.min()
     duration_max = episodes.capture_duration_seconds.max()
@@ -178,7 +187,7 @@ table{{width:100%;border-collapse:collapse;background:var(--panel);border-radius
 .bar-row{{display:grid;grid-template-columns:120px 1fr 55px;align-items:center;gap:10px;margin:9px 0}}.bar-track{{height:14px;background:#26384d;border-radius:999px;overflow:hidden}}.bar{{height:100%;border-radius:999px}}
 code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@media(max-width:700px){{main{{padding:18px}}h1{{font-size:1.8rem}}.bar-row{{grid-template-columns:95px 1fr 48px}}}}
 </style></head><body><main>
-<span class="badge">Research report</span><span class="badge">Fresh matched V3</span><span class="badge">Graph RSSM</span>
+<span class="badge">Research report</span><span class="badge">Fresh matched V3</span><span class="badge">Explicit future branches</span><span class="badge">Precise Friday PCAP</span>
 <h1>Predictive Cyber World Model</h1>
 <p class="subtitle">A stochastic recurrent graph model that observes 15 seconds of network telemetry and imagines the next 30 seconds before interpreting branching compromise risk.</p>
 
@@ -187,6 +196,8 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <div class="card"><div class="muted">Fresh V3 LM F1 / AP</div><div class="value">{v3_scratch['future_lateral_movement']['test']['f1']:.3f}</div><div>AP {v3_scratch['future_lateral_movement']['test']['average_precision']:.3f} · threshold fixed on validation</div></div>
 <div class="card"><div class="muted">Progressing episodes detected</div><div class="value">{v3_test_episode['progressing_detected_before_first_lm']}/{v3_test_episode['progressing_episodes']}</div><div>Mean exact lead {v3_test_episode['mean_exact_warning_lead_seconds']:.1f}s</div></div>
 <div class="card"><div class="muted">Stopped-prefix episodes alerting</div><div class="value">{v3_test_episode['nonprogressing_episodes_with_any_30s_false_alert']}/{v3_test_episode['nonprogressing_episodes']}</div><div>Shared precursor cannot reveal future controller intent</div></div>
+<div class="card"><div class="muted">Two-branch validation coverage</div><div class="value">{branch_future['oracle_best_branch_mae']:.3f}</div><div>Expected MAE {branch_future['expected_forecast_mae']:.3f} · validation only</div></div>
+<div class="card"><div class="muted">Friday precise-PCAP events</div><div class="value">{friday['canonical_rows'] / 1_000_000:.2f}M</div><div>{friday['capture_packets_read'] / 1_000_000:.2f}M packets · observables only</div></div>
 </div>
 
 <h2>1. What this system does</h2>
@@ -287,6 +298,25 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <div class="grid"><div class="card"><div class="muted">Stopped mean max risk</div><div class="value">{v3_pair_test['mean_stopped_max_probability']:.3f}</div></div><div class="card"><div class="muted">Progress mean max risk</div><div class="value">{v3_pair_test['mean_progress_max_probability']:.3f}</div></div><div class="card"><div class="muted">Mean absolute pair gap</div><div class="value">{v3_pair_test['mean_absolute_pair_probability_difference']:.4f}</div></div></div>
 <div class="callout bad"><strong>Observed observability boundary:</strong> both models detect all 3 progressing episodes and alert on all 3 stopped episodes. At the shared prefix, the later scenario-controller SSH decision is absent from passive telemetry. This is a branching-risk problem, not deterministic intent recovery.</div>
 
+<h2>3g. Explicit outcome-conditioned future branches</h2>
+<p>A 372,197-parameter equivariant model now emits two six-step graph futures: no LM within 30 seconds and LM within 30 seconds. The context graph alone determines branch weights. Future LM truth chooses the realized branch in the training loss but is never inference input. The model was developed on V3 train/validation only; V3 test was not reopened.</p>
+<table><tr><th>V3 validation metric</th><th>Ordinary RSSM, 20 draws</th><th>Outcome two-branch</th></tr>
+<tr><td>Expected state MAE ↓</td><td>{branch_contract['future_graph']['expected_forecast_mae']:.3f}</td><td>{branch_future['expected_forecast_mae']:.3f}</td></tr>
+<tr><td>Oracle best-candidate MAE ↓</td><td>{branch_contract['future_graph']['oracle_best_branch_mae']:.3f}</td><td><strong>{branch_future['oracle_best_branch_mae']:.3f}</strong></td></tr>
+<tr><td>Candidate diversity</td><td>{branch_contract['future_graph']['mean_pairwise_branch_mae']:.3f}</td><td><strong>{branch_future['mean_pairwise_branch_mae']:.3f}</strong></td></tr>
+<tr><td>Future-edge AP ↑</td><td><strong>{branch_contract['future_graph']['future_edge']['average_precision']:.3f}</strong></td><td>{branch_future['future_edge']['average_precision']:.3f}</td></tr>
+<tr><td>Exact-LM AP ↑</td><td>{branch_contract['exact_lm_within_30_seconds']['calibration']['average_precision']:.3f}</td><td><strong>{branch_lm['calibration']['average_precision']:.3f}</strong></td></tr>
+<tr><td>Exact-LM Brier / diagnostic ECE ↓</td><td>{branch_contract['exact_lm_within_30_seconds']['calibration']['brier']:.3f} / {branch_contract['exact_lm_within_30_seconds']['calibration']['expected_calibration_error']:.3f}</td><td><strong>{branch_lm['calibration']['brier']:.3f} / {branch_lm['calibration']['expected_calibration_error']:.3f}</strong></td></tr></table>
+<p>For LM-positive targets, active-feature MAE improves from {branch_interpretation['active_state_mae_by_branch_and_outcome'][0][1]:.3f} in the no-LM branch to <strong>{branch_interpretation['active_state_mae_by_branch_and_outcome'][1][1]:.3f}</strong> in the LM branch; positive-future edge AP improves {branch_interpretation['future_edge_ap_by_branch_and_outcome'][0][1]:.3f}→<strong>{branch_interpretation['future_edge_ap_by_branch_and_outcome'][1][1]:.3f}</strong>. Quiet-entry error worsens, showing that the LM branch predicts additional activity rather than winning by copying zeros.</p>
+<div class="callout"><strong>Correct interpretation:</strong> oracle MAE measures candidate-set coverage, not deployable point accuracy. Conditional semantic heads approach 0/1 because branch meaning is supervised. Brier/ECE come from 90 correlated validation windows and are not deployment calibration evidence.</div>
+<div class="callout bad"><strong>Hidden intent remains:</strong> the branch model still alerts on {int(branch_matched['stopped_episode_alert_fraction'] * branch_matched['pairs'])}/{branch_matched['pairs']} stopped and {int(branch_matched['progress_episode_alert_fraction'] * branch_matched['pairs'])}/{branch_matched['pairs']} progressing validation episodes. Explicit alternatives do not reveal a future controller decision absent from packets.</div>
+
+<h2>3h. Public dynamics scale: full Friday PCAPNG</h2>
+<p>A native disk-bounded adapter parsed the complete 8.839 GB capture, including out-of-order records, without loading all flow keys into memory.</p>
+<div class="grid"><div class="card"><div class="muted">Capture packets</div><div class="value">{friday['capture_packets_read']:,}</div><div>{friday['ipv4_packets']:,} IPv4 aggregated</div></div><div class="card"><div class="muted">Canonical one-second events</div><div class="value">{friday['canonical_rows']:,}</div><div>directed five-tuples</div></div><div class="card"><div class="muted">Timestamp inversions</div><div class="value">{friday['timestamp_inversions']:,}</div><div>maximum adjacent reversal {friday['maximum_adjacent_backward_seconds'] * 1_000_000:.0f} μs</div></div><div class="card"><div class="muted">Conversion resources</div><div class="value">80.7s</div><div>47 MB maximum RSS · 64 disk partitions</div></div></div>
+<div class="callout good"><strong>Integrity:</strong> 2,102,560 chronological rows reaggregate exactly 9,915,680 IPv4 packets. Native timestamps retain true microsecond precision, and the output contains no label, ATT&amp;CK, or LM fields.</div>
+<p class="callout"><strong>Scope:</strong> this data adds realistic graph/TCP dynamics and hard-negative diversity. It does not provide clean multi-stage LM truth. A context-only many-host roster contract is still required before graph sequence pretraining.</p>
+
 <h2>4. Historical V2 future-state results</h2>
 <p>Lower state MAE is better. All models use the same train-context normalization.</p><div class="card">{state_bars}</div>
 <table><tr><th>State subset</th><th>RSSM</th><th>PCA/Ridge</th><th>Persistence</th></tr>
@@ -322,14 +352,15 @@ code{{color:#a7f3d0}}.foot{{font-size:.9rem;color:var(--muted);margin-top:3em}}@
 <h3>Top pair candidates</h3><table><tr><th>Pair</th><th>Score</th></tr>{replay_pairs}</table><p>Actual pair: <strong>{escape(', '.join(replay['actual_lateral_pairs_within_horizon']))}</strong></p>
 
 <h2>8. Interpretation and limitations</h2>
-<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Score-level permutation-equivariant graph forecasts.</li><li>Fresh same-prefix stopped/progressing evaluation.</li><li>A concrete passive-telemetry observability boundary.</li></ul></div>
-<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Reliable pair accuracy beyond 18 correlated positive windows.</li><li>Calibrated multimodal uncertainty.</li><li>Exact future intent discrimination from an identical prefix.</li><li>Action-conditioned firewall counterfactuals.</li></ul></div></div>
+<div class="grid"><div class="card"><h3>What was demonstrated</h3><ul><li>Chronological graph-state modeling rather than shuffled flow classification.</li><li>Posterior latent inference followed by genuine six-step prior imagination.</li><li>Score-level permutation-equivariant graph forecasts.</li><li>Explicit no-LM/LM future candidates with context-only probabilities.</li><li>Fresh same-prefix stopped/progressing evaluation and a concrete observability boundary.</li><li>Disk-bounded full Friday-PCAP canonicalization.</li></ul></div>
+<div class="card"><h3>What was not demonstrated</h3><ul><li>Enterprise deployment generalization or clean public LM truth.</li><li>Reliable pair accuracy beyond 18 correlated positive windows.</li><li>Calibrated multimodal uncertainty.</li><li>Exact future intent discrimination from an identical prefix.</li><li>Action-conditioned firewall counterfactual performance; V4 capture is pending.</li></ul></div></div>
 <p>V3 has 48 controlled episodes and 24 LM events; only six new episodes each form validation/test. Overlapping windows are correlated. Public pretraining uses two capture groups. Test arrays received a pretraining schema/count integrity check, but model predictions occurred only after model/threshold freeze. V3 test is now inspected and must not be tuned further.</p>
 
 <h2>9. Next experiment</h2>
-<ol><li>Separate dangerous-progression risk from exact eventual-LM outcome metrics.</li><li>Represent stopped/movement futures as explicit stochastic branches rather than forcing one binary answer.</li><li>Evaluate calibration and branch coverage on new paired episodes.</li><li>Add attacker/defender action variables and paired intervention/no-intervention trajectories.</li><li>Do not tune further against the now-inspected V3 test.</li></ol>
+<p>The branch checkpoint and 36-episode V4 plan are frozen. V4 includes 12 action-training episodes, 12 sealed role-balanced permit/block test episodes, three sealed stopped/progressing pairs, and three network-matched legitimate/direct-credential pairs. <strong>No V4 episode has been captured yet.</strong></p>
+<ol><li>Interactively rebuild the isolated lab and capture/process <code>lab_073</code>–<code>lab_108</code>.</li><li>Validate action timing and blocked-attempt versus completed-LM truth before modeling.</li><li>Freeze action-conditioned model settings before opening the V4 action-test cohort.</li><li>Evaluate the passive branch checkpoint only on predetermined V4 test rows.</li><li>Define context-only many-host graph rosters for Friday dynamics pretraining.</li><li>Do not tune further against the now-inspected V3 test.</li></ol>
 
-<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details: <code>docs/RSSM_RESULTS.md</code>, <code>docs/RSSM_ABLATIONS.md</code>, <code>docs/KL_TUNING.md</code>, <code>docs/PAIR_EQUIVARIANCE_AUDIT.md</code>, <code>docs/SHARED_PAIR_DECODER.md</code>, <code>docs/GRAPH_RSSM_RESULTS.md</code>, <code>docs/GRAPH_SEMANTIC_RESULTS.md</code>, <code>docs/PUBLIC_PRETRAINING_RESULTS.md</code>, and <code>docs/V3_RESULTS.md</code>.</p>
+<p class="foot">Generated by <code>scripts/17_build_rssm_report.py</code> from local verified metrics. No external assets or runtime network resources are required. Source details include <code>docs/V3_RESULTS.md</code>, <code>docs/BRANCHING_CONTRACT.md</code>, <code>docs/BRANCHING_RESULTS.md</code>, <code>docs/V4_ACTION_PLAN.md</code>, <code>docs/FRIDAY_PCAP_ADAPTER.md</code>, and the historical V2/RSSM result documents.</p>
 </main></body></html>"""
 
     output = Path(args.out)
