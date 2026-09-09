@@ -2,50 +2,32 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## Completed batch
+## V4 capture verified
 
-Fixed-setting Friday dynamics pretraining is complete:
-
-```text
-source samples:                 5,775 train-only sequences
-model:                          GraphRSSM, 358,115 parameters
-protocol:                       seed 41001, CUDA batch128, Adam3e-4, 100 epochs
-semantic loss weights:          exactly zero
-training dynamics objective:    1.174 -> 0.350
-future-state training loss:     0.905 -> 0.220
-edge training loss:             1.076 -> 0.516
-causality/equivariance delta:    0 / 4.47e-8
-checkpoint SHA-256:             f8633c796f0523fc4537212ced3584d2f448ba55ac22be0cf94092a86e359ba0
-```
-
-This is training fit only, with no model selection and no validation/test loading. It is a candidate V4 initializer, not demonstrated transfer.
-
-The standalone report includes this result at:
+All 36 planned `lab_073`–`lab_108` raw and derived episode files exist. General episode validation plus V4 action semantics pass for 36/36. Containers have no residual firewall rules. Corpus totals:
 
 ```text
-/home/paprika/Downloads/rssm_eod_report.html
-SHA-256 5887f19ff8472042759cd5b515d185eaf98b440ccf06ec1643b4aef4bac84c27
+episodes:          36
+five-second states:828 (23 each)
+observations:      2,559
+ATT&CK events:     90
+chosen actions:    24
+zero-traffic states:399
+capture duration:  ~120.007–120.014 s
 ```
 
-## Next blocking milestone: V4 capture
+The pandas `metadata.pivot` validator bug was fixed to bracket-based column access; it was not a data error.
 
-V4 code/plan is ready, but no V4 episodes exist. Capture requires the user to keep the laptop awake, rebuild/start the modified isolated containers, and authorize foreground sudo:
+## Current batch: V4 action-train sequences only
 
-```bash
-cd lab
-docker compose down
-docker compose up -d --build
-./generate_mvp_corpus.sh ../configs/mvp_v4_episode_plan.csv
-```
-
-After capture:
-
-1. Run `scripts/36_validate_v4_actions.py`.
-2. Build V4 action-aligned contexts without opening action-test outcomes during development.
-3. Freeze action-model architecture/seed/epoch/threshold settings using V4 action train only.
-4. Compare scratch versus the frozen Friday initializer under that prespecified training protocol.
-5. Open the 12 action-test and 12 passive/direct test episodes once.
-6. Evaluate the already-frozen passive outcome-branch model on V4 test only.
-7. Regenerate the standalone report, commit, and push.
-
-Do not reopen or tune on V3 test.
+1. Add `scripts/42_build_v4_action_sequences.py`.
+2. Default to `--split train`; load only the 12 V4 action-training episode directories.
+3. Require explicit `--unlock-test` before any V4 action-test episode can be read.
+4. For each action, use the three complete five-second states ending immediately before the intervention boundary.
+5. Put the action/result window and next five windows in the six-state target.
+6. Emit observable context plus separately known action type `[permit,block]` and action directed-pair one-hot.
+7. Emit future graph/edge/LM/ATT&CK/pair targets separately.
+8. Assert no completed LM in context, action time is about 0.2 s after the future grid boundary, action precedes SSH outcome, permit completes LM, and block records attempt but not completion.
+9. Preserve graph feature contract and host/pair equivariance; action-pair augmentation must later follow host relabeling.
+10. Write train arrays/audit atomically and inspect shapes/finiteness/pair balance.
+11. Do not load, build, or predict on the 12 action-test or 12 passive/direct test episodes yet.

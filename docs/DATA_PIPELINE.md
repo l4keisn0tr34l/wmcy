@@ -722,7 +722,11 @@ Reads Friday observables only, forms complete dense five-second windows, chooses
 
 Loads Friday train only and enforces seed 41001, CUDA batch128, Adam3e-4, and exactly100 epochs without selection. Reconstruction/future-state/edge/KL losses train graph dynamics; semantic weights are exactly zero. The training objective improves, but no validation/transfer claim is made. See `docs/FRIDAY_PRETRAINING.md`.
 
-# 42. Where each datapoint resides
+# 42. `42_build_v4_action_sequences.py`
+
+Defaults to V4 action train and refuses test access without an explicit unlock. It extracts three passive states ending at the intervention grid boundary, separate chosen action type/pair inputs, and six future graph/edge/security targets. Train output contains 12 balanced intervention samples. See `docs/V4_CAPTURE_RESULTS.md`.
+
+# 43. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -792,7 +796,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 43. What will actually be fed to the model
+# 44. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -828,7 +832,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 44. How this becomes a world model
+# 45. How this becomes a world model
 
 After the state layer is correct:
 

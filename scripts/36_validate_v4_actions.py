@@ -46,7 +46,7 @@ def validate_episode(row: object, episode: Path, python: str) -> None:
         action = actions.iloc[0]
         if str(action.known_at_forecast_time).lower() != "true":
             raise ValueError(f"{episode.name}: action not known at forecast")
-        if action.source != metadata.actor.iloc[0] or action.target != metadata.pivot.iloc[0]:
+        if action["source"] != metadata["actor"].iloc[0] or action["target"] != metadata["pivot"].iloc[0]:
             raise ValueError(f"{episode.name}: action source/target differs from roles")
         if not (metadata.capture_start.iloc[0] <= action.start_time <= action.end_time <= metadata.capture_end.iloc[0]):
             raise ValueError(f"{episode.name}: action outside capture")

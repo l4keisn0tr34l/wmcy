@@ -389,26 +389,15 @@ Run the fixed training-only dynamics protocol:
 
 The script enforces seed 41001, batch 128, 100 epochs, and learning rate 3e-4. It does not perform selection or load any validation/test split.
 
-## V4 plan validation and interactive capture
+## V4 capture validation and train-only action sequences
 
 ```bash
 .venv/bin/python scripts/35_validate_v4_plan.py
-bash -n lab/run_episode.sh lab/generate_mvp_corpus.sh
-docker compose -f lab/docker-compose.yml config >/dev/null
-```
-
-When the laptop can remain awake for roughly 72 minutes plus processing:
-
-```bash
-cd lab
-docker compose down
-docker compose up -d --build
-./generate_mvp_corpus.sh ../configs/mvp_v4_episode_plan.csv
-cd ..
 .venv/bin/python scripts/36_validate_v4_actions.py
+.venv/bin/python scripts/42_build_v4_action_sequences.py --split train
 ```
 
-The capture command is interactive because host `tcpdump` requires sudo. Do not run it unattended.
+All 36 captures pass. The sequence builder loads action-train episodes only by default. `--split test` intentionally fails unless `--unlock-test` is supplied after model/protocol freeze.
 
 ## V3 matched hard-negative plan
 

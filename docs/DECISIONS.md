@@ -351,3 +351,15 @@ Use seed 41001, CUDA batch 128, Adam 3e-4, and exactly 100 epochs on all Friday 
 Reason: a random or temporal holdout from one overlapping connected capture would provide misleading selection evidence. A fixed protocol can produce an initialization while reserving transfer judgment for V4.
 
 Guardrail: training-objective improvement is not validation. Do not fine-tune or evaluate this candidate against frozen V3 test, and do not claim Friday provides LM/ATT&CK semantics.
+
+---
+
+## D037 — Align V4 action samples at the pre-intervention grid boundary
+
+**Status:** Accepted; train split built, test still sealed.
+
+For each action episode, use the three complete five-second states ending at the boundary immediately before action enforcement. Supply chosen action type and directed scope separately, then target the boundary-containing state plus the next five states.
+
+Reason: all recorded actions begin about 0.21 seconds after a five-second boundary, so passive context excludes action/result packets while the first target captures the intervention and SSH result.
+
+Guardrail: action type/pair is known input; outcome and scenario truth are not. Test episode reading requires an explicit unlock after model settings freeze. Matched captures are not identical (train paired context normalized MAE mean 0.164), so causal claims must remain qualified.

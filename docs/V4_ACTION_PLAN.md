@@ -2,7 +2,7 @@
 
 ## Status
 
-Plan and capture code are implemented and statically validated. **No V4 episode has been captured yet.** Capture requires an interactive container rebuild/start and sudo authorization for host `tcpdump`.
+Plan and capture code are implemented. **All 36 V4 episodes are now captured, processed, and validated.** No V4 test model prediction has occurred. See `docs/V4_CAPTURE_RESULTS.md`.
 
 Frozen passive branching checkpoint:
 
@@ -106,15 +106,6 @@ After capture/processing:
 
 This runs the general episode validator and checks action timing, source/target, scenario consistency, completed-versus-attempted LM semantics, and legitimate-session truth separation.
 
-## Interactive capture command
+## Capture completion
 
-When the user is ready to keep the laptop awake for approximately 72 minutes of capture plus processing:
-
-```bash
-cd lab
-docker compose down
-docker compose up -d --build
-./generate_mvp_corpus.sh ../configs/mvp_v4_episode_plan.csv
-```
-
-The generator asks for sudo once in the foreground. Do not launch this unattended.
+The interactive capture completed. Two power-loss partial directories were quarantined and their episode IDs regenerated cleanly. `scripts/36_validate_v4_actions.py` passes 36/36. See `docs/V4_CAPTURE_RESULTS.md`.
