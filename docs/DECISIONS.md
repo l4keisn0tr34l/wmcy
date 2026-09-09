@@ -291,3 +291,15 @@ Do not claim a passive model can deterministically infer unobserved attacker int
 The RTX 3050/CUDA 12.8 path passes deterministic parity, finite gradients, and graph equivariance. Batch 128 is 1.78× faster per forward/backward step and uses only ~202 MB allocated VRAM, while batch 32 is slightly slower than CPU due launch overhead.
 
 Use `--device auto` by default and prespecify larger batches for new experiments. Do not rerun or alter completed test results merely to benchmark GPU. Keep CPU fallback and save device-portable CPU checkpoint tensors. PCAP/data preparation remains CPU/disk-bound.
+
+---
+
+## D032 — Outcome-condition explicit branches; keep hidden intent unresolved
+
+**Status:** Accepted for fresh-evaluation candidacy only.
+
+Retain the explicit two-branch equivariant graph architecture and assign branches to no-LM/LM-within-30-second outcomes during training. Use context-only branch probabilities at inference and preserve both candidate graph futures. Do not reopen V3 test; evaluate only on fresh V4.
+
+Reason: ordinary stochastic draws had little coverage/diversity, while an exchangeable trajectory mixture found generic telemetry modes but did not separate LM outcomes. Outcome conditioning produces materially different active graph futures and better validation proper scores while retaining causality/equivariance.
+
+Guardrail: outcome truth is target-only, never model input. Near-0/1 conditional semantic heads are supervised construction, not discovered causal intent. All matched stopped and progressing validation episodes still alert, and validation Brier/ECE from 90 correlated windows are not calibration evidence.

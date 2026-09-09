@@ -212,4 +212,6 @@ CUDA execution is now verified on the local RTX 3050. PyTorch 2.9.1+cu128, devic
 
 A validation-only branch-aware contract is implemented. Twenty ordinary RSSM draws improve expected-to-oracle state MAE only 0.325→0.313, with pairwise diversity 0.034 and mean LM draw spread 0.011. Best-draw assignments use 18.2 effective draws, indicating diffuse perturbations rather than two interpretable futures. Exact-LM Brier/ECE are 0.205/0.229. See `docs/BRANCHING_CONTRACT.md`.
 
+An explicit 372,197-parameter two-branch equivariant GraphRSSM is now trained on V3 train/validation only. The outcome-conditioned model gives expected/oracle state MAE 0.327/0.306, diversity 0.406, edge AP 0.763, and exact-LM AP/Brier/diagnostic-ECE 0.655/0.114/0.046. On LM-positive futures, its LM branch improves active-feature MAE 0.967→0.720 and edge AP 0.800→0.879, at the cost of more quiet-entry error. It still alerts on all stopped and progressing validation episodes, so it represents alternatives but does not infer hidden intent. It is eligible for fresh V4 evaluation, not for V3 test reuse. See `docs/BRANCHING_RESULTS.md`.
+
 See `docs/MVP_STATUS.md` for full details.

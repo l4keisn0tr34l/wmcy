@@ -702,7 +702,11 @@ Loads V3 train only and validates CPU/CUDA deterministic parity, graph equivaria
 
 Loads V3 validation only and treats existing stochastic rollouts as uniformly weighted candidate futures. It separates inference-weighted forecast error from oracle coverage, audits diversity/utilization, reports exact-outcome proper scores/calibration, and separately summarizes stopped/progressing precursor alert burden.
 
-# 37. Where each datapoint resides
+# 37. `34_train_branching_graph_rssm.py` + `src/cyberwm/branching_graph_rssm.py`
+
+Loads V3 train/validation only. An invariant context latent predicts two outcome probabilities and initializes two equivariant future rollouts. Future LM truth selects the realized training branch but never enters inference. The branch-weighted future is the deployable mean; oracle best-branch error is coverage only. See `docs/BRANCHING_RESULTS.md`.
+
+# 38. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -772,7 +776,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 38. What will actually be fed to the model
+# 39. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -808,7 +812,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 39. How this becomes a world model
+# 40. How this becomes a world model
 
 After the state layer is correct:
 

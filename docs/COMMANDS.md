@@ -347,6 +347,16 @@ Primary training scripts default to `--device auto`. Use larger prespecified bat
 
 This loads V3 validation only and writes coverage/diversity/calibration diagnostics. Oracle best-branch MAE is coverage, not deployable point accuracy.
 
+## Explicit outcome-conditioned branches (V3 development only)
+
+```bash
+.venv/bin/python scripts/34_train_branching_graph_rssm.py \
+  --device cuda --batch-size 128 --epochs 250 --patience 40 \
+  --seeds 7,17,27
+```
+
+This loads only V3 train/validation. `--resume-candidates` reuses compatible per-seed checkpoints after an interrupted post-training audit. Do not use that flag after changing model/loss settings.
+
 ## V3 matched hard-negative plan
 
 ```bash

@@ -166,6 +166,7 @@ docs/V3_HARD_NEGATIVE_PLAN.md
 docs/V3_RESULTS.md
 docs/GPU_EXECUTION.md
 docs/BRANCHING_CONTRACT.md
+docs/BRANCHING_RESULTS.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -185,9 +186,13 @@ models/mvp_v3_graph_rssm_unsw_pretrained.pt
 
 ```text
 outputs/mvp_v3/branching/contract_baseline_validation.json
+outputs/mvp_v3/branching/two_branch_validation.json
+outputs/mvp_v3/branching/outcome_two_branch_validation.json
+models/mvp_v3_branching_graph_rssm_validation.pt
+models/mvp_v3_outcome_branching_graph_rssm_validation.pt
 ```
 
-See `docs/BRANCHING_CONTRACT.md`. V3 test is not loaded.
+See `docs/BRANCHING_CONTRACT.md` and `docs/BRANCHING_RESULTS.md`. V3 test is not loaded.
 
 ## Hardware validation
 
