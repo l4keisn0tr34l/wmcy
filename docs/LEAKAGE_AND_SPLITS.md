@@ -59,6 +59,10 @@ Current plan:
 
 Past states only.
 
+### Chosen defender action (action-conditioned models only)
+
+A permit/block intervention may be supplied only if the defender has already chosen it at the forecast cutoff. It must be a separate action variable, not inferred by reading post-action packets. The passive model does not receive it.
+
 ---
 
 # 3. Forbidden model input
@@ -78,6 +82,8 @@ future edge
 future actor/target
 attack start/end time
 scenario name if it directly reveals attack family
+future intervention result
+post-action packets in a pre-action context
 ```
 
 Do not feed absolute clock time if attack schedules are fixed and the model can memorize "attack starts at 15:04".

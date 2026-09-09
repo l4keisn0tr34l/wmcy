@@ -77,6 +77,8 @@ T1021.004  SSH                           Lateral Movement
 
 with randomized actor/pivot/target roles and exact controller timestamps. Benign ping and legitimate administrative SSH scenarios intentionally have no ATT&CK action truth. This provides necessary negative examples rather than teaching that every SSH connection is lateral movement.
 
+V4 additionally distinguishes an intentionally executed but firewall-blocked `T1021.004` SSH attempt from completed lateral movement. The event keeps technique ID `T1021.004` but tactic text `Lateral Movement Attempt`; `has_lateral_movement` remains false because no session completes. This preserves attempted behavior without fabricating compromise success.
+
 The current valid smoke-test `lab_003` records:
 
 ```text

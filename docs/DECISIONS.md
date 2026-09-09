@@ -303,3 +303,15 @@ Retain the explicit two-branch equivariant graph architecture and assign branche
 Reason: ordinary stochastic draws had little coverage/diversity, while an exchangeable trajectory mixture found generic telemetry modes but did not separate LM outcomes. Outcome conditioning produces materially different active graph futures and better validation proper scores while retaining causality/equivariance.
 
 Guardrail: outcome truth is target-only, never model input. Near-0/1 conditional semantic heads are supervised construction, not discovered causal intent. All matched stopped and progressing validation episodes still alert, and validation Brier/ECE from 90 correlated windows are not calibration evidence.
+
+---
+
+## D033 — Treat chosen interventions as separate causal inputs in V4
+
+**Status:** Accepted design; capture pending.
+
+V4 records `permit_ssh`/`block_ssh` in `defender_actions.csv`, separate from passive telemetry and attack truth. An action-conditioned model may receive the action only after it is chosen and before any resulting packet. The passive model never receives it.
+
+Reason: identical dangerous prefixes can diverge because of an explicit defender decision. Without the action variable, the passive process is genuinely multimodal; with it, counterfactual rollouts can ask what changes under permit versus block.
+
+Guardrail: a blocked valid-credential SSH is `Lateral Movement Attempt`, not completed LM. Action train/test pairs use fresh disjoint seeds and both cover all six host-role permutations. The frozen passive branch checkpoint cannot be changed after V4 test capture is inspected.

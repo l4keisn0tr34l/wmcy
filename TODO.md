@@ -37,7 +37,9 @@
 - [x] Enable and validate CUDA execution on the local RTX 3050 without reopening V3 test.
 - [x] Define validation-only branching-risk, exact-outcome, coverage, diversity, and calibration metrics.
 - [x] Implement/train an explicit two-branch equivariant GraphRSSM without using V3 test.
-- [ ] Freeze the outcome-branch model and evaluate it only on fresh role-balanced V4 episodes.
+- [x] Freeze the outcome-branch checkpoint and define the role-balanced/action-conditioned V4 plan.
+- [ ] Interactively rebuild the lab and capture/process `lab_073`–`lab_108`.
+- [ ] Freeze action-model settings before opening the V4 action-test cohort; evaluate the passive branch model only on V4 test rows.
 - [ ] Reset/recreate episode environment or interleave capture order to prevent cache/order drift.
 - [ ] Add consistent host-permutation augmentation or a shared-weight graph encoder.
 - [ ] Add richer benign background traffic.

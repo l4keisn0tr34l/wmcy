@@ -2,6 +2,8 @@ services:
   ws1:
     build: .
     hostname: ws1
+    cap_add:
+      - NET_ADMIN
     networks:
       labnet:
         ipv4_address: 10.77.0.20
@@ -9,6 +11,8 @@ services:
   srv1:
     build: .
     hostname: srv1
+    cap_add:
+      - NET_ADMIN
     networks:
       labnet:
         ipv4_address: 10.77.0.30
@@ -16,6 +20,8 @@ services:
   srv2:
     build: .
     hostname: srv2
+    cap_add:
+      - NET_ADMIN
     networks:
       labnet:
         ipv4_address: 10.77.0.40

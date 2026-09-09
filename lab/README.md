@@ -39,6 +39,10 @@ failed_guessing
 scan_guess_then_stop
 one_hop
 two_hop
+matched_legitimate_ssh
+credential_one_hop
+scan_guess_action_permit
+scan_guess_action_block
 ```
 
 The runner asks for sudo because host `tcpdump` captures the private bridge. Every scenario uses the same capture duration (default and minimum: 120 seconds), preventing short negative scenarios from losing late sequence windows. It refuses to overwrite existing raw episodes and writes:
@@ -47,9 +51,10 @@ The runner asks for sudo because host `tcpdump` captures the private bridge. Eve
 episodes/<id>/network.pcap
 episodes/<id>/ground_truth.csv
 episodes/<id>/episode_metadata.csv
+episodes/<id>/defender_actions.csv
 ```
 
-`ground_truth.csv` and `episode_metadata.csv` are targets/audit information, never model input.
+`ground_truth.csv`, `episode_metadata.csv`, and `defender_actions.csv` are separate target/audit information, never passive-model input. A chosen defender action may condition a future action-aware model only when `known_at_forecast_time=true`; its result remains a target.
 
 ## Process and validate one episode
 
@@ -106,6 +111,17 @@ For V3 matched prefixes and a fresh sealed holdout:
 ```
 
 Each seed is paired: `scan_guess_then_stop` executes the same discovery/guessing prefix as `one_hop` but no successful SSH. The new plan writes `lab_049`–`lab_072` only.
+
+For the V4 role-balanced intervention corpus (interactive rebuild and approximately 72 minutes of capture):
+
+```bash
+cd lab
+docker compose down
+docker compose up -d --build
+./generate_mvp_corpus.sh ../configs/mvp_v4_episode_plan.csv
+```
+
+Do not start V4 unattended. See `docs/V4_ACTION_PLAN.md` and validate the finished action semantics with `scripts/36_validate_v4_actions.py`.
 
 ### Pause safely between episodes
 

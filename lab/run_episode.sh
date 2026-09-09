@@ -12,8 +12,10 @@ usage() {
 Usage: ./run_episode.sh EPISODE_ID [options]
 
 Options:
-  --scenario NAME   benign_ping | legitimate_ssh | scan_only |
-                    failed_guessing | scan_guess_then_stop | one_hop | two_hop
+  --scenario NAME   benign_ping | legitimate_ssh | scan_only | failed_guessing |
+                    scan_guess_then_stop | one_hop | two_hop |
+                    matched_legitimate_ssh | credential_one_hop |
+                    scan_guess_action_permit | scan_guess_action_block
                     (default: two_hop)
   --seed INTEGER       Seed for host-role and timing randomization (default: epoch time)
   --duration-seconds N Common capture duration for every scenario (default: 120)
@@ -48,7 +50,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$SCENARIO" in
-  benign_ping|legitimate_ssh|scan_only|failed_guessing|scan_guess_then_stop|one_hop|two_hop) ;;
+  benign_ping|legitimate_ssh|scan_only|failed_guessing|scan_guess_then_stop|one_hop|two_hop|matched_legitimate_ssh|credential_one_hop|scan_guess_action_permit|scan_guess_action_block) ;;
   *) echo "invalid scenario: $SCENARIO" >&2; usage >&2; exit 2 ;;
 esac
 if [[ ! "$SEED" =~ ^[0-9]+$ ]]; then
@@ -67,7 +69,8 @@ fi
 GT="$OUT_DIR/ground_truth.csv"
 PCAP="$OUT_DIR/network.pcap"
 META="$OUT_DIR/episode_metadata.csv"
-if [[ -e "$PCAP" || -e "$GT" || -e "$META" ]]; then
+ACTIONS="$OUT_DIR/defender_actions.csv"
+if [[ -e "$PCAP" || -e "$GT" || -e "$META" || -e "$ACTIONS" ]]; then
   echo "refusing to overwrite existing raw episode files in $OUT_DIR" >&2
   exit 1
 fi
@@ -79,6 +82,11 @@ record_event() {
   local start="$1" end="$2" actor="$3" target="$4" tid="$5" tech="$6" tactic="$7"
   printf '%s,%s,%s,%s,%s,%s,%s,%s\n' \
     "$EPISODE_ID" "$start" "$end" "$actor" "$target" "$tid" "$tech" "$tactic" >> "$GT"
+}
+record_action() {
+  local start="$1" end="$2" action="$3" source="$4" target="$5" details="$6"
+  printf '%s,%s,%s,%s,%s,%s,true,%s\n' \
+    "$EPISODE_ID" "$start" "$end" "$action" "$source" "$target" "$details" >> "$ACTIONS"
 }
 
 host_ip() {
@@ -111,6 +119,16 @@ RANDOM=$((SEED % 32768))
 random_delay() {
   local minimum="$1" maximum="$2"
   echo $((minimum + RANDOM % (maximum - minimum + 1)))
+}
+align_to_next_state_boundary() {
+  local delay
+  delay="$(python3 - <<'PY'
+import time
+step = 5.0
+print(f"{step - (time.time() % step) + 0.2:.6f}")
+PY
+)"
+  sleep "$delay"
 }
 
 compose_exec() {
@@ -155,11 +173,48 @@ run_attack_ssh() {
 
 run_legitimate_ssh() {
   echo "[action] legitimate administrative SSH: $ACTOR -> $PIVOT (no ATT&CK truth)"
+  # Deliberately match the direct-credential scenario's network-visible command.
   compose_exec "$ACTOR" bash -lc \
-    "sshpass -p labpass ssh -o StrictHostKeyChecking=no lab@$PIVOT_IP 'hostname && uptime'" >/dev/null
+    "sshpass -p labpass ssh -o StrictHostKeyChecking=no lab@$PIVOT_IP 'hostname && id'" >/dev/null
 }
 
+run_attempted_blocked_ssh() {
+  local start end
+  echo "[action] blocked T1021.004 attempt: $ACTOR -> $PIVOT"
+  start="$(iso_now)"
+  if compose_exec "$ACTOR" bash -lc \
+      "sshpass -p labpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 lab@$PIVOT_IP 'hostname && id'" \
+      >/dev/null 2>&1; then
+    echo "blocked SSH unexpectedly succeeded" >&2
+    return 1
+  fi
+  end="$(iso_now)"
+  record_event "$start" "$end" "$ACTOR" "$PIVOT" T1021.004 SSH 'Lateral Movement Attempt'
+}
+
+record_permit_action() {
+  local now
+  now="$(iso_now)"
+  record_action "$now" "$now" permit_ssh "$ACTOR" "$PIVOT" tcp_22_source_permitted
+}
+
+apply_block_action() {
+  local start end
+  start="$(iso_now)"
+  compose_exec "$PIVOT" iptables -I INPUT 1 -p tcp -s "$ACTOR_IP" --dport 22 \
+    -j REJECT --reject-with tcp-reset
+  BLOCK_INSTALLED=1
+  end="$(iso_now)"
+  record_action "$start" "$end" block_ssh "$ACTOR" "$PIVOT" tcp_22_source_rejected
+}
+
+BLOCK_INSTALLED=0
 cleanup() {
+  if [[ "$BLOCK_INSTALLED" -eq 1 ]]; then
+    compose_exec "$PIVOT" iptables -D INPUT -p tcp -s "$ACTOR_IP" --dport 22 \
+      -j REJECT --reject-with tcp-reset >/dev/null 2>&1 || true
+    BLOCK_INSTALLED=0
+  fi
   if [[ -n "${TCPDUMP_PID:-}" ]]; then
     sudo -n kill "$TCPDUMP_PID" 2>/dev/null || true
     wait "$TCPDUMP_PID" 2>/dev/null || true
@@ -178,6 +233,7 @@ fi
 sudo -v
 mkdir -p "$OUT_DIR"
 echo 'episode_id,start_time,end_time,actor,target,technique_id,technique,tactic' > "$GT"
+echo 'episode_id,start_time,end_time,action,source,target,known_at_forecast_time,details' > "$ACTIONS"
 CAPTURE_START="$(iso_now)"
 CAPTURE_START_NS="$(date +%s%N)"
 CAPTURE_DEADLINE_NS=$((CAPTURE_START_NS + DURATION_SECONDS * 1000000000))
@@ -187,13 +243,7 @@ sleep 1
 
 # Begin controlled traffic just after a wall-clock five-second boundary. This
 # keeps the baseline out of the partially captured opening state window.
-ALIGN_DELAY="$(python3 - <<'PY'
-import time
-step = 5.0
-print(f"{step - (time.time() % step) + 0.2:.6f}")
-PY
-)"
-sleep "$ALIGN_DELAY"
+align_to_next_state_boundary
 
 BASELINE_ROUNDS="$(random_delay 8 10)"
 echo "[baseline] $BASELINE_ROUNDS benign pings: $ACTOR -> $TARGET"
@@ -205,9 +255,13 @@ done
 case "$SCENARIO" in
   benign_ping)
     ;;
-  legitimate_ssh)
+  legitimate_ssh|matched_legitimate_ssh)
     sleep "$(random_delay 4 9)"
     run_legitimate_ssh
+    ;;
+  credential_one_hop)
+    sleep "$(random_delay 4 9)"
+    run_attack_ssh "$ACTOR" "$PIVOT" "$PIVOT_IP"
     ;;
   scan_only)
     sleep "$(random_delay 4 9)"
@@ -227,13 +281,29 @@ case "$SCENARIO" in
     run_guessing
     sleep "$(random_delay 5 10)"
     ;;
-  one_hop)
+  one_hop|scan_guess_action_permit)
     sleep "$(random_delay 4 9)"
     run_discovery
     sleep "$(random_delay 5 10)"
     run_guessing
     sleep "$(random_delay 5 10)"
+    if [[ "$SCENARIO" == scan_guess_action_permit ]]; then
+      # The preceding complete state ends before this known intervention.
+      align_to_next_state_boundary
+      record_permit_action
+    fi
     run_attack_ssh "$ACTOR" "$PIVOT" "$PIVOT_IP"
+    ;;
+  scan_guess_action_block)
+    sleep "$(random_delay 4 9)"
+    run_discovery
+    sleep "$(random_delay 5 10)"
+    run_guessing
+    sleep "$(random_delay 5 10)"
+    # The preceding complete state ends before this known intervention.
+    align_to_next_state_boundary
+    apply_block_action
+    run_attempted_blocked_ssh
     ;;
   two_hop)
     sleep "$(random_delay 4 9)"
@@ -266,19 +336,22 @@ CAPTURE_END="$(iso_now)"
 cleanup
 trap - EXIT
 
-# Metadata is supervision/audit information and must never be fed to the model.
-printf 'episode_id,scenario,seed,capture_start,capture_end,actor,pivot,target,window_seconds,planned_capture_duration_seconds\n' > "$META"
-printf '%s,%s,%s,%s,%s,%s,%s,%s,5,%s\n' \
+# Metadata is supervision/audit information and must never be fed to the passive model.
+DEFENDER_ACTION=none
+[[ "$SCENARIO" == scan_guess_action_permit ]] && DEFENDER_ACTION=permit_ssh
+[[ "$SCENARIO" == scan_guess_action_block ]] && DEFENDER_ACTION=block_ssh
+printf 'episode_id,scenario,seed,capture_start,capture_end,actor,pivot,target,window_seconds,planned_capture_duration_seconds,defender_action\n' > "$META"
+printf '%s,%s,%s,%s,%s,%s,%s,%s,5,%s,%s\n' \
   "$EPISODE_ID" "$SCENARIO" "$SEED" "$CAPTURE_START" "$CAPTURE_END" \
-  "$ACTOR" "$PIVOT" "$TARGET" "$DURATION_SECONDS" >> "$META"
+  "$ACTOR" "$PIVOT" "$TARGET" "$DURATION_SECONDS" "$DEFENDER_ACTION" >> "$META"
 
 # Refuse to announce success when locale/quoting or a future edit corrupts a manifest.
-python3 - "$GT" "$META" <<'PY'
+python3 - "$GT" "$META" "$ACTIONS" "$SCENARIO" <<'PY'
 import csv
 import re
 import sys
 
-expected = {sys.argv[1]: 8, sys.argv[2]: 10}
+expected = {sys.argv[1]: 8, sys.argv[2]: 11, sys.argv[3]: 8}
 timestamp = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}$")
 for path, width in expected.items():
     with open(path, newline="", encoding="utf-8") as handle:
@@ -290,6 +363,19 @@ for path, width in expected.items():
         for column in time_columns:
             if not timestamp.fullmatch(row[column]):
                 raise SystemExit(f"invalid nanosecond timestamp in {path}: {row[column]!r}")
+with open(sys.argv[3], newline="", encoding="utf-8") as handle:
+    actions = list(csv.DictReader(handle))
+expected_action = {
+    "scan_guess_action_permit": "permit_ssh",
+    "scan_guess_action_block": "block_ssh",
+}.get(sys.argv[4])
+if expected_action is None and actions:
+    raise SystemExit(f"unexpected defender action for scenario {sys.argv[4]}")
+if expected_action is not None:
+    if len(actions) != 1 or actions[0]["action"] != expected_action:
+        raise SystemExit(f"expected exactly one {expected_action} action")
+    if actions[0]["known_at_forecast_time"] != "true":
+        raise SystemExit("defender action must be marked known at forecast time")
 PY
 
 echo "episode written to $OUT_DIR"
@@ -297,3 +383,4 @@ echo "  scenario: $SCENARIO (seed=$SEED; roles=$ACTOR->$PIVOT->$TARGET; duration
 echo "  pcap: $PCAP"
 echo "  truth: $GT"
 echo "  metadata: $META"
+echo "  defender actions: $ACTIONS"

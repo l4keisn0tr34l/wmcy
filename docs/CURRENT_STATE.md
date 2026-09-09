@@ -214,4 +214,6 @@ A validation-only branch-aware contract is implemented. Twenty ordinary RSSM dra
 
 An explicit 372,197-parameter two-branch equivariant GraphRSSM is now trained on V3 train/validation only. The outcome-conditioned model gives expected/oracle state MAE 0.327/0.306, diversity 0.406, edge AP 0.763, and exact-LM AP/Brier/diagnostic-ECE 0.655/0.114/0.046. On LM-positive futures, its LM branch improves active-feature MAE 0.967→0.720 and edge AP 0.800→0.879, at the cost of more quiet-entry error. It still alerts on all stopped and progressing validation episodes, so it represents alternatives but does not infer hidden intent. It is eligible for fresh V4 evaluation, not for V3 test reuse. See `docs/BRANCHING_RESULTS.md`.
 
+V4 is now specified but not captured: 36 fresh equal-duration episodes, including role-balanced permit/block action pairs, sealed stopped/progressing pairs, and network-matched legitimate/direct-credential pairs. The lab writes chosen actions to separate `defender_actions.csv`; blocked SSH is an attempted technique, not completed LM. Plan/static validators pass. Capture remains interactive and requires a Docker rebuild plus sudo. See `docs/V4_ACTION_PLAN.md`.
+
 See `docs/MVP_STATUS.md` for full details.

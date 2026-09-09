@@ -357,6 +357,27 @@ This loads V3 validation only and writes coverage/diversity/calibration diagnost
 
 This loads only V3 train/validation. `--resume-candidates` reuses compatible per-seed checkpoints after an interrupted post-training audit. Do not use that flag after changing model/loss settings.
 
+## V4 plan validation and interactive capture
+
+```bash
+.venv/bin/python scripts/35_validate_v4_plan.py
+bash -n lab/run_episode.sh lab/generate_mvp_corpus.sh
+docker compose -f lab/docker-compose.yml config >/dev/null
+```
+
+When the laptop can remain awake for roughly 72 minutes plus processing:
+
+```bash
+cd lab
+docker compose down
+docker compose up -d --build
+./generate_mvp_corpus.sh ../configs/mvp_v4_episode_plan.csv
+cd ..
+.venv/bin/python scripts/36_validate_v4_actions.py
+```
+
+The capture command is interactive because host `tcpdump` requires sudo. Do not run it unattended.
+
 ## V3 matched hard-negative plan
 
 ```bash

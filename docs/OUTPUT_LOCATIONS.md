@@ -167,6 +167,7 @@ docs/V3_RESULTS.md
 docs/GPU_EXECUTION.md
 docs/BRANCHING_CONTRACT.md
 docs/BRANCHING_RESULTS.md
+docs/V4_ACTION_PLAN.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -193,6 +194,16 @@ models/mvp_v3_outcome_branching_graph_rssm_validation.pt
 ```
 
 See `docs/BRANCHING_CONTRACT.md` and `docs/BRANCHING_RESULTS.md`. V3 test is not loaded.
+
+## V4 intervention plan (not captured yet)
+
+```text
+configs/mvp_v4_episode_plan.csv
+configs/mvp_v4_split_assignments.csv
+lab/episodes/lab_073 ... lab_108  # future raw/derived locations
+```
+
+See `docs/V4_ACTION_PLAN.md`.
 
 ## Hardware validation
 

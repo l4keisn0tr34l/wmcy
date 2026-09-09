@@ -54,7 +54,8 @@ for row in rows:
     duration = row.get("duration_seconds") or "120"
     if not duration.isdigit() or int(duration) < 120:
         raise SystemExit(f"invalid duration_seconds for {row['episode_id']}: {duration!r}")
-    print(f"{row['episode_id']}\t{row['scenario']}\t{row['seed']}\t{duration}")
+    action = row.get("defender_action") or ""
+    print(f"{row['episode_id']}\t{row['scenario']}\t{row['seed']}\t{duration}\t{action}")
 PY
 )
 
@@ -69,15 +70,19 @@ for row in "${PLAN_ROWS[@]}"; do
     echo "resume with: rm -f $PAUSE_FILE && $0 $PLAN"
     exit 0
   fi
-  IFS=$'\t' read -r episode_id scenario seed duration_seconds <<< "$row"
+  IFS=$'\t' read -r episode_id scenario seed duration_seconds defender_action <<< "$row"
   completed=$((completed + 1))
   episode_dir="$SCRIPT_DIR/episodes/$episode_id"
   echo
   echo "===== MVP episode $completed/$total: $episode_id ====="
 
   if [[ -f "$episode_dir/network.pcap" && -f "$episode_dir/ground_truth.csv" && -f "$episode_dir/episode_metadata.csv" ]]; then
+    if [[ -n "$defender_action" && ! -f "$episode_dir/defender_actions.csv" ]]; then
+      echo "cannot resume: plan requires missing $episode_dir/defender_actions.csv" >&2
+      exit 1
+    fi
     # Resume only when existing raw data exactly matches this plan row.
-    "$PYTHON" - "$episode_dir/episode_metadata.csv" "$episode_id" "$scenario" "$seed" "$duration_seconds" <<'PY'
+    "$PYTHON" - "$episode_dir/episode_metadata.csv" "$episode_id" "$scenario" "$seed" "$duration_seconds" "$defender_action" <<'PY'
 import csv
 import sys
 with open(sys.argv[1], newline="", encoding="utf-8") as handle:
@@ -95,6 +100,11 @@ if planned_duration is not None and planned_duration != sys.argv[5]:
     )
 if planned_duration is None:
     print("resume: legacy metadata has no planned duration; base fields match")
+expected_action = sys.argv[6]
+if expected_action and rows[0].get("defender_action") != expected_action:
+    raise SystemExit(
+        f"cannot resume: defender action {rows[0].get('defender_action')!r} != {expected_action!r}"
+    )
 PY
     if [[ -f "$episode_dir/observations.csv.gz" && -d "$episode_dir/states" && -f "$episode_dir/state_ground_truth.csv" ]] \
        && "$PYTHON" "$ROOT/scripts/07_validate_episode.py" "$episode_dir" --window-seconds 5; then

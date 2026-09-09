@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build and validate all derived files for one controlled lab episode.
 
-Raw network.pcap, ground_truth.csv, and episode_metadata.csv are read-only. Derived
+Raw network.pcap, ground_truth.csv, episode_metadata.csv, and optional defender_actions.csv are read-only. Derived
 outputs are built in a temporary directory, validated there, and installed only
 after the full pipeline passes.
 """
