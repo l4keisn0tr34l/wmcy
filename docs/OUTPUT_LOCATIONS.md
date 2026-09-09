@@ -170,6 +170,7 @@ docs/BRANCHING_RESULTS.md
 docs/V4_ACTION_PLAN.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
+docs/FRIDAY_PRETRAINING.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -205,6 +206,8 @@ outputs/cic2017_friday_pcap/canonical/manifest.json
 outputs/cic2017_friday_pcap/graph_sequences/train.npz
 outputs/cic2017_friday_pcap/graph_sequences/sample_manifest.csv
 outputs/cic2017_friday_pcap/graph_sequences/feature_metadata.json
+outputs/cic2017_friday_pcap/pretraining/fixed_pretraining.json
+models/friday_graph_rssm_pretrained_fixed.pt
 ```
 
 See `docs/FRIDAY_PCAP_ADAPTER.md` and `docs/FRIDAY_GRAPH_SEQUENCES.md`.

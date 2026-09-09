@@ -718,7 +718,11 @@ Streams classic PCAP/PCAPNG through fixed-width disk partitions, aggregates comp
 
 Reads Friday observables only, forms complete dense five-second windows, chooses three-host rosters from context only, deterministically anonymizes slots, and emits 5,775 train-only context/future/edge arrays. Real TCP flags and capture-causal edge novelty are retained. No validation/test split is fabricated from the connected capture. The test checks artifact lineage, chronology, novelty, and context-only roster behavior. See `docs/FRIDAY_GRAPH_SEQUENCES.md`.
 
-# 41. Where each datapoint resides
+# 41. `41_pretrain_graph_rssm_friday.py`
+
+Loads Friday train only and enforces seed 41001, CUDA batch128, Adam3e-4, and exactly100 epochs without selection. Reconstruction/future-state/edge/KL losses train graph dynamics; semantic weights are exactly zero. The training objective improves, but no validation/transfer claim is made. See `docs/FRIDAY_PRETRAINING.md`.
+
+# 42. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -788,7 +792,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 42. What will actually be fed to the model
+# 43. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -824,7 +828,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 43. How this becomes a world model
+# 44. How this becomes a world model
 
 After the state layer is correct:
 

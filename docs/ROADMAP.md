@@ -194,7 +194,7 @@ Potential addition:
 
 temporal contrastive loss so the history representation is closer to the true next state than unrelated future negatives.
 
-Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground truth is weak. The full precise Friday PCAPNG is now available as 2,102,560 observable one-second events through a 47 MB-RSS disk-bounded adapter. Context-only induced-subgraph construction produces 5,775 train-only graph sequences with real TCP flags; fixed-setting pretraining and fresh V4 transfer evaluation remain.
+Public CIC/UNSW/CSE-CIC telemetry can be useful here even when ATT&CK ground truth is weak. The full precise Friday PCAPNG is now available as 2,102,560 observable one-second events through a 47 MB-RSS disk-bounded adapter. Context-only induced-subgraph construction produces 5,775 train-only graph sequences with real TCP flags. A fixed 100-epoch, zero-semantic-weight GraphRSSM run fits the training dynamics expression 1.174→0.350; fresh V4 transfer evaluation remains and this training fit is not generalization evidence.
 
 ---
 

@@ -339,3 +339,15 @@ Construct three-host induced graph samples with context-only rosters, five-secon
 Reason: the available Friday file is one connected working-hours capture. Adjacent windows and host interactions are correlated. Fixed-setting dynamics pretraining can use it, but selection/generalization evidence must come from an independent development/evaluation source.
 
 Guardrail: no CIC label is loaded; slot identity is anonymized; future activity never chooses roster members; frozen V3 test cannot select Friday pretraining.
+
+---
+
+## D036 — Pretrain Friday for a fixed epoch budget without internal selection
+
+**Status:** Accepted initialization checkpoint.
+
+Use seed 41001, CUDA batch 128, Adam 3e-4, and exactly 100 epochs on all Friday train-only sequences. Train reconstruction, future state, edge, and KL objectives; set every semantic weight to zero.
+
+Reason: a random or temporal holdout from one overlapping connected capture would provide misleading selection evidence. A fixed protocol can produce an initialization while reserving transfer judgment for V4.
+
+Guardrail: training-objective improvement is not validation. Do not fine-tune or evaluate this candidate against frozen V3 test, and do not claim Friday provides LM/ATT&CK semantics.

@@ -381,6 +381,14 @@ Build train-only causal Friday graph sequences:
 
 Use `--force` only for an intentional rebuild. This deliberately emits no validation/test split from the one connected Friday capture.
 
+Run the fixed training-only dynamics protocol:
+
+```bash
+.venv/bin/python scripts/41_pretrain_graph_rssm_friday.py --device cuda
+```
+
+The script enforces seed 41001, batch 128, 100 epochs, and learning rate 3e-4. It does not perform selection or load any validation/test split.
+
 ## V4 plan validation and interactive capture
 
 ```bash

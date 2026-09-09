@@ -2,7 +2,7 @@
 
 ## Status
 
-Complete train-only public dynamics sequence build. No model has been trained on it yet.
+Complete train-only public dynamics sequence build. A fixed-setting training-only checkpoint now exists; see `docs/FRIDAY_PRETRAINING.md`.
 
 ## Input
 
