@@ -57,7 +57,8 @@
 - [x] Build context-only, anonymized UNSW induced-subgraph dynamics sequences.
 - [x] Evaluate observable-only UNSW graph-dynamics pretraining and controlled semantic fine-tuning.
 - [x] Canonicalize the full Friday PCAPNG with a disk-bounded, order-independent adapter.
-- [ ] Define a causal many-host roster/state contract for the 2,102,560 Friday events.
+- [x] Define/build causal context-only three-host induced graph sequences for Friday.
+- [ ] Pretrain on Friday with fixed settings and no fabricated in-capture validation; evaluate transfer only under V4 protocol.
 - [ ] Add CSE-CIC-IDS2018 adapter where useful.
 - [ ] Version MITRE Enterprise ATT&CK STIX locally.
 - [ ] Validate technique/tactic IDs automatically against that version.

@@ -327,3 +327,15 @@ Use fixed-width disk partitions selected by `bucket_index mod P`, aggregate each
 Reason: all packets for a directed five-tuple bucket land together even when capture records are out of order, while peak memory is bounded by one partition. Full Friday conversion processed 9,997,874 packets in 1m20.72s at 47,480 KB maximum RSS.
 
 Guardrail: output is observable IPv4 packet-derived telemetry only. CIC labels remain separate; bucket duration is not whole-connection duration; Ethernet/IPv4 parser limitations are explicit.
+
+---
+
+## D035 — Keep Friday as one train-only connected capture
+
+**Status:** Accepted.
+
+Construct three-host induced graph samples with context-only rosters, five-second stride, and capture-causal edge novelty, but emit only `train.npz`. Do not random-split or temporal-split overlapping Friday windows and call them independent validation.
+
+Reason: the available Friday file is one connected working-hours capture. Adjacent windows and host interactions are correlated. Fixed-setting dynamics pretraining can use it, but selection/generalization evidence must come from an independent development/evaluation source.
+
+Guardrail: no CIC label is loaded; slot identity is anonymized; future activity never chooses roster members; frozen V3 test cannot select Friday pretraining.

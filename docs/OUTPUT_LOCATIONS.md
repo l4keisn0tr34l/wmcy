@@ -169,6 +169,7 @@ docs/BRANCHING_CONTRACT.md
 docs/BRANCHING_RESULTS.md
 docs/V4_ACTION_PLAN.md
 docs/FRIDAY_PCAP_ADAPTER.md
+docs/FRIDAY_GRAPH_SEQUENCES.md
 ```
 
 ## V3 fresh matched-prefix evaluation
@@ -201,9 +202,12 @@ See `docs/BRANCHING_CONTRACT.md` and `docs/BRANCHING_RESULTS.md`. V3 test is not
 ```text
 outputs/cic2017_friday_pcap/canonical/observations.csv.gz
 outputs/cic2017_friday_pcap/canonical/manifest.json
+outputs/cic2017_friday_pcap/graph_sequences/train.npz
+outputs/cic2017_friday_pcap/graph_sequences/sample_manifest.csv
+outputs/cic2017_friday_pcap/graph_sequences/feature_metadata.json
 ```
 
-See `docs/FRIDAY_PCAP_ADAPTER.md`.
+See `docs/FRIDAY_PCAP_ADAPTER.md` and `docs/FRIDAY_GRAPH_SEQUENCES.md`.
 
 ## V4 intervention plan (not captured yet)
 

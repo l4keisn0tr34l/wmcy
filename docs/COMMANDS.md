@@ -372,6 +372,15 @@ This loads only V3 train/validation. `--resume-candidates` reuses compatible per
 
 Use `--max-packets 100000` for a bounded smoke test. Existing outputs are protected unless `--force` is explicit. Labels are never read.
 
+Build train-only causal Friday graph sequences:
+
+```bash
+.venv/bin/python scripts/39_build_friday_graph_sequences.py
+.venv/bin/python scripts/40_test_friday_graph_sequences.py
+```
+
+Use `--force` only for an intentional rebuild. This deliberately emits no validation/test split from the one connected Friday capture.
+
 ## V4 plan validation and interactive capture
 
 ```bash

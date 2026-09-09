@@ -48,7 +48,7 @@ Do not claim it supplies a clean second-by-second multi-stage lateral-movement t
 
 ### Friday precise-PCAP adapter
 
-The local 8.839 GB Friday PCAPNG capture is fully canonicalized with exact packet timestamps. `scripts/37_canonicalize_pcap_scalable.py` processes 9,997,874 packets into 2,102,560 one-second directed events in a disk-bounded pipeline. It observed 7,094 adjacent timestamp inversions (maximum 14 microseconds), aggregates 9,915,680 IPv4 packets, and includes no labels. See `docs/FRIDAY_PCAP_ADAPTER.md`.
+The local 8.839 GB Friday PCAPNG capture is fully canonicalized with exact packet timestamps. `scripts/37_canonicalize_pcap_scalable.py` processes 9,997,874 packets into 2,102,560 one-second directed events in a disk-bounded pipeline. It observed 7,094 adjacent timestamp inversions (maximum 14 microseconds), aggregates 9,915,680 IPv4 packets, and includes no labels. A context-only three-host adapter produces 5,775 train-only graph sequences; it intentionally creates no holdout from the one connected capture. See `docs/FRIDAY_PCAP_ADAPTER.md` and `docs/FRIDAY_GRAPH_SEQUENCES.md`.
 
 ### Mapping truth
 Use official scenario behavior and documented times, not label names alone.

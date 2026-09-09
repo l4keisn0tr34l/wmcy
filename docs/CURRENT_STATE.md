@@ -216,8 +216,8 @@ An explicit 372,197-parameter two-branch equivariant GraphRSSM is now trained on
 
 V4 is now specified but not captured: 36 fresh equal-duration episodes, including role-balanced permit/block action pairs, sealed stopped/progressing pairs, and network-matched legitimate/direct-credential pairs. The lab writes chosen actions to separate `defender_actions.csv`; blocked SSH is an attempted technique, not completed LM. Plan/static validators pass. Capture remains interactive and requires a Docker rebuild plus sudo. See `docs/V4_ACTION_PLAN.md`.
 
-The full 8.839 GB Friday PCAPNG is now canonicalized by a native disk-bounded adapter: 9,997,874 packets, 9,915,680 IPv4 packets, 7,094 small timestamp inversions, and 2,102,560 chronological directed one-second events in 1m20.72s with 47 MB maximum RSS. Labels remain absent/separate. See `docs/FRIDAY_PCAP_ADAPTER.md`.
+The full 8.839 GB Friday PCAPNG is now canonicalized by a native disk-bounded adapter: 9,997,874 packets, 9,915,680 IPv4 packets, 7,094 small timestamp inversions, and 2,102,560 chronological directed one-second events in 1m20.72s with 47 MB maximum RSS. Labels remain absent/separate. A causal context-only three-host builder produces 5,775 train-only `[3,141]→[6,141]` graph sequences with real TCP flags. No validation/test split is fabricated inside the one connected capture, and no model is trained yet. See `docs/FRIDAY_PCAP_ADAPTER.md` and `docs/FRIDAY_GRAPH_SEQUENCES.md`.
 
-The standalone senior report now includes explicit branching, V4 protocol, and Friday scale evidence. Current report SHA-256: `7c62926c14e3053663e90cffc622668dd3877dfc4b1af53bd81da203bddd1b5a`.
+The standalone senior report now includes explicit branching, V4 protocol, and Friday scale evidence. Current report SHA-256: `13eccd8e3b31c2ce0a44db4f1455c0c970cd5b59ff90c1950cdaf9dc185fc84a`.
 
 See `docs/MVP_STATUS.md` for full details.

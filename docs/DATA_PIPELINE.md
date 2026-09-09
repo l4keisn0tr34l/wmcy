@@ -714,7 +714,11 @@ Loads V3 train/validation only. An invariant context latent predicts two outcome
 
 Streams classic PCAP/PCAPNG through fixed-width disk partitions, aggregates complete one-second directed 5-tuples despite packet-order inversions, and k-way merges chronological observable events. Full Friday conversion produces 2,102,560 events with no labels. The regression script matches the small Scapy adapter's packet/byte/flag aggregates while preserving exact microsecond ticks. See `docs/FRIDAY_PCAP_ADAPTER.md`.
 
-# 40. Where each datapoint resides
+# 40. `39_build_friday_graph_sequences.py` + `40_test_friday_graph_sequences.py`
+
+Reads Friday observables only, forms complete dense five-second windows, chooses three-host rosters from context only, deterministically anonymizes slots, and emits 5,775 train-only context/future/edge arrays. Real TCP flags and capture-causal edge novelty are retained. No validation/test split is fabricated from the connected capture. The test checks artifact lineage, chronology, novelty, and context-only roster behavior. See `docs/FRIDAY_GRAPH_SEQUENCES.md`.
+
+# 41. Where each datapoint resides
 
 ## Raw synthetic packet evidence
 
@@ -784,7 +788,7 @@ configs/cic2017_known_mitre.csv
 
 ---
 
-# 41. What will actually be fed to the model
+# 42. What will actually be fed to the model
 
 Only past observable state information:
 
@@ -820,7 +824,7 @@ See `LEAKAGE_AND_SPLITS.md`.
 
 ---
 
-# 42. How this becomes a world model
+# 43. How this becomes a world model
 
 After the state layer is correct:
 
