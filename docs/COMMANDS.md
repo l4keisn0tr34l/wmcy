@@ -483,7 +483,7 @@ git commit -m "message"
 git push origin main
 ```
 
-## V5 five-host lab (draft; do not capture before Astra review)
+## V5 five-host lab (reviewed; full corpus gated on real smokes and freeze)
 
 ```bash
 .venv/bin/python scripts/46_validate_v5_plan.py
@@ -493,7 +493,21 @@ docker compose -p cyberwm_v5 -f lab/docker-compose-v5.yml up -d --build
 docker compose -p cyberwm_v5 -f lab/docker-compose-v5.yml ps
 ```
 
-The V4 and V5 networks use the same authorized private CIDR, so the old V4 compose network must be down before creating V5. After plan freeze and interactive sudo authorization:
+The V4 and V5 networks use the same authorized private CIDR, so the old V4 compose network must be down before creating V5. The reviewed runtime recreates only the owned V5 project per episode. Images are already built; do not rebuild them after freeze.
+
+First run exactly two smokes on AC power, in an interactive terminal:
+
+```bash
+systemd-inhibit --what=sleep:idle --mode=block bash lab/smoke_v5.sh
+```
+
+This does not freeze or start the corpus. After inspecting successful smoke outputs:
+
+```bash
+.venv/bin/python scripts/49_freeze_v5_capture.py --freeze
+```
+
+Only after that explicit capture freeze and interactive sudo authorization:
 
 ```bash
 cd lab

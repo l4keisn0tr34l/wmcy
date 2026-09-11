@@ -2,7 +2,7 @@
 
 ## Status
 
-**Draft validated plan; not yet capture-frozen. Astra methodology review is required before capture.**
+**Reviewed implementation; not yet capture-frozen. Two real smoke captures remain blocked on interactive sudo.** See `docs/V5_PRECAPTURE_REVIEW.md` for corrections, verified tests, and the smoke-only command.
 
 The purpose of V5 is to address the fresh V4 failures within a 3–4 day deadline. It does not retune any V3/V4 checkpoint or reuse an inspected test outcome.
 
@@ -10,7 +10,7 @@ Current draft hashes:
 
 ```text
 configs/mvp_v5_episode_plan.csv
-SHA-256 d4db26eff1eebfb50237c3a9d54bfe7eb9afa16966d1f256a15a62e10d69bade
+SHA-256 b6676819c7c9cdf13e7a8b40b1861f209fb0a85310708028864d3de3b26a0946
 
 configs/mvp_v5_split_assignments.csv
 SHA-256 ea9c885cb6d2219369707effbccce167d80072c068f39b15f145eadc42ac8dd5
@@ -47,7 +47,7 @@ srv2    10.77.0.40
 admin1  10.77.0.50
 ```
 
-Each paired family uses a unique seed-derived ordering of actor, pivot, target, and two background hosts. Every physical host appears as actor, pivot, and target in each split. All activity stays inside the authorized `10.77.0.0/24` Docker bridge.
+Each paired family uses a unique seed-derived host ordering; every physical host appears in each of its first three slots in every split. Only actor→pivot is an executed malicious hop: the legacy `target` and two `background_host` slots are audit metadata, not a second hop. All five hosts generate benign background. All activity stays inside the authorized `10.77.0.0/24` internal Docker bridge.
 
 This is one larger flat topology, not evidence of unseen-topology generalization. It tests increased graph size and role/background diversity. Multiple topology families remain future work.
 
@@ -103,7 +103,7 @@ Every split contains exactly balanced paired families from:
 - `admin`: periodic legitimate administrative SSH;
 - `mixed`: web, ping, and administrative traffic together.
 
-The two hosts not assigned actor/pivot/target generate background traffic. Paired alternatives share seed, roles, and background profile. Captures remain independent and therefore similar rather than packet-identical.
+All five hosts generate background through capture end−2 seconds, so source inactivity is not an actor-role marker. Paired alternatives share seed, roles, and background profile. Validation/test cohort profiles are rotated rather than repeating the old quiet/web versus admin/mixed partition. Two families per small cohort still cannot fully cross four profiles; stratify results and disclose residual confounding. Captures remain independent and therefore similar rather than packet-identical.
 
 ## Temporal schedule
 
@@ -111,17 +111,18 @@ V5 uses elapsed-time scheduling rather than accumulating command runtimes:
 
 ```text
 capture start
-~25 s: discovery where applicable
-~50 s: guessing where applicable
-~85 s: chosen action or SSH outcome
+20–28 s: discovery where applicable
+43–50 s: guessing where applicable
+80–103 s: chosen action decision (family-seeded variation)
+next 5s boundary: forecast cutoff; application/SSH starts afterward
 150 s: capture end
 ```
 
-Actions align just after a five-second boundary. This leaves more than 60 seconds after intervention, preventing V4's missing sixth future-state failure. The action sequence still uses three complete pre-action states and six complete future states.
+The action is chosen before the cutoff, but application begins about 0.2s afterward. Unexpected runtime drift or inadequate future margin rejects the episode rather than shifting/padding the window. The action sequence uses three complete pre-action states and six complete future states. Capture is measured from tcpdump readiness to stop request. Fixed hash ordering interleaves split/cohort/alternative acquisition rather than using CSV order.
 
 ## Split policy
 
-All paired-family members remain in one split. Seeds and ordered actor/pivot/target triples are disjoint across splits.
+All paired-family members remain in one split. Seeds and ordered first-three-host audit triples are disjoint across splits. This is not proof of independent effective interaction patterns: the executed actor→pivot pair can recur, and equivariant models deliberately ignore arbitrary host labels.
 
 ```text
 train:      20 families / 40 episodes
@@ -148,6 +149,8 @@ action_pair = directed anonymous host pair
 
 The action pair must be permuted consistently with graph host relabeling.
 
+The implemented exporter has passive, action, and action-aligned-without-action modes; raw context/future shapes are `[N,3,345]` and `[N,6,345]`, with 20 directed pairs. No normalization is fitted during export. See `docs/V5_PRECAPTURE_REVIEW.md`.
+
 ### Targets
 
 Six future graph states, future edge presence, ATT&CK targets, completed-LM truth, and completed-LM pair truth. Attempted blocked SSH retains `T1021.004` attempt truth but is not marked completed LM.
@@ -166,7 +169,7 @@ Use one validation-frozen training protocol and carry eligible candidates to tes
 
 No candidate may be selected from train fit or V5 test. State metrics must use one V5 train-fitted scaler so candidates are directly comparable.
 
-## Exit criteria before capture
+## Exit criteria before full corpus capture
 
 - plan validator passes;
 - five-host Docker health and isolation pass;
@@ -175,7 +178,8 @@ No candidate may be selected from train fit or V5 test. State metrics must use o
 - firewall cleanup is verified;
 - background traffic is present according to profile;
 - no V5 test file is loaded by a training script;
-- Astra review accepts scope, splits, timing, and leakage rules.
+- Astra review accepts scope, splits, timing, and leakage rules;
+- `scripts/49_freeze_v5_capture.py --freeze` records reviewed source/image/smoke hashes after both real smokes pass; both corpus entry points enforce the resulting freeze.
 
 ## Remaining limitations
 

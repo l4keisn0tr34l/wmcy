@@ -2,10 +2,12 @@ x-v5-node: &v5-node
   build: .
   cap_add:
     - NET_ADMIN
+  volumes:
+    - ./v5_background.py:/opt/cyberwm/v5_background.py:ro
   command:
     - bash
     - -lc
-    - "python3 -m http.server 8080 >/tmp/http.log 2>&1 & exec /usr/sbin/sshd -D -e"
+    - "mkdir -p /srv/http; printf 'lab background\\n' >/srv/http/index.html; python3 -m http.server 8080 --directory /srv/http >/tmp/http.log 2>&1 & exec /usr/sbin/sshd -D -e"
   networks:
     labnet_v5: {}
 
@@ -47,6 +49,7 @@ services:
 
 networks:
   labnet_v5:
+    internal: true
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: cyberwmv5

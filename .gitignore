@@ -18,6 +18,9 @@ runs/
 # Temporary pipeline output and local corpus pause sentinel
 .processing-*/
 lab/.pause_corpus
+lab/.pause_v5_corpus
+lab/.v5_capture.lock
+lab/.v5_corpus.lock
 
 # Editor / OS files
 .DS_Store

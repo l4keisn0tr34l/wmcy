@@ -5,14 +5,15 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from pathlib import Path
-import random
 import re
 import sys
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-HOSTS = ["ws1", "ws2", "srv1", "srv2", "admin1"]
+sys.path.insert(0, str(ROOT))
+from src.cyberwm.v5_contract import HOSTS as INVENTORY, roles, capture_order
+HOSTS = list(INVENTORY)
 BACKGROUND = {"quiet", "web", "admin", "mixed"}
 REQUIRED = {"episode_id", "scenario", "seed", "duration_seconds", "cohort", "split",
             "paired_family", "defender_action", "background_profile", "topology_profile", "node_count"}
@@ -39,7 +40,7 @@ EXPECTED_EPISODES = {
 
 
 def role_order(seed: int) -> tuple[str, ...]:
-    hosts = HOSTS.copy(); random.Random(seed).shuffle(hosts); return tuple(hosts)
+    return tuple(roles(seed))
 
 
 def prior_seeds(config_dir: Path) -> set[int]:
@@ -90,9 +91,9 @@ def main() -> int:
         if set(rows.scenario) != COHORT_SCENARIOS[cohort]: raise ValueError(f"{family}: wrong alternatives")
         if not re.fullmatch(r"v5_(train|validation|test)_[a-z_]+_\d+", family):
             raise ValueError(f"invalid family ID: {family}")
-        roles = role_order(int(rows.seed.iloc[0]))[:3]
-        if roles in seen_triples: raise ValueError(f"reused actor/pivot/target ordering: {roles}")
-        seen_triples.add(roles); triples[split].add(roles)
+        triple = role_order(int(rows.seed.iloc[0]))[:3]
+        if triple in seen_triples: raise ValueError(f"reused actor/pivot/target ordering: {triple}")
+        seen_triples.add(triple); triples[split].add(triple)
         for row in rows.itertuples(index=False):
             expected_action = ACTION_MAP.get(row.scenario, "none")
             if row.defender_action != expected_action:
@@ -104,11 +105,18 @@ def main() -> int:
             if present != set(HOSTS): raise ValueError(f"{split} {role} lacks host coverage: {present}")
         family_profiles = plan[plan.split.eq(split)].drop_duplicates("paired_family").background_profile
         profile_counts = Counter(family_profiles)
-        if max(profile_counts.values()) - min(profile_counts.values()) > 0:
+        if set(profile_counts) != BACKGROUND or max(profile_counts.values()) - min(profile_counts.values()) > 0:
             raise ValueError(f"{split}: background families not exactly balanced: {profile_counts}")
     for scenario, expected_action in ACTION_MAP.items():
         if not plan.loc[plan.scenario.eq(scenario), "defender_action"].eq(expected_action).all():
             raise ValueError(f"{scenario}: defender action mismatch")
+    for cohort in ["scan_action", "credential_action", "passive_prefix", "benign_control"]:
+        val_profiles = set(plan.loc[plan.cohort.eq(cohort) & plan.split.eq("validation"), "background_profile"])
+        test_profiles = set(plan.loc[plan.cohort.eq(cohort) & plan.split.eq("test"), "background_profile"])
+        if val_profiles & test_profiles or val_profiles | test_profiles != BACKGROUND:
+            raise ValueError(f"{cohort}: validation/test profile rotation lost")
+    order = sorted(plan.episode_id, key=capture_order)
+    if order == plan.episode_id.tolist(): raise ValueError("capture order must not follow split/permit-before-block CSV order")
     total_seconds = int(plan.duration_seconds.sum())
     print("V5 plan PASS")
     print(plan.groupby(["split", "cohort", "scenario"]).size().to_string())

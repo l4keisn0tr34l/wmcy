@@ -402,10 +402,26 @@ Reason: V4 is a fresh test corpus. Retuning would erase the generalization evide
 
 ## D041 — Time-box V5 around five-host background/action diversity
 
-**Status:** Draft pending Astra review; no capture yet.
+**Status:** Reviewed implementation; capture freeze awaits two real smoke episodes. No capture yet.
 
 Use 80 paired 150-second episodes on one isolated five-host graph, with a real train/validation/test split, four balanced background profiles, scan and direct-credential actions, passive stopped/progressing pairs, benign controls, and a test-only matched-intent probe.
 
 Reason: V4 showed that action conditioning works in the narrow lab but passive precursor warning and direct-credential generalization fail. V5 must address those failures within 3–4 days. Eighty captures require 3h20m of raw wall time and leave enough schedule margin for processing/training/reporting.
 
-Guardrails: do not claim multiple-topology generalization; keep all paired alternatives in one split; keep intent probe out of training; schedule action by elapsed capture time and retain at least six complete future states; review/freeze before capture.
+Guardrails: do not claim multiple-topology generalization; keep all paired alternatives in one split; keep intent probe out of training; schedule action by elapsed capture time and retain at least six complete future states; review, run smokes, then freeze before full corpus capture.
+
+---
+
+## D042 — Separate action decision from application and enforce smoke-backed V5 capture freeze
+
+**Status:** Implemented and synthetically tested; real smokes blocked on interactive sudo.
+
+Choose the action before the forecast cutoff and apply it after; export its type/pair separately from three complete telemetry states. Use family-seeded timing variation, fixed hash capture order, sustained background from all hosts, and rotated validation/test cohort-profile assignments. Recreate the owned internal five-host network each episode, capture only inventory-to-inventory IPv4, and stop container-side descendants on every exit. Install raw completion metadata only after successful cleanup.
+
+Reason: the draft had an after-cutoff decision timestamp, role/background and quiet-tail shortcuts, acquisition-order confounding, and no enforced freeze gate. These are data/observability problems, not problems to hide behind a larger neural model.
+
+The new 345-feature exporter has separate passive, action, and action-aligned passive modes, strict schemas/reference/time/target validation, atomic immutable outputs, and explicit test locks. Fit no scaler during export. Future V5 candidates must share a train-context-only scaler; 141-feature checkpoint scalers cannot be reused. Shared parameter shape compatibility is verified, not beneficial transfer.
+
+Freeze only after both non-corpus smoke episodes pass raw/derived/action/background/cleanup validation. Record source, image, and raw-smoke hashes in `configs/mvp_v5_capture_freeze.json`; refuse changed provenance rather than retrofitting it. Both corpus entry points enforce the gate. Capture freeze is not model/evaluation freeze.
+
+Limits: one flat topology, one executed SSH hop, synthetic background, residual small-cohort profile confounding, non-identical matched captures, and unidentifiable intent remain. Exact CPU causality passes; CUDA float32 reduction differences (~3e-8) require numerical tolerance rather than a false bitwise-equality claim. See `docs/V5_PRECAPTURE_REVIEW.md`.

@@ -867,3 +867,11 @@ future source-target movement edge
 ```
 
 The world-state prediction remains primary.
+
+---
+
+# 49. Reviewed five-host V5 contract (pre-capture)
+
+`src/cyberwm/v5_contract.py` explicitly defines 15 global + 5×18 node + 20×12 pair features (345). `scripts/47_build_v5_sequences.py` exports raw 3-state contexts and 6-state futures, with strict schema, inventory, dense capture-boundary, entity-reference, and separate truth validation. Ordinary passive mode excludes intervention episodes; action mode provides chosen type/pair separately; passive_action mode exports the identical aligned context without those action variables. Test remains explicitly locked. No normalization is fitted during export.
+
+The runtime chooses actions before the forecast cutoff and applies them afterward. Capture bounds use readiness through stop request. Background is sustained from all five hosts; only inventory-to-inventory IPv4 enters graph states. Source/image/raw-smoke provenance and cleanup are prerequisites to capture freeze, not model inputs. See `docs/V5_PRECAPTURE_REVIEW.md` for precise transformations, limitations, tests, and smoke commands. Real smoke captures and capture freeze remain outstanding.
