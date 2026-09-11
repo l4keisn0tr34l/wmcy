@@ -1,0 +1,55 @@
+x-v5-node: &v5-node
+  build: .
+  cap_add:
+    - NET_ADMIN
+  command:
+    - bash
+    - -lc
+    - "python3 -m http.server 8080 >/tmp/http.log 2>&1 & exec /usr/sbin/sshd -D -e"
+  networks:
+    labnet_v5: {}
+
+services:
+  ws1:
+    <<: *v5-node
+    hostname: ws1
+    networks:
+      labnet_v5:
+        ipv4_address: 10.77.0.20
+
+  ws2:
+    <<: *v5-node
+    hostname: ws2
+    networks:
+      labnet_v5:
+        ipv4_address: 10.77.0.25
+
+  srv1:
+    <<: *v5-node
+    hostname: srv1
+    networks:
+      labnet_v5:
+        ipv4_address: 10.77.0.30
+
+  srv2:
+    <<: *v5-node
+    hostname: srv2
+    networks:
+      labnet_v5:
+        ipv4_address: 10.77.0.40
+
+  admin1:
+    <<: *v5-node
+    hostname: admin1
+    networks:
+      labnet_v5:
+        ipv4_address: 10.77.0.50
+
+networks:
+  labnet_v5:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: cyberwmv5
+    ipam:
+      config:
+        - subnet: 10.77.0.0/24

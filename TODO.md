@@ -127,6 +127,12 @@
 - [x] Generate a selected held-out V2 RSSM HTML/JSON replay with uncertainty and explicit selection disclosure.
 - [x] Regenerate the standalone senior-facing HTML report with complete V4 action/passive results and inline diagrams.
 - [ ] Visually inspect/polish and freeze the judge-facing HTML replay/report.
+- [x] Draft and validate a time-boxed 80-episode, five-host V5 plan with balanced background profiles and a real validation split.
+- [x] Implement isolated five-host Docker composition and V5 resumable runner; pass HTTP/SSH/firewall cleanup smoke checks.
+- [ ] Complete Astra methodology review, freeze V5 plan hashes, then capture two full smoke episodes.
+- [ ] Capture/process V5 `lab_109`–`lab_188`, pausing only between episodes.
+- [ ] Build dynamic five-host passive/action sequence contracts with test locks.
+- [ ] Freeze V5 scratch/Friday/V4-initialized comparisons on train/validation before opening test.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 

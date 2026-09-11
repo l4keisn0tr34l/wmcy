@@ -482,3 +482,27 @@ git add -A
 git commit -m "message"
 git push origin main
 ```
+
+## V5 five-host lab (draft; do not capture before Astra review)
+
+```bash
+.venv/bin/python scripts/46_validate_v5_plan.py
+
+docker compose -f lab/docker-compose.yml down
+docker compose -p cyberwm_v5 -f lab/docker-compose-v5.yml up -d --build
+docker compose -p cyberwm_v5 -f lab/docker-compose-v5.yml ps
+```
+
+The V4 and V5 networks use the same authorized private CIDR, so the old V4 compose network must be down before creating V5. After plan freeze and interactive sudo authorization:
+
+```bash
+cd lab
+./generate_v5_corpus.sh ../configs/mvp_v5_episode_plan.csv
+```
+
+Pause only between episodes:
+
+```bash
+touch lab/.pause_v5_corpus
+rm -f lab/.pause_v5_corpus
+```

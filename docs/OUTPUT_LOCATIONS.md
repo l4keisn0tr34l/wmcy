@@ -172,6 +172,8 @@ docs/V4_CAPTURE_RESULTS.md
 docs/V4_ACTION_MODEL_PROTOCOL.md
 docs/V4_ACTION_RESULTS.md
 docs/V4_PASSIVE_BRANCH_RESULTS.md
+docs/V5_PLAN.md
+docs/CSE_CIC_IDS2018_REMOTE.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
 docs/FRIDAY_PRETRAINING.md
@@ -236,6 +238,19 @@ models/mvp_v4_action_graph_rssm_friday_initialized.pt
 ```
 
 All captures validate. Action test arrays and one-shot reports now exist; do not rerun/tune against them. See `docs/V4_ACTION_RESULTS.md` and `docs/V4_PASSIVE_BRANCH_RESULTS.md`.
+
+## V5 draft corpus contract
+
+```text
+configs/mvp_v5_episode_plan.csv
+configs/mvp_v5_split_assignments.csv
+lab/docker-compose-v5.yml
+lab/run_v5_episode.sh
+lab/generate_v5_corpus.sh
+scripts/46_validate_v5_plan.py
+```
+
+No V5 captures exist yet. The plan is pending Astra review and hash freeze.
 
 ## Hardware validation
 

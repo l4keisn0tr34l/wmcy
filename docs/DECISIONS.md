@@ -396,3 +396,16 @@ Reason: complete capture-bounded state targets are a causal temporal invariant. 
 Do not adjust the V3 validation threshold or retrain the passive branch model against V4. Report that it alerted 3/3 stopped scan/guess episodes but 0/3 progressing episodes before a positive horizon, and missed 3/3 direct-credential progressions.
 
 Reason: V4 is a fresh test corpus. Retuning would erase the generalization evidence. The state branches still show outcome specialization and oracle coverage, while the gate and precursor-specific alert behavior do not transfer reliably. Future improvement requires new train/validation episodes and broader scenarios/topologies.
+
+
+---
+
+## D041 — Time-box V5 around five-host background/action diversity
+
+**Status:** Draft pending Astra review; no capture yet.
+
+Use 80 paired 150-second episodes on one isolated five-host graph, with a real train/validation/test split, four balanced background profiles, scan and direct-credential actions, passive stopped/progressing pairs, benign controls, and a test-only matched-intent probe.
+
+Reason: V4 showed that action conditioning works in the narrow lab but passive precursor warning and direct-credential generalization fail. V5 must address those failures within 3–4 days. Eighty captures require 3h20m of raw wall time and leave enough schedule margin for processing/training/reporting.
+
+Guardrails: do not claim multiple-topology generalization; keep all paired alternatives in one split; keep intent probe out of training; schedule action by elapsed capture time and retain at least six complete future states; review/freeze before capture.

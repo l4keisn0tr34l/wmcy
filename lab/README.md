@@ -140,6 +140,25 @@ rm -f lab/.pause_corpus
 
 Completed episodes are validated and skipped. If Ctrl+C interrupts an active capture, that one partial episode must be quarantined/regenerated; resume is otherwise episode-granular.
 
+## V5 five-host lab
+
+V5 uses a separate Compose project and bridge but retains the authorized `10.77.0.0/24` scope. Stop the old three-host network before starting it:
+
+```bash
+docker compose -f lab/docker-compose.yml down
+docker compose -p cyberwm_v5 -f lab/docker-compose-v5.yml up -d --build
+.venv/bin/python scripts/46_validate_v5_plan.py
+```
+
+After Astra review and plan freeze, capture with interactive sudo:
+
+```bash
+cd lab
+./generate_v5_corpus.sh ../configs/mvp_v5_episode_plan.csv
+```
+
+Use `lab/.pause_v5_corpus` to pause between episodes. V5 has five hosts, balanced background profiles, 80 episodes at 150 seconds, and a dedicated validation split. See `docs/V5_PLAN.md`.
+
 ## Data policy
 
 `lab/episodes/` is Git-ignored. Raw captures and manifests stay local and immutable. Publish only explicitly selected, reviewed demo artifacts later.

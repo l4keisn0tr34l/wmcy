@@ -2,29 +2,50 @@
 
 > Overwrite this file before each new code-writing batch.
 
-## V4 milestone complete
+## V5 draft ready for Astra review — do not capture yet
 
-Action and passive evaluations are frozen and inspected. Do not retrain, retune thresholds, or rerun either sealed evaluator.
-
-Key action result: on five eligible permit/block pairs, scratch state MAE is `.0603`, edge/LM/pair AP is `1.0`, and the factual action has lower state error than the opposite action on `10/10` contexts. Friday initialization has worse state MAE `.0719`.
-
-Key passive result: across 12 passive/direct episodes, the frozen branch model alerts on `3/3` stopped prefixes but `0/3` progressing prefixes before a positive horizon and `0/3` direct-credential progressions. Window LM F1/AP is `.483/.472`.
-
-On the same 10 action contexts, passive/action LM F1 is directly comparable at `.400/1.000`. Passive/action normalized state MAEs `.141/.060` use different V3/V4 training scalers and must not be presented as a direct improvement ratio. The within-action-model factual-versus-opposite comparison is valid.
-
-## Report
+A time-boxed V5 draft is implemented and statically validated:
 
 ```text
-/home/paprika/Downloads/rssm_eod_report.html
-outputs/mvp_v2/report/rssm_eod_report.html
-SHA-256 7b886a2d0da7bbc856deda7a621f33d9ff34eda22197bcc79698ba1597fe25e5
+80 episodes / 40 paired families
+150 seconds each / 3h20m raw capture
+5 hosts / 345-feature expected graph contract
+train 40 / validation 16 / sealed test 24 episodes
 ```
 
-## Next work
+Cohorts: scan permit/block, direct-credential permit/block, passive stopped/progressing, benign controls, and test-only legitimate/malicious intent probe. Every split has complete five-host actor/pivot/target coverage; each split balances quiet/web/admin/mixed background families exactly. All 40 ordered role triples are unique across splits.
 
-1. Do not tune against V3 or V4.
-2. Design a new corpus with additional topologies, host counts, background processes, direct-credential paths, and interventions.
-3. Create topology/scenario-disjoint train/validation/test before model changes.
-4. Obtain additional precise raw PCAP/Zeek captures with disconnected capture groups; avoid label-only shuffled IDS CSVs.
-5. Evaluate public initialization across multiple captures.
-6. Add calibration only after enough independent validation episodes exist.
+Files:
+
+```text
+configs/mvp_v5_episode_plan.csv
+configs/mvp_v5_split_assignments.csv
+scripts/46_validate_v5_plan.py
+lab/docker-compose-v5.yml
+lab/run_v5_episode.sh
+lab/generate_v5_corpus.sh
+docs/V5_PLAN.md
+```
+
+Draft plan hashes (not frozen):
+
+```text
+d4db26eff1eebfb50237c3a9d54bfe7eb9afa16966d1f256a15a62e10d69bade
+ea9c885cb6d2219369707effbccce167d80072c068f39b15f145eadc42ac8dd5
+```
+
+Five V5 containers are currently running under Compose project `cyberwm_v5`; HTTP, SSH, source-specific block, and firewall cleanup smoke checks pass. The old V4 network was stopped because both use the authorized `10.77.0.0/24` range.
+
+## Required next step
+
+Switch Pi to `openai-codex/gpt-6-astra` now for one methodology/code review before capture. Astra should:
+
+1. read `docs/V5_PLAN.md`, plan/split CSVs, validator, compose file, and both V5 shell scripts completely;
+2. audit scope feasibility, paired design, schedule margin, leakage, split balance, process cleanup, and shell safety;
+3. run static tests and inspect the live five-container lab;
+4. make only necessary pre-capture corrections;
+5. add dynamic five-host sequence/action builders and tests;
+6. capture one benign and one blocked-action smoke episode only after review;
+7. freeze hashes only after both smoke episodes process and validate.
+
+Do not capture the 80-episode corpus yet. Do not retune V3/V4.
