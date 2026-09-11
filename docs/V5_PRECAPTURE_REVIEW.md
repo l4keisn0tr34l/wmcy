@@ -2,9 +2,9 @@
 
 ## Status
 
-Implementation/methodology review completed; **capture approval is conditional on two real smokes**. Neither smoke nor the 80-episode corpus has been captured. Interactive `sudo -n true` still reports a password requirement. The existing running containers are the earlier configuration; the smoke controller recreates only the owned V5 project with the reviewed configuration.
+Implementation/methodology review and two real smokes completed; **capture protocol is frozen and the 80-episode corpus has not started**. Interactive sudo remains required for corpus capture. The controller recreates only the owned V5 project with the frozen configuration.
 
-No V3/V4 test predictions or tuning were performed. V5 model/evaluation protocols are not frozen. A capture freeze is a separate artifact and cannot currently be created because real smoke outputs are absent.
+No V3/V4 test predictions or tuning were performed. V5 model/evaluation protocols are not frozen. The capture-only freeze exists at `configs/mvp_v5_capture_freeze.json` (SHA-256 `53069f98ed2f8e686f973da6aa6f62f22f4d9b735def1da9868e7247783a20df`). V5 model/evaluation protocols remain explicitly unfrozen.
 
 ## Corrections and why they matter
 
@@ -56,7 +56,7 @@ Output directories: `outputs/mvp_v5/sequences/<mode>/<split>/`, each with `<spli
 
 ## Verified, not hypothesized
 
-- Eleven synthetic regressions pass: shapes, silent inventory, benign windows, completed point-event LM, blocked attempt semantics, truth/future input independence, late action/short horizon rejection, unknown-host/extra-label/reference rejection, test lock, immutable export, freeze gate, and permutation/schedule checks.
+- Twelve synthetic regressions pass, including shutdown/sleep inhibitor enforcement: shapes, silent inventory, benign windows, completed point-event LM, blocked attempt semantics, truth/future input independence, late action/short horizon rejection, unknown-host/extra-label/reference rejection, test lock, immutable export, freeze gate, and permutation/schedule checks.
 - On local CUDA, all 120 host/action-pair permutations have maximum float32 discrepancy `2.98e-8` initially and `3.35e-8` in the final repeat.
 - Exact CPU future-perturbation discrepancy is zero. CUDA discrepancy `2.98e-8` is within the `1e-6` test tolerance; repeated identical CUDA inputs also differed at that scale because of floating-point reductions. Do not report CUDA bitwise equality.
 - Gradients tested are finite. Shared-slot scaler normalization commutes with host relabeling.
@@ -67,28 +67,15 @@ Output directories: `outputs/mvp_v5/sequences/<mode>/<split>/`, each with `<spli
 
 Development failures were caught before capture: an invalid BPF expression, pandas boolean case conversion in a synthetic action fixture, and an unjustified bitwise CUDA assertion. They were corrected; none produced a real episode or evaluation score.
 
-## Required next action: two smokes, not the corpus
+## Real smoke evidence and next action
 
-On AC power, keeping the laptop awake, run in an interactive terminal:
+The first `v5_smoke_001` attempt was interrupted by a user-confirmed manual shutdown after about 112 seconds. It is preserved as `_quarantine_v5_smoke_001_reboot_20260911T234648` (PCAP SHA-256 `28af0a56f6a61a80a9ef1d53e2925cc7d233292d5e5f84b5a362450cba30bf81`) and is not data. Entry points now self-enforce a blocking `shutdown:sleep:idle` inhibitor.
 
-```bash
-cd /home/paprika/Documents/153/wm
-bash lab/smoke_v5.sh
-```
+The two replacement smokes completed:
 
-The script self-wraps with a blocking `shutdown:sleep:idle` systemd inhibitor, so ordinary desktop reboot/shutdown and sleep requests cannot silently truncate a capture. Enter the sudo password only at the terminal prompt. This runs exactly:
+- benign legitimate SSH: `150.000136s`, 29 dense states, 184 observations, five-host sustained mixed traffic, no ATT&CK/LM truth;
+- blocked scan/guess: `150.000197s`, 29 dense states, 228 observations, `T1046`, `T1110.001`, attempted `T1021.004`, and zero completed LM.
 
-- `v5_smoke_001`: legitimate SSH with mixed background (benign truth);
-- `v5_smoke_002`: scan/guess + chosen SSH block with mixed background.
+Both had zero packet drops, only inventory IPs, clean firewall/container shutdown, current source/image provenance, and passing raw/derived/V5 validators. In the blocked PCAP, the action was chosen before the five-second cutoff and applied afterward; the actor SYN receives a pivot TCP reset. Action and action-aligned-passive context/future/target arrays are exactly equal; only the former contains chosen action variables.
 
-Each lasts 150 seconds plus restart/processing overhead. The script processes, validates, and exports the smoke contracts; **it neither freezes nor starts the full corpus**. If it fails, preserve the raw directory and report the error; do not overwrite it or Ctrl+Z a capture.
-
-The first real attempt at `v5_smoke_001` was interrupted by a clean system reboot after about 112 seconds. It is preserved as `_quarantine_v5_smoke_001_reboot_20260911T234648` (PCAP SHA-256 `28af0a56f6a61a80a9ef1d53e2925cc7d233292d5e5f84b5a362450cba30bf81`) and is not data. AC remained online; logs establish a logind reboot request but not its initiator. This exposed that the earlier command inhibited sleep/idle only; the entry points now enforce shutdown inhibition themselves.
-
-After inspecting both completed outputs, explicitly run:
-
-```bash
-.venv/bin/python scripts/49_freeze_v5_capture.py --freeze
-```
-
-This reruns tests, checks raw smoke/provenance/background/cleanup, and writes `configs/mvp_v5_capture_freeze.json`. A reviewed source change after a smoke requires a new smoke capture, not retrofitted provenance. Only after that freeze may the corpus generator be started. Model budgets, initialization treatment, thresholds, branch protocol, and metrics still require a separate train/validation freeze before sealed evaluation.
+The capture-only freeze records 36 smoke artifact hashes and an 80-ID hash order. The corpus may now start with `bash lab/generate_v5_corpus.sh` when the user is ready for the interactive sudo boundary and approximately 3h20 of raw capture. Model budgets, initialization treatment, thresholds, branch protocol, and metrics still require a separate train/validation freeze before sealed evaluation.

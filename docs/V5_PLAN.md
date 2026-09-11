@@ -2,11 +2,11 @@
 
 ## Status
 
-**Reviewed implementation; not yet capture-frozen. Two real smoke captures remain blocked on interactive sudo.** See `docs/V5_PRECAPTURE_REVIEW.md` for corrections, verified tests, and the smoke-only command.
+**Capture protocol frozen after two successful real smoke captures; full corpus not started. Model/evaluation protocol remains unfrozen.** See `docs/V5_PRECAPTURE_REVIEW.md` for corrections and smoke evidence.
 
 The purpose of V5 is to address the fresh V4 failures within a 3–4 day deadline. It does not retune any V3/V4 checkpoint or reuse an inspected test outcome.
 
-Current draft hashes:
+Frozen hashes:
 
 ```text
 configs/mvp_v5_episode_plan.csv
@@ -14,6 +14,9 @@ SHA-256 b6676819c7c9cdf13e7a8b40b1861f209fb0a85310708028864d3de3b26a0946
 
 configs/mvp_v5_split_assignments.csv
 SHA-256 ea9c885cb6d2219369707effbccce167d80072c068f39b15f145eadc42ac8dd5
+
+configs/mvp_v5_capture_freeze.json
+SHA-256 53069f98ed2f8e686f973da6aa6f62f22f4d9b735def1da9868e7247783a20df
 ```
 
 ## Core questions

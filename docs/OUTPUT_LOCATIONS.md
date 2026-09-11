@@ -239,18 +239,23 @@ models/mvp_v4_action_graph_rssm_friday_initialized.pt
 
 All captures validate. Action test arrays and one-shot reports now exist; do not rerun/tune against them. See `docs/V4_ACTION_RESULTS.md` and `docs/V4_PASSIVE_BRANCH_RESULTS.md`.
 
-## V5 draft corpus contract
+## V5 frozen capture contract and smokes
 
 ```text
 configs/mvp_v5_episode_plan.csv
 configs/mvp_v5_split_assignments.csv
+configs/mvp_v5_capture_freeze.json
 lab/docker-compose-v5.yml
 lab/run_v5_episode.sh
 lab/generate_v5_corpus.sh
-scripts/46_validate_v5_plan.py
+lab/episodes/v5_smoke_001
+lab/episodes/v5_smoke_002
+outputs/mvp_v5/sequences/{passive,action,passive_action}/smoke/
+outputs/mvp_v5/review/capture_freeze.txt
+scripts/46_validate_v5_plan.py ... scripts/49_freeze_v5_capture.py
 ```
 
-No V5 captures exist yet. The plan is pending Astra review and hash freeze.
+Both complete smokes validate and capture is frozen. The first manually interrupted smoke is separately quarantined and excluded. No 80-episode corpus capture or V5 model/evaluation protocol exists yet. See `docs/V5_PRECAPTURE_REVIEW.md`.
 
 ## Hardware validation
 

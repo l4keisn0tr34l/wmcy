@@ -130,7 +130,7 @@
 - [x] Draft and validate a time-boxed 80-episode, five-host V5 plan with balanced background profiles and a real validation split.
 - [x] Implement isolated five-host Docker composition and V5 resumable runner; pass HTTP/SSH/firewall cleanup smoke checks.
 - [x] Complete Astra pre-capture methodology/code review and correct timing, background, cleanup, and freeze gating.
-- [ ] Re-run two full V5 smokes with interactive sudo (`lab/smoke_v5.sh`), inspect results, THEN freeze capture hashes; first smoke attempt was reboot-interrupted and quarantined.
+- [x] Run, inspect, and validate two full V5 smokes; freeze capture/source/image/raw-smoke hashes. First attempt was manually interrupted and quarantined.
 - [ ] Capture/process V5 `lab_109`–`lab_188`, pausing only between episodes; enforced freeze required.
 - [x] Build five-host passive/action/aligned-passive contracts with test locks; 11 synthetic tests and CUDA/CPU causality/permutation checks pass.
 - [ ] Freeze V5 scratch/Friday/V4-initialized comparisons on train/validation before opening test.

@@ -414,7 +414,7 @@ Guardrails: do not claim multiple-topology generalization; keep all paired alter
 
 ## D042 — Separate action decision from application and enforce smoke-backed V5 capture freeze
 
-**Status:** Implemented and synthetically tested; real smokes blocked on interactive sudo.
+**Status:** Capture protocol frozen after synthetic checks and two validated real smokes; corpus/model protocol not started.
 
 Choose the action before the forecast cutoff and apply it after; export its type/pair separately from three complete telemetry states. Use family-seeded timing variation, fixed hash capture order, sustained background from all hosts, and rotated validation/test cohort-profile assignments. Recreate the owned internal five-host network each episode, capture only inventory-to-inventory IPv4, and stop container-side descendants on every exit. Install raw completion metadata only after successful cleanup.
 
@@ -422,6 +422,6 @@ Reason: the draft had an after-cutoff decision timestamp, role/background and qu
 
 The new 345-feature exporter has separate passive, action, and action-aligned passive modes, strict schemas/reference/time/target validation, atomic immutable outputs, and explicit test locks. Fit no scaler during export. Future V5 candidates must share a train-context-only scaler; 141-feature checkpoint scalers cannot be reused. Shared parameter shape compatibility is verified, not beneficial transfer.
 
-Freeze only after both non-corpus smoke episodes pass raw/derived/action/background/cleanup validation. Record source, image, and raw-smoke hashes in `configs/mvp_v5_capture_freeze.json`; refuse changed provenance rather than retrofitting it. Both corpus entry points enforce the gate. Capture freeze is not model/evaluation freeze. After the first smoke was interrupted by a normal logind reboot request, both capture entry points were additionally made to self-enforce a blocking `shutdown:sleep:idle` inhibitor; the partial raw smoke was quarantined rather than completed or processed.
+Freeze only after both non-corpus smoke episodes pass raw/derived/action/background/cleanup validation. Record source, image, and raw-smoke hashes in `configs/mvp_v5_capture_freeze.json`; refuse changed provenance rather than retrofitting it. Both corpus entry points enforce the gate. Capture freeze is not model/evaluation freeze. After the first smoke was interrupted by a user-confirmed manual shutdown through logind, both capture entry points were additionally made to self-enforce a blocking `shutdown:sleep:idle` inhibitor; the partial raw smoke was quarantined rather than completed or processed.
 
 Limits: one flat topology, one executed SSH hop, synthetic background, residual small-cohort profile confounding, non-identical matched captures, and unidentifiable intent remain. Exact CPU causality passes; CUDA float32 reduction differences (~3e-8) require numerical tolerance rather than a false bitwise-equality claim. See `docs/V5_PRECAPTURE_REVIEW.md`.
