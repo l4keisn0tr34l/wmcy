@@ -35,7 +35,7 @@ raw capture wall time: 3 hours 20 minutes
 train/validation/test: 40 / 16 / 24 episodes
 ```
 
-Allow approximately another 30–60 minutes for Docker transitions and processing. Capture remains resumable and may be paused only between episodes.
+Allow approximately another 30–60 minutes for Docker transitions and processing. Corpus generation is resumable only between complete episodes and may be paused only between episodes. Interrupted raw episodes are quarantined and recaptured from time zero. Smoke/corpus entry points self-enforce a blocking shutdown/sleep/idle inhibitor.
 
 ## Five-host inventory
 

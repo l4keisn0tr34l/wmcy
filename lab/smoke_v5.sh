@@ -4,6 +4,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PYTHON="$ROOT/.venv/bin/python"
+if [[ "${V5_SYSTEM_INHIBITED:-0}" != 1 ]]; then
+  command -v systemd-inhibit >/dev/null || { echo "systemd-inhibit is required" >&2; exit 1; }
+  exec systemd-inhibit --what=shutdown:sleep:idle --mode=block \
+    --who=cyberwm-v5-smoke --why="Protect complete V5 capture windows" \
+    env V5_SYSTEM_INHIBITED=1 bash "$0" "$@"
+fi
 cd "$ROOT"
 exec 9>"$SCRIPT_DIR/.v5_corpus.lock"
 flock -n 9 || { echo "another capture controller is running" >&2; exit 1; }

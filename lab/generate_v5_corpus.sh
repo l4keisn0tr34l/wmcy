@@ -5,6 +5,12 @@ ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PYTHON="$ROOT/.venv/bin/python"
 PLAN="${1:-$ROOT/configs/mvp_v5_episode_plan.csv}"
 PAUSE_FILE="$SCRIPT_DIR/.pause_v5_corpus"
+if [[ "${V5_SYSTEM_INHIBITED:-0}" != 1 ]]; then
+  command -v systemd-inhibit >/dev/null || { echo "systemd-inhibit is required" >&2; exit 1; }
+  exec systemd-inhibit --what=shutdown:sleep:idle --mode=block \
+    --who=cyberwm-v5-corpus --why="Protect complete V5 capture windows" \
+    env V5_SYSTEM_INHIBITED=1 bash "$0" "$@"
+fi
 [[ "$(realpath "$PLAN")" == "$ROOT/configs/mvp_v5_episode_plan.csv" ]] || { echo "only the frozen V5 plan is accepted" >&2; exit 1; }
 exec 9>"$SCRIPT_DIR/.v5_corpus.lock"
 flock -n 9 || { echo "another corpus controller is running" >&2; exit 1; }

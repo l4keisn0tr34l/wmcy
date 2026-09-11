@@ -128,6 +128,12 @@ class ContractTests(unittest.TestCase):
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         module.FREEZE=self.root/"absent_freeze.json"
         with self.assertRaisesRegex(PermissionError,"NOT FROZEN"):module.check_freeze()
+    def test_capture_entrypoints_inhibit_shutdown_and_sleep(self):
+        for relative in ["lab/smoke_v5.sh", "lab/generate_v5_corpus.sh"]:
+            text=(ROOT/relative).read_text()
+            self.assertIn("--what=shutdown:sleep:idle",text)
+            self.assertIn("V5_SYSTEM_INHIBITED=1",text)
+            self.assertLess(text.index("--what=shutdown:sleep:idle"),text.index("sudo -v"))
     def test_schedule_bounds(self):
         schedules=[schedule(i) for i in range(10000,10200)]
         self.assertGreater(len({s["decision_seconds"] for s in schedules}),10)

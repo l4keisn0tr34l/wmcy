@@ -498,10 +498,10 @@ The V4 and V5 networks use the same authorized private CIDR, so the old V4 compo
 First run exactly two smokes on AC power, in an interactive terminal:
 
 ```bash
-systemd-inhibit --what=sleep:idle --mode=block bash lab/smoke_v5.sh
+bash lab/smoke_v5.sh
 ```
 
-This does not freeze or start the corpus. After inspecting successful smoke outputs:
+The script self-enforces a blocking `shutdown:sleep:idle` inhibitor. This does not freeze or start the corpus. After inspecting successful smoke outputs:
 
 ```bash
 .venv/bin/python scripts/49_freeze_v5_capture.py --freeze

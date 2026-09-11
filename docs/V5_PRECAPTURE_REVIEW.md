@@ -73,17 +73,19 @@ On AC power, keeping the laptop awake, run in an interactive terminal:
 
 ```bash
 cd /home/paprika/Documents/153/wm
-systemd-inhibit --what=sleep:idle --mode=block bash lab/smoke_v5.sh
+bash lab/smoke_v5.sh
 ```
 
-Enter the sudo password only at the terminal prompt. This runs exactly:
+The script self-wraps with a blocking `shutdown:sleep:idle` systemd inhibitor, so ordinary desktop reboot/shutdown and sleep requests cannot silently truncate a capture. Enter the sudo password only at the terminal prompt. This runs exactly:
 
 - `v5_smoke_001`: legitimate SSH with mixed background (benign truth);
 - `v5_smoke_002`: scan/guess + chosen SSH block with mixed background.
 
 Each lasts 150 seconds plus restart/processing overhead. The script processes, validates, and exports the smoke contracts; **it neither freezes nor starts the full corpus**. If it fails, preserve the raw directory and report the error; do not overwrite it or Ctrl+Z a capture.
 
-After inspecting both outputs, explicitly run:
+The first real attempt at `v5_smoke_001` was interrupted by a clean system reboot after about 112 seconds. It is preserved as `_quarantine_v5_smoke_001_reboot_20260911T234648` (PCAP SHA-256 `28af0a56f6a61a80a9ef1d53e2925cc7d233292d5e5f84b5a362450cba30bf81`) and is not data. AC remained online; logs establish a logind reboot request but not its initiator. This exposed that the earlier command inhibited sleep/idle only; the entry points now enforce shutdown inhibition themselves.
+
+After inspecting both completed outputs, explicitly run:
 
 ```bash
 .venv/bin/python scripts/49_freeze_v5_capture.py --freeze
