@@ -2,7 +2,7 @@
 
 ## Status
 
-**Capture protocol frozen after two successful real smoke captures; full corpus not started. Model/evaluation protocol remains unfrozen.** See `docs/V5_PRECAPTURE_REVIEW.md` for corrections and smoke evidence.
+**Capture complete: all 80 episodes pass general/V5 validation and the equal-duration consistency audit. Model/evaluation protocol remains unfrozen; test model evaluation has not occurred.** See `docs/V5_CORPUS_AUDIT.md`.
 
 The purpose of V5 is to address the fresh V4 failures within a 3–4 day deadline. It does not retune any V3/V4 checkpoint or reuse an inspected test outcome.
 

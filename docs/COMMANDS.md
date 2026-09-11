@@ -483,7 +483,7 @@ git commit -m "message"
 git push origin main
 ```
 
-## V5 five-host lab (reviewed; full corpus gated on real smokes and freeze)
+## V5 five-host lab (capture complete; commands retained for provenance)
 
 ```bash
 .venv/bin/python scripts/46_validate_v5_plan.py
@@ -520,3 +520,11 @@ Pause only between episodes:
 touch lab/.pause_v5_corpus
 rm -f lab/.pause_v5_corpus
 ```
+
+Capture is now complete; do not rerun it. The all-split consistency audit was generated with:
+
+```bash
+.venv/bin/python scripts/50_audit_v5_corpus.py --deep-validate
+```
+
+Before any test export, build train/validation datasets and separately freeze the model/scaler/metric protocol. The capture freeze is not a model freeze.

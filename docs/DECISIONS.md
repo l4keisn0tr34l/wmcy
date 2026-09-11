@@ -414,7 +414,7 @@ Guardrails: do not claim multiple-topology generalization; keep all paired alter
 
 ## D042 — Separate action decision from application and enforce smoke-backed V5 capture freeze
 
-**Status:** Capture protocol frozen after synthetic checks and two validated real smokes; corpus/model protocol not started.
+**Status:** Capture protocol frozen and all 80 episodes completed/validated; model protocol not started.
 
 Choose the action before the forecast cutoff and apply it after; export its type/pair separately from three complete telemetry states. Use family-seeded timing variation, fixed hash capture order, sustained background from all hosts, and rotated validation/test cohort-profile assignments. Recreate the owned internal five-host network each episode, capture only inventory-to-inventory IPv4, and stop container-side descendants on every exit. Install raw completion metadata only after successful cleanup.
 
@@ -425,3 +425,17 @@ The new 345-feature exporter has separate passive, action, and action-aligned pa
 Freeze only after both non-corpus smoke episodes pass raw/derived/action/background/cleanup validation. Record source, image, and raw-smoke hashes in `configs/mvp_v5_capture_freeze.json`; refuse changed provenance rather than retrofitting it. Both corpus entry points enforce the gate. Capture freeze is not model/evaluation freeze. After the first smoke was interrupted by a user-confirmed manual shutdown through logind, both capture entry points were additionally made to self-enforce a blocking `shutdown:sleep:idle` inhibitor; the partial raw smoke was quarantined rather than completed or processed.
 
 Limits: one flat topology, one executed SSH hop, synthetic background, residual small-cohort profile confounding, non-identical matched captures, and unidentifiable intent remain. Exact CPU causality passes; CUDA float32 reduction differences (~3e-8) require numerical tolerance rather than a false bitwise-equality claim. See `docs/V5_PRECAPTURE_REVIEW.md`.
+
+---
+
+## D043 — Accept equal-duration V5 corpus while disclosing residual paired timing phase
+
+**Status:** Applied after capture, before model preprocessing/training or test export.
+
+Accept all 80 planned episodes: each independently passes raw/derived/V5 validation, has a 150.000094–150.000615-second capture, exactly 29 complete dense states, and zero drops. Attack-intent and benign/legitimate mean raw durations differ by only 15 microseconds; maximum paired duration difference is 0.456 ms. This removes the historical outcome-dependent duration/censoring shortcut.
+
+Retain and disclose that independent capture phases can place a paired forecast cutoff one state apart. This occurs in 2/20 action families; action-pair cutoff-offset differences are at most 3.3595 seconds (scan) and 2.7230 seconds (credential). Do not call the pairs packet-identical counterfactual twins. Each action sample nevertheless has three immediately preceding complete states and at least six complete futures, with minimum raw margin 42.294828 seconds.
+
+Classify 12 post-block administrative SSH failures as real consequences of the chosen source-target firewall action and one tail timeout as bounded deadline behavior. Do not erase them: the defender action affects legitimate traffic on the selected pair as well as the focal attacker attempt. Quarantined partial attempts remain excluded.
+
+This is all-split dataset integrity QA only. It must not choose preprocessing, architecture, hyperparameters, thresholds, or candidate models. See `docs/V5_CORPUS_AUDIT.md`.

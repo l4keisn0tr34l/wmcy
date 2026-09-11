@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation/methodology review and two real smokes completed; **capture protocol is frozen and the 80-episode corpus has not started**. Interactive sudo remains required for corpus capture. The controller recreates only the owned V5 project with the frozen configuration.
+Implementation/methodology review and two real smokes completed before capture. **The subsequently frozen 80-episode corpus is now complete and passes the post-capture consistency audit.** This document preserves the pre-capture rationale; see `docs/V5_CORPUS_AUDIT.md` for observed corpus evidence.
 
 No V3/V4 test predictions or tuning were performed. V5 model/evaluation protocols are not frozen. The capture-only freeze exists at `configs/mvp_v5_capture_freeze.json` (SHA-256 `53069f98ed2f8e686f973da6aa6f62f22f4d9b735def1da9868e7247783a20df`). V5 model/evaluation protocols remain explicitly unfrozen.
 
@@ -78,4 +78,4 @@ The two replacement smokes completed:
 
 Both had zero packet drops, only inventory IPs, clean firewall/container shutdown, current source/image provenance, and passing raw/derived/V5 validators. In the blocked PCAP, the action was chosen before the five-second cutoff and applied afterward; the actor SYN receives a pivot TCP reset. Action and action-aligned-passive context/future/target arrays are exactly equal; only the former contains chosen action variables.
 
-The capture-only freeze records 36 smoke artifact hashes and an 80-ID hash order. The corpus may now start with `bash lab/generate_v5_corpus.sh` when the user is ready for the interactive sudo boundary and approximately 3h20 of raw capture. Model budgets, initialization treatment, thresholds, branch protocol, and metrics still require a separate train/validation freeze before sealed evaluation.
+The capture-only freeze records 36 smoke artifact hashes and an 80-ID hash order. The corpus subsequently completed through the frozen generator. Model budgets, initialization treatment, thresholds, branch protocol, and metrics still require a separate train/validation freeze before sealed evaluation.

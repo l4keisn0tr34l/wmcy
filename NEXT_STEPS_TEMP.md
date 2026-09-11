@@ -1,28 +1,18 @@
-# V5 capture frozen after two validated real smokes
+# V5 corpus complete — consistency audit and train/validation protocol next
 
-## Observed milestone
+## Observed corpus facts
 
-- v5_smoke_001 legitimate SSH: 150.000136s,29 dense states,184 observations,0 truth events/LM, five-host sustained mixed background, zero drops.
-- v5_smoke_002 blocked scan/guess:150.000197s,29 dense states,228 observations; T1046 + T1110.001 + attempted T1021.004; chosen block before cutoff, applied after; PCAP actor SYN/pivot RST; zero completed LM; zero drops.
-- Both raw/derived/general/V5 validators pass. Only five inventory IPs occur. Current source/image provenance matches. Containers stopped/firewall clean.
-- Exports pass: passive[21,3,345], action[1,3,345], passive_action[1,3,345]; six-state futures;20 pairs. Action/passive_action common arrays exactly equal.
-- Capture-only freeze created: configs/mvp_v5_capture_freeze.json SHA53069f98ed2f8e686f973da6aa6f62f22f4d9b735def1da9868e7247783a20df. 36 smoke file hashes, randomized80-ID capture order. Model protocol explicitly NOT FROZEN.
-- First partial v5_smoke_001 attempt was user-confirmed manual shutdown, quarantined as `_quarantine_v5_smoke_001_reboot_20260911T234648`; never processed/trained.
-- Kitty copy issue repaired outside repo: Tode generated unsupported copy_or_noop at ~/.config/kitty/tode/keybinds.kitty.conf; backed up and changed to copy_to_clipboard, Kitty reloaded.
+- All80 planned episodes exist with raw+derived completion; general and V5 contract validators independently pass80/80. No active capture/container. Freeze SHA53069f98... still passes.
+- Raw duration range150.000094–150.000615s; attack-intent vs benign/legit means differ ~15 microseconds. Every episode has29 dense complete 5s states (145s complete-grid coverage); paired max duration delta0.456ms and state delta0.
+- Zero packet drops. Only planned metadata/splits.40 actions; action future margin min42.2948s. Event schedule ranges as frozen: T1046 20–28s, T1110.00143–49s, T1021.00482.034–107.906s.
+- Background sustained from all5 hosts; expected profile kinds.13 failed commands:12 are post-effective block consequences on chosen source/target;1 is a bounded timeout at capture tail. Not uncontrolled capture failures.
+- Residual paired mismatch: independent captures/absolute grid alignment yield action-pair forecast-offset differences max3.3595s scan and2.7230s credential; 2/20 action families differ by one forecast state index. Both retain immediate pre-action context and six complete futures. Disclose; not duration leakage.
+- Quarantines excluded: historical V4 two, manually interrupted smoke, rejected first lab158 SSH-transport attempt. Replacement lab158 valid.
 
-## Invariants now frozen
+## Current batch
 
-Do not edit any path in src/cyberwm/v5_integrity.py FILES or rebuild Docker images during corpus. Freeze check must pass before every episode. Raw captures immutable; interrupted directory quarantine/restart from zero. Shutdown/sleep/idle inhibitor self-enforced. V3/V4 tests remain untouched. No V5 test export/model access.
+Create reproducible post-capture audit script/output; no model inference. Update CURRENT_STATE/TODO/MEMORY/V5 docs/decisions/output locations. Do not alter any capture-producing path enumerated by src/cyberwm/v5_integrity.py or rebuild images. Preserve capture freeze.
 
-## Immediate next action
+## Next research gate
 
-Full corpus may now begin only when user is ready for ~3h20 raw capture + processing, laptop on AC/awake:
-
-```bash
-cd /home/paprika/Documents/153/wm
-bash lab/generate_v5_corpus.sh
-```
-
-Interactive sudo required. Fixed hash order begins lab163, lab179, lab151... Pause ONLY between episodes with `touch lab/.pause_v5_corpus`; remove before resuming. Do not Ctrl+Z or shutdown during an active capture. On failure preserve raw directory and inspect/quarantine.
-
-After80 episodes: inspect all raw/derived outputs and action semantics; build train/validation only. Then define and freeze common V5 train scaler, scratch/Friday/V4 initialization treatment, budgets, passive branch comparison, thresholds and metrics before any test export. Next critical model/evaluation protocol review merits Astra; Sol can execute routine capture/processing and verification.
+Build TRAIN and VALIDATION exporters only. Before neural training, freeze one V5 train-context shared-slot scaler, candidate initialization rules (scratch/Friday/V4 shared parameters), budgets/seeds, passive/action-aligned comparison, branch treatment, thresholds, selection objective, metrics, and sealed-test unlock mechanism. Do not use V5 test arrays or outcomes for preprocessing/selection. Critical protocol merits Astra review; Sol may implement routine audited plumbing.
