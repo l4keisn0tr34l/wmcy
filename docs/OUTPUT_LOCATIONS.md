@@ -175,6 +175,7 @@ docs/V4_PASSIVE_BRANCH_RESULTS.md
 docs/V5_PLAN.md
 docs/V5_PRECAPTURE_REVIEW.md
 docs/V5_CORPUS_AUDIT.md
+docs/V5_MODEL_PROTOCOL.md
 docs/CSE_CIC_IDS2018_REMOTE.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
@@ -257,7 +258,10 @@ outputs/mvp_v5/review/capture_freeze.txt
 outputs/mvp_v5/corpus_audit/{audit.json,episode_summary.csv,paired_family_summary.csv,background_failures.csv}
 outputs/mvp_v5/sequences/{passive,action,passive_action}/{train,validation}/
 outputs/mvp_v5/export_audit/{audit.json,summary.csv}
-scripts/46_validate_v5_plan.py ... scripts/51_audit_v5_exports.py
+configs/mvp_v5_training_protocol.json
+docs/V5_MODEL_PROTOCOL.md
+outputs/mvp_v5/model_protocol/  # created only at training-protocol freeze
+scripts/46_validate_v5_plan.py ... scripts/55_test_v5_training_protocol.py
 ```
 
 Both smokes and all 80 corpus episodes validate. The manually interrupted smoke and first rejected `lab_158` attempt are separately quarantined and excluded. No V5 model/evaluation protocol or test prediction exists yet. See `docs/V5_PRECAPTURE_REVIEW.md` and `docs/V5_CORPUS_AUDIT.md`.

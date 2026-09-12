@@ -1,0 +1,138 @@
+{
+  "protocol_id": "mvp_v5_train_validation_v1",
+  "scope": "V5 train and validation only; test export, test inference, and test-driven changes forbidden",
+  "context_states": 3,
+  "horizon_states": 6,
+  "window_seconds": 5,
+  "graph": {
+    "global_size": 15,
+    "node_size": 18,
+    "node_count": 5,
+    "edge_size": 12,
+    "pair_count": 20,
+    "technique_count": 3,
+    "global_hidden": 64,
+    "node_hidden": 32,
+    "edge_hidden": 32,
+    "stochastic_size": 16,
+    "local_embedding": 32
+  },
+  "scaler": {
+    "type": "shared-slot z-score",
+    "source": "unique observable context states from passive/train and action/train only",
+    "deduplication_key": ["episode_id", "state_index"],
+    "expected_unique_state_rows": 440,
+    "future_values_used": false,
+    "validation_values_used": false,
+    "test_values_used": false,
+    "old_141_feature_scalers_reused": false
+  },
+  "initializations": {
+    "scratch": {
+      "source": null,
+      "sha256": null
+    },
+    "friday": {
+      "source": "models/friday_graph_rssm_pretrained_fixed.pt",
+      "sha256": "f8633c796f0523fc4537212ced3584d2f448ba55ac22be0cf94092a86e359ba0",
+      "load_policy": "load all compatible GraphRSSM parameters; initialize missing action/branch parameters from the candidate seed"
+    },
+    "v4": {
+      "source": "models/mvp_v4_action_graph_rssm_scratch.pt",
+      "sha256": "f69ece2d24ac07593d35666a83ea52ef8a768d1f51d4dcab13e7c1dc9f1c876f",
+      "load_policy": "action track loads all compatible ActionGraphRSSM parameters; passive branch track loads only compatible GraphRSSM parameters and initializes branch parameters from the candidate seed"
+    }
+  },
+  "action_track": {
+    "architecture": "ActionGraphRSSM",
+    "train_export": "outputs/mvp_v5/sequences/action/train/train.npz",
+    "validation_export": "outputs/mvp_v5/sequences/action/validation/validation.npz",
+    "train_samples": 24,
+    "validation_samples": 8,
+    "seeds": [51001, 51002, 51003],
+    "epochs": 400,
+    "batch_size": 12,
+    "optimizer": "Adam",
+    "learning_rate": 0.0003,
+    "gradient_clip": 10.0,
+    "host_permutation_augmentation": "uniform over all 120 five-host permutations; action pair and targets relabeled consistently",
+    "loss_weights": {
+      "future_state": 1.0,
+      "reconstruction": 0.1,
+      "edge": 0.25,
+      "kl": 0.01,
+      "lm": 0.2,
+      "technique": 0.1,
+      "pair": 0.1
+    },
+    "seed_selection": "minimum deterministic validation (group-balanced future-state MSE + 0.25 future-edge BCE), ties within 1e-8 choose smaller seed",
+    "initialization_selection": "same validation score; designate one primary initialization before test but retain one frozen checkpoint per initialization for prespecified diagnostic comparison",
+    "test_threshold_policy": "fixed 0.5 is primary; validation-best F1 threshold may be frozen per candidate as a secondary diagnostic only"
+  },
+  "passive_branch_track": {
+    "architecture": "two-branch outcome-supervised BranchingGraphRSSM",
+    "train_export": "outputs/mvp_v5/sequences/passive/train/train.npz",
+    "validation_export": "outputs/mvp_v5/sequences/passive/validation/validation.npz",
+    "aligned_validation_export": "outputs/mvp_v5/sequences/passive_action/validation/validation.npz",
+    "train_samples": 336,
+    "validation_samples": 168,
+    "aligned_validation_samples": 8,
+    "branch_count": 2,
+    "branch_meanings": ["no completed LM within 30 seconds", "completed LM within 30 seconds"],
+    "branch_gate_inputs": "observable context only",
+    "seeds": [51001, 51002, 51003],
+    "epochs": 250,
+    "batch_size": 128,
+    "optimizer": "Adam",
+    "learning_rate": 0.0003,
+    "gradient_clip": 10.0,
+    "mixture_temperature": 0.25,
+    "loss_weights": {
+      "future_state": 1.0,
+      "reconstruction": 0.25,
+      "edge": 0.25,
+      "kl": 0.01,
+      "lm": 0.2,
+      "technique": 0.1,
+      "pair": 0.1,
+      "branch_balance": 0.0,
+      "free_nats": 0.0
+    },
+    "checkpoint_selection": "minimum validation joint branch trajectory/gate plus weighted edge/semantic objective across all 250 epochs",
+    "seed_selection": "minimum frozen validation selection score, ties within 1e-8 choose smaller seed",
+    "initialization_selection": "same validation score; designate one primary initialization before test and retain one checkpoint per initialization",
+    "oracle_metric_policy": "oracle branch state error measures candidate-future coverage only, never deployable inference accuracy",
+    "calibration_policy": "Brier/ECE on small correlated validation/test windows are diagnostics, not deployment calibration evidence"
+  },
+  "eligibility_gates": {
+    "finite_training_and_gradients": true,
+    "future_perturbation_causality_max_delta": 0.0,
+    "cpu_deterministic_equivariance_max_delta": 0.00001,
+    "action_track_requires_mean_permit_lm_above_block": true,
+    "passive_track_requires_nonzero_branch_diversity": true
+  },
+  "sealed_test_policy": {
+    "training_scripts_have_no_test_path": true,
+    "model_evaluation_freeze_required_after_validation": true,
+    "test_export_requires_separate_explicit_unlock": true,
+    "one_sealed_evaluation_run": true,
+    "no_post_test_threshold_or_model_retuning": true,
+    "primary_metrics": [
+      "shared-scaler normalized state MAE overall/global/node/edge/active/quiet",
+      "future edge average precision",
+      "completed-LM average precision, Brier score, and F1 at fixed 0.5",
+      "completed-LM pair average precision and top-1",
+      "action factual-versus-opposite state preference",
+      "passive expected and oracle branch MAE with oracle labeled coverage-only",
+      "intent-probe legitimate-versus-malicious comparison",
+      "scenario and background-profile diagnostics with sample counts"
+    ]
+  },
+  "claim_limits": [
+    "one synthetic flat five-host topology",
+    "one executed SSH service/hop and deterministic permit/block action",
+    "small validation/test cohorts",
+    "paired captures are similar but not packet-identical",
+    "no enterprise, unseen-topology, causal-policy, or deployment-calibration claim"
+  ]
+}

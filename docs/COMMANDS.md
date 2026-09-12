@@ -527,4 +527,21 @@ Capture is now complete; do not rerun it. The all-split consistency audit was ge
 .venv/bin/python scripts/50_audit_v5_corpus.py --deep-validate
 ```
 
-Before any test export, build train/validation datasets and separately freeze the model/scaler/metric protocol. The capture freeze is not a model freeze.
+Before any test export, build/audit train and validation datasets, test the protocol plumbing, commit reviewed sources, and freeze the train-only scaler/protocol:
+
+```bash
+.venv/bin/python scripts/51_audit_v5_exports.py
+.venv/bin/python scripts/55_test_v5_training_protocol.py
+.venv/bin/python scripts/52_freeze_v5_training_protocol.py --check-only
+# commit reviewed protocol/trainer sources first; then, from a clean tree:
+.venv/bin/python scripts/52_freeze_v5_training_protocol.py
+```
+
+After that freeze, train on CUDA:
+
+```bash
+.venv/bin/python scripts/53_train_v5_action.py --device cuda
+.venv/bin/python scripts/54_train_v5_passive_branch.py --device cuda
+```
+
+Neither trainer has a test path. Training completion still requires a separate evaluation freeze before test export. The capture freeze is not a model freeze.

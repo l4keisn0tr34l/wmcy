@@ -439,3 +439,17 @@ Retain and disclose that independent capture phases can place a paired forecast 
 Classify 12 post-block administrative SSH failures as real consequences of the chosen source-target firewall action and one tail timeout as bounded deadline behavior. Do not erase them: the defender action affects legitimate traffic on the selected pair as well as the focal attacker attempt. Quarantined partial attempts remain excluded.
 
 This is all-split dataset integrity QA only. It must not choose preprocessing, architecture, hyperparameters, thresholds, or candidate models. See `docs/V5_CORPUS_AUDIT.md`.
+
+---
+
+## D044 — Freeze one deduplicated V5 train-context scaler and separate passive/action validation tracks
+
+**Status:** Protocol implemented for pre-training freeze; V5 test remains sealed.
+
+Fit one345-feature shared-slot scaler using exactly440 unique observable training context states, deduplicated by `(episode_id,state_index)` across passive and action train exports. Use no future, validation, or test values and never reuse the old141-feature checkpoint scalers. This preserves host equivariance, prevents overlapping passive windows from overweighting repeated states, and makes all normalized candidate errors comparable.
+
+Compare scratch, fixed Friday, and frozen V4-scratch initialization under equal per-track budgets. The action track trains `ActionGraphRSSM` on24 action samples and selects one seed per initialization by validation state-plus-edge dynamics, not by the deterministic permit/block semantic label. The passive track trains an outcome-supervised two-branch `BranchingGraphRSSM` on336 passive windows and validates both ordinary passive forecasts and the eight action-aligned contexts without receiving action.
+
+Use three prespecified seeds. Designate primary initialization(s) from validation before test while retaining one checkpoint per initialization for a prespecified transfer diagnostic. Primary LM threshold is0.5; validation-optimized F1 thresholds are secondary only. Oracle branch MAE is coverage only. Every retained model must pass finite-gradient, future-causality, all120-host CPU equivariance, and track-specific noncollapse gates.
+
+Training completion does not unlock test. A separate evaluation freeze must hash selected checkpoints, scaler, evaluator, thresholds, and metrics before one explicit test export/evaluation. See `docs/V5_MODEL_PROTOCOL.md` and `configs/mvp_v5_training_protocol.json`.
