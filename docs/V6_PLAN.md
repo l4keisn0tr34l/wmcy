@@ -152,6 +152,25 @@ Each family contains two independent captures sharing seed, topology, service, b
 
 Background profiles (`quiet`, `web`, `admin`, `mixed`) and authentication methods (`ssh_password`, `ssh_key`) are balanced by split and crossed within topology. The validator caught and rejected an initial service/topology confound before capture.
 
+### Frozen-before-runtime scenario meaning
+
+`src/cyberwm/v6_scenarios.py` now specifies controller programs before any capture. These records are audit/truth instructions, never model input. Actual packet and server-log timestamps remain authoritative observables.
+
+| Scenario | Before cutoff | After cutoff | Security truth |
+|---|---|---|---|
+| `background_only` | allowlisted background only | background only | benign |
+| `legitimate_admin_ssh` | background only | administrator→target accepted SSH | benign administration |
+| `credential_pressure_progress` | actor discovery + failed auth pressure | actor→pivot accepted SSH | T1046, T1110.001, then completed T1078/T1021.004 LM |
+| `matched_legitimate_admin` | successful administrator→pivot auth burst | administrator→target accepted SSH | benign administration; observable contrast, not identical prefix |
+| `shared_prefix_stop` | actor discovery + failed auth pressure | no focal SSH | T1046/T1110.001 only |
+| `shared_prefix_progress` | the same scheduled prefix | actor→pivot accepted SSH | future completed T1078/T1021.004 LM |
+| `pivot_probe_then_stop` | accepted actor→pivot session held35s + pivot target probe | no second hop | first completed LM + T1046 probe |
+| `pivot_probe_then_second_hop` | the same scheduled prefix | pivot→target accepted SSH | future completed second-hop LM |
+| `second_hop_action_permit` | the same first-hop/probe telemetry; permit selected before cutoff | permit effective, then accepted pivot→target SSH | completed second-hop LM |
+| `second_hop_action_block` | the same first-hop/probe telemetry; block selected before cutoff | block effective, then rejected pivot→target SSH | attempted T1021.004, **not** completed LM |
+
+For action pairs, the chosen action differs before cutoff but has no packet/auth consequence until after cutoff; passive observable prefixes therefore remain matched. For ambiguous and two-hop pairs, all scheduled observable pre-cutoff operations are identical. Independent captures remain similar rather than packet-identical.
+
 ## Timing contract
 
 Outcome-independent family schedules are generated in a separate RNG namespace:
@@ -243,7 +262,7 @@ Overlapping windows may optimize training but must not inflate confidence interv
 Current non-capture facts:
 
 - one shared V6 image ran seven containers on internal `10.77.0.0/24` and stopped cleanly;
-- actual Docker/OpenSSH UTC logs produced a password failure and public-key success; canonical events preserve host, remote host, method, result, and timestamp while discarding username/fingerprint;
+- actual Docker/OpenSSH UTC logs produced password and public-key failures plus a public-key success; canonical events preserve host, remote host, method, result, and source nanoseconds while discarding username/fingerprint; literal UTC (`Z` or `+00:00`) is required;
 - generated `dual_zone7_holdout` rules blocked direct cross-zone SSH/HTTP (`255`/`7`) while permitted zone→jump and jump→zone legs succeeded;
 - generated `flat5` rules permitted active→active SSH/HTTP and blocked active→inactive access;
 - these checks used smoke seed`999001`, which is absent from the prospective episode plan;
@@ -254,7 +273,7 @@ Evidence is under `outputs/mvp_v6/review/{auth_feasibility,policy_feasibility}.j
 Remaining before any planned episode:
 
 1. implement the full fail-closed V6 episode runtime around the isolated composition;
-2. verify failed public-key authentication and per-host timestamped log collection;
+2. integrate per-host timestamped log collection into the episode runtime;
 3. verify server timestamps against PCAP and forecast cutoff;
 4. verify inactive masks, policy tensors, and packet paths in processed states;
 5. run topology×service benign/permit/block capture smokes;

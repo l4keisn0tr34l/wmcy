@@ -2,6 +2,7 @@
 """Non-capture V6 auth-log feasibility smoke on the isolated Docker inventory."""
 from __future__ import annotations
 
+import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -41,8 +42,14 @@ def exec_host(host: str, command: list[str], check: bool = True) -> sp.Completed
 
 
 def main() -> int:
-    if OUT.exists():
-        raise FileExistsError(f"preserve existing feasibility result: {OUT}")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", type=Path, default=OUT)
+    args = parser.parse_args()
+    out = args.out.resolve()
+    if not out.is_relative_to((ROOT / "outputs/mvp_v6/review").resolve()):
+        parser.error("output must remain under outputs/mvp_v6/review")
+    if out.exists():
+        raise FileExistsError(f"preserve existing feasibility result: {out}")
     for compose in (V5_COMPOSE, COMPOSE):
         running = run(compose + ["ps", "--services", "--status", "running"],
                       capture_output=True, text=True).stdout.strip()
@@ -80,6 +87,12 @@ def main() -> int:
             "lab@10.77.0.30", "true"], check=False)
         if wrong.returncode != 5:
             raise RuntimeError(f"expected password authentication rejection5, got {wrong.returncode}")
+        wrong_key = exec_host("ws1", ["ssh", "-i", "/etc/ssh/ssh_host_ed25519_key",
+            "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no",
+            "-o", "UserKnownHostsFile=/dev/null", "-o", "ConnectTimeout=2",
+            "lab@10.77.0.30", "true"], check=False)
+        if wrong_key.returncode != 255:
+            raise RuntimeError(f"expected public-key authentication rejection255, got {wrong_key.returncode}")
         exec_host("jump1", ["ssh", "-i", "/home/lab/.ssh/id_ed25519", "-o", "BatchMode=yes",
             "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null",
             "-o", "ConnectTimeout=2", "lab@10.77.0.40", "true"])
@@ -91,9 +104,10 @@ def main() -> int:
             (temp / f"{service}.raw.log").write_text(raw)
             parsed[service] = parse_auth_logs(service, raw.splitlines(), started, ended)
             validate_auth_event_schema(parsed[service])
-        if len(parsed["srv1"]) != 1 or parsed["srv1"][0]["event_type"] != "auth_failure" \
-                or parsed["srv1"][0]["auth_method"] != "password":
-            raise RuntimeError("actual password failure parse differs")
+        srv1_outcomes = {(event["event_type"], event["auth_method"]) for event in parsed["srv1"]}
+        if len(parsed["srv1"]) != 2 or srv1_outcomes != {
+                ("auth_failure", "password"), ("auth_failure", "publickey")}:
+            raise RuntimeError(f"actual authentication failures differ: {parsed['srv1']}")
         if len(parsed["srv2"]) != 1 or parsed["srv2"][0]["event_type"] != "auth_success" \
                 or parsed["srv2"][0]["auth_method"] != "publickey":
             raise RuntimeError("actual public-key success parse differs")
@@ -106,20 +120,21 @@ def main() -> int:
            text=True).stdout.strip():
         raise RuntimeError("V6 containers remain running")
     result = {"status": "PASS_NON_CAPTURE_AUTH_FEASIBILITY", "scope":
-        "isolated internal password rejection/public-key acceptance and observable parsing; no PCAP/episode",
+        "isolated internal password/public-key rejection, public-key acceptance, and observable parsing; no PCAP/episode",
         "started_utc": started, "completed_utc": ended, "network_internal": True,
         "subnet": "10.77.0.0/24", "containers": 7, "shared_image_id": next(iter(ids.values())),
         "password_rejection_returncode": wrong.returncode,
+        "publickey_rejection_returncode": wrong_key.returncode,
         "events": parsed, "raw_logs_retained": False,
         "source_sha256": {str(path.relative_to(ROOT)): digest(path) for path in (
             ROOT / "lab/Dockerfile.v6", ROOT / "lab/docker-compose-v6.yml",
             ROOT / "src/cyberwm/v6_auth.py", Path(__file__).resolve())}}
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    temporary = OUT.with_suffix(".tmp")
-    temporary.write_text(json.dumps(result, indent=2) + "\n"); temporary.replace(OUT)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    temporary = out.with_suffix(".tmp")
+    temporary.write_text(json.dumps(result, indent=2) + "\n"); temporary.replace(out)
     for path in temp.iterdir(): path.unlink()
     temp.rmdir()
-    print(json.dumps({"status": result["status"], "out": str(OUT),
+    print(json.dumps({"status": result["status"], "out": str(out),
                       "shared_image_id": result["shared_image_id"]}, indent=2))
     return 0
 

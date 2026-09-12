@@ -15,13 +15,20 @@ AUTH = re.compile(
 
 
 def utc_timestamp(value: str) -> datetime:
+    if not (value.endswith("Z") or value.endswith("+00:00")):
+        raise ValueError(f"authentication timestamp must be literal UTC: {value}")
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.removesuffix("Z") + ("+00:00" if value.endswith("Z") else ""))
     except ValueError as error:
         raise ValueError(f"invalid authentication timestamp: {value}") from error
     if parsed.tzinfo is None or parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
         raise ValueError(f"authentication timestamp must be explicit UTC: {value}")
     return parsed
+
+
+def canonical_utc(value: str) -> str:
+    """Retain source fractional precision; only normalize Docker's Z suffix."""
+    return value.removesuffix("Z") + ("+00:00" if value.endswith("Z") else "")
 
 
 def parse_auth_logs(host: str, lines: Iterable[str], capture_start: str, capture_end: str
@@ -63,7 +70,7 @@ def parse_auth_logs(host: str, lines: Iterable[str], capture_start: str, capture
         if key in seen:
             raise ValueError(f"line {line_number}: duplicate auth event")
         seen.add(key)
-        events.append({"event_time": timestamp.isoformat(timespec="microseconds"),
+        events.append({"event_time": canonical_utc(parts[0]),
             "host": host, "host_ip": HOSTS[host], "remote_host": inventory_by_ip[remote_ip],
             "remote_ip": remote_ip,
             "event_type": "auth_success" if match.group("result") == "Accepted" else "auth_failure",

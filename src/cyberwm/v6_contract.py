@@ -27,8 +27,8 @@ ACTIONS = ("permit_ssh", "block_ssh")
 TECHNIQUES = ("T1046", "T1110.001", "T1078", "T1021.004")
 
 # Dynamic packet features remain compatible in meaning with V5. Proposed host
-# observables are limited to authentication/session records available to a
-# defender; no controller action name, role, or success truth is a feature.
+# observables are limited to authentication records available to a defender;
+# no controller action name, role, or success truth is a feature.
 GLOBAL_DYNAMIC = "flow_count unique_hosts unique_src_hosts unique_dst_hosts unique_edges new_edges internal_edges total_bytes total_packets syn_count rst_count fin_count max_out_fanout mean_out_fanout dst_port_entropy auth_success_count auth_failure_count hosts_reporting_auth auth_telemetry_mask".split()
 NODE_DYNAMIC = "outgoing_flows outgoing_bytes outgoing_packets out_neighbors unique_dst_ports out_syn out_rst incoming_flows incoming_bytes incoming_packets in_neighbors unique_src_ports in_syn in_rst is_internal new_out_neighbors new_in_neighbors activity_mask auth_success auth_failure password_auth publickey_auth new_remote_auth_source auth_telemetry_mask".split()
 EDGE_DYNAMIC = "flow_count bytes_total packets_total syn_count ack_count rst_count fin_count mean_flow_duration unique_dst_ports internal_edge is_new_edge presence_mask auth_success auth_failure new_auth_edge auth_telemetry_mask".split()

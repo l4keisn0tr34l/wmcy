@@ -7,8 +7,8 @@
 - [x] Parse real timestamped OpenSSH success/failure events while discarding usernames and fingerprints.
 - [x] Build an isolated seven-host V6 Docker composition sharing one image digest.
 - [x] Realize and non-capture-smoke SSH/HTTP policy rules for dual-zone, flat active, and inactive paths.
-- [ ] Verify failed public-key authentication from actual OpenSSH logs.
-- [ ] Specify and implement exact outcome-independent runtime behavior for all ten V6 scenario variants.
+- [x] Verify failed public-key authentication from actual OpenSSH logs and preserve source nanoseconds under literal-UTC validation.
+- [x] Specify exact outcome-independent behavior for all ten V6 scenario variants; implementation in the capture runtime remains pending.
 - [ ] Integrate allowlisted benign traffic, per-host auth collection, policy cleanup, provenance, and quarantine behavior.
 - [ ] Run PCAP timestamp/path/inactive-mask smoke checks; do not start planned episodes yet.
 - [ ] Run topology×service benign/permit/block capture smokes and independently review artifacts.

@@ -555,3 +555,15 @@ Use one shared Docker image across seven containers on the internal authorized`1
 Parse actual Docker/OpenSSH UTC logs into canonical defender events while dropping usernames and key fingerprints. A real password failure and public-key success parse correctly. These checks do not establish PCAP alignment, endpoint completeness, session state, forecasting, topology transfer, or causal policy value.
 
 Two policy-smoke attempts completed their traffic checks but failed during result construction because the wrapper used nonexistent profile`flat6`. Cleanup stopped every container and no passing artifact was installed. Correct the wrapper to the contracted`flat5` name and rerun from a clean network; preserve the failure disclosure rather than presenting the first attempt as successful. Freeze nothing until failed-public-key, PCAP/cutoff, background, full scenario, and capture-smoke gates pass.
+
+---
+
+## D053 — Fix V6 scenario semantics before implementing capture
+
+**Status:** Controller programs and seven synthetic tests implemented; no episode capture started.
+
+Specify every scenario as pre-cutoff, decision, and post-cutoff operations with one outcome-independent seeded schedule. Ambiguous stop/progress and two-hop stop/progress alternatives have identical observable scheduled prefixes. Action permit/block pairs also have identical passive observable prefixes: action selection occurs before cutoff, but firewall consequences occur only afterward. Informative credential-pressure versus legitimate-admin and benign background versus future legitimate SSH are deliberate observable contrasts, not matched-prefix claims.
+
+A successful malicious SSH emits intentional T1078/T1021.004 truth and counts as completed LM only when server authentication is accepted. A firewall-blocked focal SSH is attempted T1021.004, has no accepted-auth event, and is not completed LM. Benign administrator SSH has observable packet/auth effects but no ATT&CK/LM truth. Hold the first-hop session35 seconds so its network state spans context for second-hop forecasting; do not fabricate a session-open endpoint feature.
+
+Require authentication log timestamps to be literal UTC and preserve their original nanosecond fraction in canonical events. A second real non-capture smoke verifies failed password, failed untrusted public key, and accepted trusted public key while still removing username/fingerprint. This is endpoint-parser evidence only. Runtime implementation, PCAP alignment, and capture freeze remain pending.

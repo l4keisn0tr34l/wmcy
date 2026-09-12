@@ -314,7 +314,7 @@ Different explanation types serve different users.
 
 V5 sealed inference is permanently closed. V6 uses entirely new prospective evidence:192 episodes /96 paired families, whole-family88/40/64 episode splits, maximum seven equivariant node slots, static policy topology separate from dynamic targets, and defender-observable OpenSSH authentication events. The test-only topology is`dual_zone7_holdout`; no V6 PCAP episode, export, scaler, model, or test artifact exists yet.
 
-Ten V6 contract tests and six auth-parser tests pass. Non-capture Docker smokes verified a shared seven-host image, real password-failure/public-key-success parsing with username/fingerprint discarded, dual-zone direct SSH/HTTP blocks with permitted jump legs, and inactive-slot service blocks. This is runtime feasibility only, not forecasting or topology-generalization evidence. Capture still requires AC power, interactive sudo, explicit authorization, and complete uninterrupted episode windows.
+Ten V6 contract tests, six auth-parser tests, and seven controller-program tests pass. Non-capture Docker smokes verified a shared seven-host image, real password/public-key failures and public-key success with nanoseconds retained and username/fingerprint discarded, dual-zone direct SSH/HTTP blocks with permitted jump legs, and inactive-slot service blocks. This is runtime feasibility only, not forecasting or topology-generalization evidence. Capture still requires AC power, interactive sudo, explicit authorization, and complete uninterrupted episode windows.
 
 ## Working style
 

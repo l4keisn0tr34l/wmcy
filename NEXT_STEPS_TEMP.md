@@ -1,29 +1,30 @@
-# Active temporary handoff — V6 real policy feasibility
+# Active temporary handoff — V6 auth hardening and scenario specification
 
-Updated: 2026-09-12T17:41:00Z
+Updated: 2026-09-12T17:52:00Z
+Base commit: b881ee6 (pushed)
 
-## Current verified state
+## Verified
 
-- Prospective V6 plan: 192 episodes / 96 families; 10 contract tests pass.
-- OpenSSH parser: 6 synthetic tests pass.
-- Isolated seven-container V6 image/compose builds and stops cleanly.
-- A durable non-capture smoke verified one password rejection and one key success from real Docker/OpenSSH UTC logs; canonical events omit username and key fingerprint.
-- All seven smoke containers used one image ID. No V5 source/image/checkpoint or sealed output was modified.
-- No V6 episode, PCAP, scaler, model, or test artifact exists. Nothing is frozen.
+- Prospective192-episode V6 plan and split are deterministic; 10 contract tests pass.
+- Six synthetic auth-parser tests pass.
+- Real non-capture password-failure/public-key-success parsing passes.
+- Real non-capture dual-zone/flat/inactive SSH+HTTP policy checks pass.
+- Both smoke wrappers stop containers in `finally`; no V5/V6 containers or networks remain.
+- No V6 PCAP episode, model, scaler, exporter, or test artifact exists; nothing is frozen.
 
 ## This code batch
 
-1. Implement a reproducible non-capture policy-realization smoke.
-2. Apply generated inventory-only SSH/HTTP rejection rules inside the isolated V6 network.
-3. Verify direct dual-zone service access is blocked while each permitted jump-role leg succeeds.
-4. Verify the five-active flat profile permits active-to-active access and blocks inactive slots.
-5. Tear down in `finally`, retain only sanitized structured results, and fail closed on any mismatch.
-6. Add synthetic/background allowlist checks if required by the smoke findings.
+1. Require literal UTC (`Z` or `+00:00`) for auth logs and preserve source nanoseconds in canonical event strings.
+2. Verify an actual failed-public-key attempt with an untrusted in-container key, without changing the image.
+3. Add a versioned immutable feasibility result rather than overwriting the first smoke result.
+4. Specify exact, outcome-independent behavior/timing for all ten V6 scenarios before implementing the capture runtime.
+5. Add tests for scenario schedules, same-prefix families, attempted/completed LM semantics, and future margin.
 
 ## Hard constraints
 
-- Targets must remain inside 10.77.0.0/24 and the seven-host inventory.
-- This is topology feasibility, not a capture episode and not model evidence.
-- Do not use planned test episode data, run PCAP capture, or inspect any sealed V5 test pathway.
-- Do not modify frozen V5 files or images.
-- Do not request sudo or begin corpus capture in this batch.
+- All runtime traffic remains inside the seven-host inventory on10.77.0.0/24.
+- Raw OpenSSH text may contain fixed lab usernames/fingerprints; canonical model telemetry must not.
+- Controller roles/scenarios/actions/truth remain audit/target data, never observable model input.
+- A blocked attempt is not completed LM.
+- Do not run PCAP capture, planned episodes, test export, training, or V5 inference.
+- No sudo is needed in this batch.

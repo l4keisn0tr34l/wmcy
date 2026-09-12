@@ -29,6 +29,8 @@ class V6AuthTests(unittest.TestCase):
         self.assertEqual([event["auth_method"] for event in events], ["password", "publickey"])
         self.assertEqual(events[0]["remote_host"], "ws1")
         self.assertEqual(events[1]["remote_host"], "jump1")
+        self.assertEqual(events[0]["event_time"], "2026-10-01T12:00:40.100000000+00:00")
+        self.assertEqual(events[1]["event_time"], "2026-10-01T12:01:20.200000000+00:00")
         self.assertNotIn("secret-user", str(events)); self.assertNotIn("SHA256", str(events))
         self.assertNotIn("session", str(events))
 
@@ -54,9 +56,13 @@ class V6AuthTests(unittest.TestCase):
     def test_reject_missing_or_non_utc_timestamp(self):
         with self.assertRaisesRegex(ValueError, "timestamp"):
             parse_auth_logs("srv1", ["Accepted password for lab from 10.77.0.20 port 99 ssh2"], START, END)
-        with self.assertRaisesRegex(ValueError, "explicit UTC"):
+        with self.assertRaisesRegex(ValueError, "literal UTC"):
             parse_auth_logs("srv1", [
                 "2026-10-01T12:00:40 Accepted password for lab from 10.77.0.20 port 99 ssh2"
+            ], START, END)
+        with self.assertRaisesRegex(ValueError, "literal UTC"):
+            parse_auth_logs("srv1", [
+                "2026-10-01T17:30:40+05:30 Accepted password for lab from 10.77.0.20 port 99 ssh2"
             ], START, END)
 
     def test_reject_duplicate_and_unknown_host(self):
