@@ -278,7 +278,10 @@ outputs/mvp_v5/evaluation_protocol/reviewed_validation_smoke/{report.json,report
 src/cyberwm/v5_evaluation_seal.py
 scripts/60_test_v5_evaluation_seal.py
 docs/V5_FINAL_REVIEW.md
-outputs/mvp_v5/sealed_test_attempt/  # permanent consumed-attempt marker, created only at test access
+outputs/mvp_v5/sealed_test_attempt/  # permanent consumed claim; evaluation succeeded2026-09-12
+outputs/mvp_v5/sealed_test/{report.json,report.predictions.npz,provenance.json,execution.log}
+outputs/mvp_v5/sealed_test/sequences/{action,passive,passive_action}/test/
+docs/V5_TEST_RESULTS.md
 docs/V5_EVALUATION_PROTOCOL.md
 scripts/57_evaluate_v5_models.py
 scripts/58_freeze_v5_evaluation.py

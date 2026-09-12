@@ -135,7 +135,9 @@
 - [x] Build and audit five-host train/validation passive/action/aligned-passive exports with test locks; 12 synthetic tests and CUDA/CPU causality/permutation checks pass.
 - [x] Run and independently audit the frozen V5 scratch/Friday/V4 train/validation protocol; scratch selected primary for both tracks.
 - [x] Astra-review and harden the evaluator/atomic wrapper; synthetic guards and CUDA validation reproduction pass without test access.
-- [ ] Create/inspect/commit the accepted evaluation freeze and execute V5 sealed test exactly once.
+- [x] Create/inspect/commit accepted evaluation freeze (`e1497ff`) and execute V5 sealed test exactly once; successful, consumed attempt retained.
+- [x] Verify sealed artifacts/checkpoint/scaler/threshold identities and saved-prediction MAEs; document successes/failures in `docs/V5_TEST_RESULTS.md`.
+- [ ] Update standalone senior HTML/judge presentation from saved V5 artifacts; no test rerun or tuning. Emphasize modest graph accuracy, deterministic action semantics, and passive3/6 detection with7/10 false alerts at the secondary threshold.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 

@@ -505,3 +505,17 @@ The initial implementation recorded hashes without enforcing all of them, allowe
 Use the original selected checkpoint thresholds exactly, not CPU-reoptimized values. Primary thresholds remain0.5. Retain existing model/seed/epoch/scaler/selection decisions unchanged. Save predictions and report profile/episode/per-horizon diagnostics plus primary passive warning lead to successful SSH action start. Such lead is not independently timed compromise completion.
 
 Synthetic negative tests and CUDA validation reproduction pass. Intent cutoff selection is verified from generator code and eight synthetic fixtures, never real test episodes during review. Same-scaler action/passive comparisons remain descriptive because training cohorts differ; oracle branches are coverage only. See `docs/V5_FINAL_REVIEW.md`. Commit reviewed code and freeze before the one authorized test execution.
+
+---
+
+## D049 — Close V5 test after one successful evaluation; preserve passive warning failure
+
+**Status:** Completed2026-09-12, freeze commit`e1497ff`, immutable `outputs/mvp_v5/sealed_test/` and permanent consumed claim.
+
+Scratch remains primary in both tracks. Action state MAE`.459835` beats persistence`.539809`; factual chosen action gives lower state error8/8. Perfect LM/pair semantics are conditional on explicit chosen action/pair and deterministic lab outcomes, not general causal intelligence. Friday initialization does not improve scratch dynamics.
+
+Passive scratch expected/oracle MAE`.472887/.470838` beats persistence`.538841` but provides only`.002049` candidate-coverage gain, LM F1@.5=0, and weak localization. Frozen low threshold detects3/6 progressing episodes while falsely alerting7/10 nonprogressing episodes. Preserve this failed warning tradeoff and the tiny intent probe's limits; do not rescue them with test-fitted thresholds.
+
+Aligned action MAE`.459835` versus passive`.468434` is a small descriptive overall gain, not a pure conditioning ablation: cohorts/objectives differ and active-feature MAE favors passive`.661994` over action`.787490`. V4's lower passive point MAE does not replace the validation-selected scratch primary.
+
+Verified hashes/lineage and point metrics from saved forecasts only. No post-test optimization or inference rerun is permitted. Update reports from immutable artifacts; future research needs new prospective data/protocols rather than reuse of V5 test for selection. See `docs/V5_TEST_RESULTS.md`.

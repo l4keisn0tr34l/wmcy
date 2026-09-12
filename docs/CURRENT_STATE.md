@@ -2,7 +2,11 @@
 
 ## Latest V5 gate (supersedes historical statuses below)
 
-Astra final evaluation review is accepted after correcting full hash enforcement, durable single-attempt/replay guards, original checkpoint threshold lineage, strict bundle validation, CUDA inference, saved forecasts, and profile/episode/horizon diagnostics. Eight synthetic guard tests and validation-only reproduction pass; no V5 test content was read in this review. Next: commit reviewed sources, create/inspect/commit evaluation freeze, then execute the sealed wrapper once. See `docs/V5_FINAL_REVIEW.md`.
+**V5 sealed evaluation completed exactly once on2026-09-12 at12:00UTC**, after Astra review, corrected guards, and committed freeze (`e1497ff`). No post-test tuning or inference rerun. Permanent claim: `outputs/mvp_v5/sealed_test_attempt/`; results/predictions/provenance: `outputs/mvp_v5/sealed_test/`. All artifact/model/scaler/threshold identities and saved-prediction point metrics verified.
+
+Scratch action state MAE `.459835` vs persistence `.539809`, edge AP `.411418`, LM F1@.5=1 under deterministic given permit/block, factual action wins8/8. Scratch passive expected/oracle MAE `.472887/.470838` vs persistence `.538841`, edge AP `.369933`, LM AP `.200029`, F1@.5=0. Frozen secondary warning threshold detects3/6 progressing episodes but falsely alerts7/10 nonprogressing episodes. Useful passive warning remains unsupported.
+
+Same-scaler aligned scratch passive MAE `.468434` is slightly worse than action `.459835`, but passive active-feature MAE `.661994` is better than action `.787490`; cohorts/objectives differ, so this is not a pure conditioning ablation. Friday does not improve scratch dynamics; V4's lower passive point MAE does not change the primary selection. Next: update standalone senior HTML/presentation from saved artifacts only. See `docs/V5_TEST_RESULTS.md` and the immutable pre-test `docs/V5_FINAL_REVIEW.md`. Historical pending-test statements below are superseded.
 
 This file records the current verified implementation. See `docs/MVP_STATUS.md` for the complete plain-language checkpoint, file map, dataset inventory, hardware assessment, and MVP timeline.
 
