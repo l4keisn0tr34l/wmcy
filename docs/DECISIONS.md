@@ -519,3 +519,15 @@ Passive scratch expected/oracle MAE`.472887/.470838` beats persistence`.538841` 
 Aligned action MAE`.459835` versus passive`.468434` is a small descriptive overall gain, not a pure conditioning ablation: cohorts/objectives differ and active-feature MAE favors passive`.661994` over action`.787490`. V4's lower passive point MAE does not replace the validation-selected scratch primary.
 
 Verified hashes/lineage and point metrics from saved forecasts only. No post-test optimization or inference rerun is permitted. Update reports from immutable artifacts; future research needs new prospective data/protocols rather than reuse of V5 test for selection. See `docs/V5_TEST_RESULTS.md`.
+
+---
+
+## D050 — Make the judge materials V5-led and failure-forward
+
+**Status:** Applied2026-09-12 using saved sealed JSON metrics only.
+
+Replace the historical V2/V4-led senior report with a concise V5-led standalone report and add an11-slide standalone HTML deck. Lead with the world-model objective and future-state/edge evidence—not perfect deterministic action labels. Present action MAE/persistence/factual-direction evidence alongside modest edge AP and the explicit action/pair caveat.
+
+Make the passive warning failure a headline:0/6 detection at0.5 and3/6 versus7/10 false-alerted nonprogressions at the frozen low threshold. Disclose tiny intent probe, correlated windows, weak localization, negligible oracle gain, non-calibration, one topology, and non-causal aligned action/passive comparison. Preserve scratch selections regardless of test point metrics.
+
+Generate only from sealed `report.json`, provenance, corpus audit, and split plan; do not load prediction arrays, checkpoints, Torch, or evaluator code. Verify hashes/status before formatting, embed all CSS/SVG/JavaScript, reject external dependencies in post-generation audit, and byte-check compatibility/Downloads copies. Reporting changes no scientific evidence.

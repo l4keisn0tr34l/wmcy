@@ -101,7 +101,7 @@ outputs/mvp_v2/graph_rssm/semantic_tuning.json
 outputs/mvp_v2/graph_rssm/rich_semantic.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.json
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
-outputs/mvp_v2/report/rssm_eod_report.html
+outputs/mvp_v2/report/rssm_eod_report.html  # compatibility copy of current V5-led report
 models/mvp_v2_baseline.joblib
 models/mvp_v2_rssm.pt
 models/mvp_v2_rssm_selfsupervised.pt
@@ -286,13 +286,15 @@ docs/V5_EVALUATION_PROTOCOL.md
 scripts/57_evaluate_v5_models.py
 scripts/58_freeze_v5_evaluation.py
 scripts/59_run_v5_sealed_evaluation.py
-outputs/mvp_v5/sealed_test/  # must remain absent until evaluation freeze/review
+outputs/mvp_v5/report/{rssm_eod_report.html,cyberwm_v5_judge_presentation.html,materials_manifest.json}
+/home/paprika/Downloads/{rssm_eod_report.html,cyberwm_v5_judge_presentation.html}
+scripts/61_build_v5_judge_materials.py
 models/mvp_v5_action_graph_rssm_{scratch,friday,v4}.pt
 models/mvp_v5_passive_branch_{scratch,friday,v4}.pt
 scripts/46_validate_v5_plan.py ... scripts/56_audit_v5_validation_models.py
 ```
 
-Both smokes and all 80 corpus episodes validate. The manually interrupted smoke and first rejected `lab_158` attempt are separately quarantined and excluded. No V5 model/evaluation protocol or test prediction exists yet. See `docs/V5_PRECAPTURE_REVIEW.md` and `docs/V5_CORPUS_AUDIT.md`.
+Both smokes and all80 corpus episodes validate. The interrupted smoke and rejected first `lab_158` attempt are quarantined and excluded. V5 training/validation and one sealed test evaluation are complete; the permanent claim forbids rerunning test inference. Current report/deck are regenerated from saved JSON metrics only. See `docs/V5_TEST_RESULTS.md`, `docs/V5_FINAL_REVIEW.md`, and `docs/V5_CORPUS_AUDIT.md`.
 
 ## Hardware validation
 

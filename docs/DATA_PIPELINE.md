@@ -874,4 +874,21 @@ The world-state prediction remains primary.
 
 `src/cyberwm/v5_contract.py` explicitly defines 15 global + 5×18 node + 20×12 pair features (345). `scripts/47_build_v5_sequences.py` exports raw 3-state contexts and 6-state futures, with strict schema, inventory, dense capture-boundary, entity-reference, and separate truth validation. Ordinary passive mode excludes intervention episodes; action mode provides chosen type/pair separately; passive_action mode exports the identical aligned context without those action variables. Test remains explicitly locked. No normalization is fitted during export.
 
-The runtime chooses actions before the forecast cutoff and applies them afterward. Capture bounds use readiness through stop request. Background is sustained from all five hosts; only inventory-to-inventory IPv4 enters graph states. Source/image/raw-smoke provenance and cleanup are prerequisites to capture freeze, not model inputs. See `docs/V5_PRECAPTURE_REVIEW.md` for precise transformations, limitations, tests, and smoke commands. The two smokes and all 80 frozen captures now pass. Every accepted episode has a ~150-second raw interval and exactly 29 complete five-second states (145 seconds after excluding both partial boundary bins); no episode is shortened by outcome. Train/validation exports are now immutable and audited: passive336/168, action24/8, aligned-passive24/8; all common action/aligned arrays match exactly and no test export exists. See `docs/V5_CORPUS_AUDIT.md`.
+The runtime chooses actions before the forecast cutoff and applies them afterward. Capture bounds use readiness through stop request. Background is sustained from all five hosts; only inventory-to-inventory IPv4 enters graph states. Source/image/raw-smoke provenance and cleanup are prerequisites to capture freeze, not model inputs. See `docs/V5_PRECAPTURE_REVIEW.md` for precise transformations, limitations, tests, and smoke commands. The two smokes and all80 frozen captures pass. Every accepted episode has a ~150-second raw interval and exactly29 complete five-second states (145 seconds after excluding both partial boundary bins); no episode is shortened by outcome. Train/validation/test exports are now immutable: test was exported only inside the permanently consumed one-shot evaluation. See `docs/V5_CORPUS_AUDIT.md` and `docs/V5_TEST_RESULTS.md`.
+
+---
+
+# 50. V5 reporting from saved artifacts
+
+`scripts/61_build_v5_judge_materials.py` reads only the saved sealed metric report, provenance JSON, corpus audit, and episode-plan split counts. It verifies sealed-report/provenance hashes and completion status, computes simple displayed ratios, and writes a standalone senior report plus an11-slide keyboard/print-capable judge deck. It never imports Torch, loads checkpoints/prediction arrays, fits scaling/thresholds, or invokes the evaluator. Inline CSS/SVG/JavaScript removes external runtime dependencies.
+
+Outputs:
+
+```text
+outputs/mvp_v5/report/rssm_eod_report.html
+outputs/mvp_v5/report/cyberwm_v5_judge_presentation.html
+/home/paprika/Downloads/rssm_eod_report.html
+/home/paprika/Downloads/cyberwm_v5_judge_presentation.html
+```
+
+The report/deck lead with future-state/edge evidence and prominently preserve the failed passive warning tradeoff. Compatibility copies are byte-verified. Remaining limitation: presentation formatting can summarize sealed evidence but cannot increase independent sample size, create calibration, or turn deterministic action inputs into causal-policy evidence.

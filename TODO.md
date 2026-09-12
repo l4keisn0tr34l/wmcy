@@ -137,7 +137,7 @@
 - [x] Astra-review and harden the evaluator/atomic wrapper; synthetic guards and CUDA validation reproduction pass without test access.
 - [x] Create/inspect/commit accepted evaluation freeze (`e1497ff`) and execute V5 sealed test exactly once; successful, consumed attempt retained.
 - [x] Verify sealed artifacts/checkpoint/scaler/threshold identities and saved-prediction MAEs; document successes/failures in `docs/V5_TEST_RESULTS.md`.
-- [ ] Update standalone senior HTML/judge presentation from saved V5 artifacts; no test rerun or tuning. Emphasize modest graph accuracy, deterministic action semantics, and passive3/6 detection with7/10 false alerts at the secondary threshold.
+- [x] Update standalone V5 senior HTML and11-slide judge presentation from saved metrics only; validate standalone rendering, disclosures, and byte-identical Downloads copies.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 

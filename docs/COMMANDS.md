@@ -228,11 +228,13 @@ Open:
 outputs/mvp_v2/replays/lab_048_context_6_rssm.html
 ```
 
-Build the standalone senior-facing HTML report with inline diagrams:
+Build the current V5-led standalone senior report and judge deck from saved sealed metrics only (no model inference):
 
 ```bash
-.venv/bin/python scripts/17_build_rssm_report.py
+.venv/bin/python scripts/61_build_v5_judge_materials.py
 ```
+
+`scripts/17_build_rssm_report.py` is the historical V2–V4 report generator and should not replace the current V5-led materials.
 
 Run the matched frozen/unfrozen/zero-KL experiment:
 

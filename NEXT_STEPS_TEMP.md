@@ -1,13 +1,31 @@
-# V5 one-shot evaluation completed — 2026-09-12
+# V5 judge materials complete — 2026-09-12
 
-Astra review accepted after evaluation-only guard fixes. Reviewed sources committed b1c5901; freeze inspected/committed e1497ff. Script59 executed exactly once at12:00UTC and succeeded. The permanent consumed attempt is outputs/mvp_v5/sealed_test_attempt/. Do not rerun any V5 test inference, change frozen files, retune thresholds, retrain candidates against this test, or delete evidence.
+Completed a reporting-only batch. No model inference, training, test export, threshold fitting, candidate selection, scaler mutation, or frozen-artifact change occurred.
 
-Current documentation batch: record immutable results and identities in docs/V5_TEST_RESULTS.md, CURRENT_STATE, MEMORY, TODO, DECISIONS, and OUTPUT_LOCATIONS. No model/evaluator/capture code changes.
+Generator:
+- scripts/61_build_v5_judge_materials.py
+- reads saved sealed report/provenance, corpus audit, and episode-plan split counts;
+- verifies sealed report hash/status and freeze lineage;
+- imports no Torch/NumPy/sklearn and never loads checkpoints or prediction arrays;
+- emits inline-only HTML and audits required failure/limitation disclosures plus zero external URLs.
 
-Verified all12 sealed artifact hashes, all six checkpoint/scaler/freeze/threshold identities,54 finite saved forecast arrays, and nine point MAEs recomputed from saved predictions only. No failed sealed attempt occurred. Read-only inspection snippets had key/signature/reshape mistakes that were corrected; these never called model inference or modified results.
+Outputs:
+- outputs/mvp_v5/report/rssm_eod_report.html
+- outputs/mvp_v5/report/cyberwm_v5_judge_presentation.html
+- outputs/mvp_v5/report/materials_manifest.json
+- byte-identical compatibility copies at outputs/mvp_v2/report/rssm_eod_report.html and /home/paprika/Downloads/{rssm_eod_report.html,cyberwm_v5_judge_presentation.html}
 
-Primary action state MAE .459835 vs persistence .539809; edge AP .411418; LM F1@.5=1 under deterministic permit/block; factual action state wins8/8. Primary passive expected/oracle MAE .472887/.470838 vs persistence .538841; edge AP .369933; LM AP .200029, F1@.5=0. Frozen low threshold detects3/6 progression episodes but falsely alerts7/10 nonprogressing episodes. Intent-only cutoff F1@.5=0, secondary .4; no hidden-intent recovery claim.
+Hashes:
+- report 919a42436b7f0ebf2e629b52e4046810e48d43a99870ca23d7e53c23e9186442
+- 11-slide deck 738fa5aeda761a3afcdf6de104908ba75686bab92dc8c1303e85a730f4ba70d2
 
-Aligned same-scaler scratch passive MAE .468434 versus action .459835: small overall action advantage, but active-feature error is worse (.787490 versus .661994) and training cohorts differ, so not a pure action-conditioning ablation. Friday transfer does not improve scratch dynamics. V4 has lower passive point MAE, but scratch remains the frozen primary.
+Validation:
+- generator/HTML audits PASS;
+- report/deck contain no external resources;
+- all compatibility copies are byte-identical;
+- Firefox headless rendered the report title, deck title, and critical warning-failure slide correctly;
+- temporary preview files/profiles removed;
+- passive0/6@.5 and3/6 detected versus7/10 false-alerted low-threshold failures are prominent;
+- deterministic action, tiny intent probe, correlated windows, weak localization, negligible oracle gain, single topology, and no calibration/enterprise/causal-policy claims are explicit.
 
-Next independent work: update the standalone senior HTML/judge presentation from saved artifacts, preserving weak passive/uncertainty results and methodological limits. Remote CSE-CIC-IDS2018 download remains unstarted and independent; respect approved HDD-only scope.
+Next: use arrow keys/PageUp/PageDown in the judge deck; print to PDF only if needed. Do not rerun V5 test inference or retune. Any future scientific work requires a new prospective corpus/protocol. Remote CSE-CIC-IDS2018 work remains independent and unstarted.
