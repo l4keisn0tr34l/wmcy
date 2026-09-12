@@ -1,0 +1,69 @@
+x-v6-node: &v6-node
+  image: cyberwm-v6-node:latest
+  cap_add:
+    - NET_ADMIN
+  volumes:
+    - ./v6_background.py:/opt/cyberwm/v6_background.py:ro
+  command:
+    - bash
+    - -lc
+    - "mkdir -p /srv/http; printf 'lab background\\n' >/srv/http/index.html; python3 -m http.server 8080 --directory /srv/http >/tmp/http.log 2>&1 & exec /usr/sbin/sshd -D -e -o LogLevel=VERBOSE"
+  networks:
+    labnet_v6: {}
+
+services:
+  ws1:
+    <<: *v6-node
+    build:
+      context: .
+      dockerfile: Dockerfile.v6
+    hostname: ws1
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.20
+  ws2:
+    <<: *v6-node
+    hostname: ws2
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.25
+  ws3:
+    <<: *v6-node
+    hostname: ws3
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.27
+  srv1:
+    <<: *v6-node
+    hostname: srv1
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.30
+  srv2:
+    <<: *v6-node
+    hostname: srv2
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.40
+  admin1:
+    <<: *v6-node
+    hostname: admin1
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.50
+  jump1:
+    <<: *v6-node
+    hostname: jump1
+    networks:
+      labnet_v6:
+        ipv4_address: 10.77.0.60
+
+networks:
+  labnet_v6:
+    internal: true
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: cyberwmv6
+    ipam:
+      config:
+        - subnet: 10.77.0.0/24

@@ -1,6 +1,22 @@
 # TODO — Cyber World Model
 
-## NOW — correctness before model training
+## NOW — V6 prospective runtime before any model training
+
+- [x] Define a new192-episode/96-family V6 plan with whole-family splits and a test-only topology regime.
+- [x] Define seven-slot dynamic/auth/static-topology contracts and leakage/timing/balance validators.
+- [x] Parse real timestamped OpenSSH success/failure events while discarding usernames and fingerprints.
+- [x] Build an isolated seven-host V6 Docker composition sharing one image digest.
+- [x] Realize and non-capture-smoke SSH/HTTP policy rules for dual-zone, flat active, and inactive paths.
+- [ ] Verify failed public-key authentication from actual OpenSSH logs.
+- [ ] Specify and implement exact outcome-independent runtime behavior for all ten V6 scenario variants.
+- [ ] Integrate allowlisted benign traffic, per-host auth collection, policy cleanup, provenance, and quarantine behavior.
+- [ ] Run PCAP timestamp/path/inactive-mask smoke checks; do not start planned episodes yet.
+- [ ] Run topology×service benign/permit/block capture smokes and independently review artifacts.
+- [ ] Freeze V6 capture sources, image digest, plan/split hashes, smoke hashes, and acceptance gates before corpus capture.
+- [ ] After authorization/AC/sudo, capture only complete episodes in resumable blocks; quarantine interruptions from time zero.
+- [ ] Keep all V6 test families sealed through development, model selection, thresholding, and a new one-shot evaluation freeze.
+
+## HISTORICAL FOUNDATION — correctness before model training
 
 - [x] Inspect the user's current local versions of `03_build_graph_states.py`, `05_align_ground_truth.py`, `06_pcap_to_canonical.py`, and `lab/run_episode.sh`. Do not assume the fixed zip was fully applied.
 - [x] Make graph-state windows **dense**: every configured 5-second interval must exist, including zero-traffic windows.

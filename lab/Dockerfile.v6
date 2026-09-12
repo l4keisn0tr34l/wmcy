@@ -1,0 +1,17 @@
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server openssh-client sshpass nmap curl iputils-ping iptables python3 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd \
+    && useradd -m -s /bin/bash lab \
+    && mkdir -p /home/lab/.ssh \
+    && echo 'lab:labpass' | chpasswd \
+    && ssh-keygen -q -t ed25519 -N '' -f /home/lab/.ssh/id_ed25519 \
+    && cp /home/lab/.ssh/id_ed25519.pub /home/lab/.ssh/authorized_keys \
+    && chown -R lab:lab /home/lab/.ssh \
+    && chmod 700 /home/lab/.ssh \
+    && chmod 600 /home/lab/.ssh/authorized_keys /home/lab/.ssh/id_ed25519 \
+    && printf '\nPasswordAuthentication yes\nPubkeyAuthentication yes\nPermitRootLogin no\nLogLevel VERBOSE\n' >> /etc/ssh/sshd_config
+EXPOSE 22 8080
+CMD ["/usr/sbin/sshd", "-D", "-e"]

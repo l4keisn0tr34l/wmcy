@@ -531,3 +531,27 @@ Replace the historical V2/V4-led senior report with a concise V5-led standalone 
 Make the passive warning failure a headline:0/6 detection at0.5 and3/6 versus7/10 false-alerted nonprogressions at the frozen low threshold. Disclose tiny intent probe, correlated windows, weak localization, negligible oracle gain, non-calibration, one topology, and non-causal aligned action/passive comparison. Preserve scratch selections regardless of test point metrics.
 
 Generate only from sealed `report.json`, provenance, corpus audit, and split plan; do not load prediction arrays, checkpoints, Torch, or evaluator code. Verify hashes/status before formatting, embed all CSS/SVG/JavaScript, reject external dependencies in post-generation audit, and byte-check compatibility/Downloads copies. Reporting changes no scientific evidence.
+
+---
+
+## D051 — Start V6 with a new prospective topology/authentication protocol
+
+**Status:** Design plan and synthetic contracts implemented; no V6 capture/model/test evidence exists.
+
+Use entirely new paired families and reserve whole families before capture:192 episodes /96 families split88/40/64 episodes across train/validation/test. Reserve`dual_zone7_holdout` only for16 sealed test families while retaining16 fresh in-domain test families. V5 results motivate the hypotheses but cannot select V6 architecture, mixture count, thresholds, or initialization.
+
+Represent at most seven inventory slots and42 directed pairs with active masks and shared graph operations. Keep defender-known inventory/service-policy topology in separate conditioning tensors and exclude it from dynamic future-state error. Add only server-observed, timestamped authentication success/failure and password/public-key method; discard username/fingerprint and never expose scenario roles, intent, outcomes, ATT&CK truth, or future events. Evaluate action-present versus action-masked models on identical intervention examples/objectives, network+auth versus network-only on identical rows, and ambiguous same-prefix families as probabilistic coverage rather than hidden-intent recovery.
+
+The deterministic plan/validator and synthetic contracts pass. Plan hashes identify a draft protocol, not a capture freeze. See `docs/V6_PLAN.md`.
+
+---
+
+## D052 — Treat real V6 auth/policy smokes as feasibility only and preserve fail-closed corrections
+
+**Status:** Non-capture feasibility passed; capture/runtime integration remains incomplete.
+
+Use one shared Docker image across seven containers on the internal authorized`10.77.0.0/24` bridge. Generate destination-side SSH/HTTP rejection rules only from the static topology contract; all source/destination addresses are inventory allowlisted. The rules implement declared service access, not arbitrary routing. A smoke-only seed absent from the episode plan verifies direct dual-zone blocks, two independently permitted jump-role legs, flat active access, and inactive-slot rejection.
+
+Parse actual Docker/OpenSSH UTC logs into canonical defender events while dropping usernames and key fingerprints. A real password failure and public-key success parse correctly. These checks do not establish PCAP alignment, endpoint completeness, session state, forecasting, topology transfer, or causal policy value.
+
+Two policy-smoke attempts completed their traffic checks but failed during result construction because the wrapper used nonexistent profile`flat6`. Cleanup stopped every container and no passing artifact was installed. Correct the wrapper to the contracted`flat5` name and rerun from a clean network; preserve the failure disclosure rather than presenting the first attempt as successful. Freeze nothing until failed-public-key, PCAP/cutoff, background, full scenario, and capture-smoke gates pass.

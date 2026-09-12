@@ -1,5 +1,11 @@
 # Current State — latest checkpoint 2026-09-12
 
+## Latest V6 prospective gate
+
+V6 design/runtime feasibility has started on entirely new prospective families; no V6 PCAP episode, model, scaler, export, or test artifact exists and nothing is frozen. The deterministic plan defines192 episodes /96 paired families with88/40/64 train/validation/test episodes, whole-family splits, and16 test-only dual-zone topology families. Current plan hashes are`951eb142...` and`dd9a5f98...`.
+
+Ten synthetic V6 contract tests and six authentication-parser tests pass. A new isolated seven-container composition uses one shared image on internal`10.77.0.0/24`. Non-capture real-system smokes verify sanitized Docker/OpenSSH password-failure/public-key-success parsing and service-policy realization: direct dual-zone SSH/HTTP is blocked, permitted jump legs succeed, flat active pairs succeed, and inactive slots reject service traffic. Smoke seed`999001` is not in the episode plan. These are engineering facts only—not PCAP alignment, topology-transfer, warning, or model evidence. Two preliminary policy-smoke wrappers used invalid profile name`flat6`; both failed closed, stopped containers, and installed no passing result before the corrected`flat5` run. See `docs/V6_PLAN.md` and `outputs/mvp_v6/review/`.
+
 ## Latest V5 gate (supersedes historical statuses below)
 
 **V5 sealed evaluation completed exactly once on2026-09-12 at12:00UTC**, after Astra review, corrected guards, and committed freeze (`e1497ff`). No post-test tuning or inference rerun. Permanent claim: `outputs/mvp_v5/sealed_test_attempt/`; results/predictions/provenance: `outputs/mvp_v5/sealed_test/`. All artifact/model/scaler/threshold identities and saved-prediction point metrics verified.
