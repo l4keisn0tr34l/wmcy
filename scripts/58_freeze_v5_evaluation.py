@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Freeze checkpoints, thresholds, evaluator, and metrics before one V5 test run."""
+"""Freeze fully verified V5 lineage before one permanent test-access claim."""
 from __future__ import annotations
 import argparse
 import json
@@ -7,79 +7,79 @@ from pathlib import Path
 import subprocess
 import sys
 
-import numpy as np
-import pandas as pd
-import sklearn
-import torch
-
-ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 from src.cyberwm.v5_model_protocol import file_sha256
-
-REGIMES=("scratch","friday","v4")
-SOURCES=(
- "configs/mvp_v5_training_protocol.json","configs/mvp_v5_training_freeze.json",
- "src/cyberwm/graph_rssm.py","src/cyberwm/action_graph_rssm.py","src/cyberwm/branching_graph_rssm.py",
- "src/cyberwm/branch_metrics.py","src/cyberwm/v5_contract.py","src/cyberwm/v5_sequences.py",
- "src/cyberwm/v5_model_protocol.py","scripts/15_train_rssm.py","scripts/47_build_v5_sequences.py",
- "scripts/56_audit_v5_validation_models.py","scripts/57_evaluate_v5_models.py",
- "scripts/58_freeze_v5_evaluation.py","scripts/59_run_v5_sealed_evaluation.py",
-)
+from src.cyberwm.v5_evaluation_seal import (SCALER, checkpoint_contract, check_hashes,
+    durable_json, no_previous_attempt, runtime_versions)
 
 
-def main()->int:
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("--check-only",action="store_true")
- ap.add_argument("--out",type=Path,default=ROOT/"configs/mvp_v5_evaluation_freeze.json")
- args=ap.parse_args()
- if (ROOT/"outputs/mvp_v5/sealed_test").exists():raise PermissionError("V5 sealed test already exists")
- if any((ROOT/"outputs/mvp_v5/sequences"/m/"test").exists() for m in ["passive","action","passive_action"]):
-  raise PermissionError("test export exists before evaluation freeze")
- training_freeze_path=ROOT/"configs/mvp_v5_training_freeze.json";training_freeze=json.loads(training_freeze_path.read_text())
- if training_freeze.get("status")!="FROZEN_TRAIN_VALIDATION_ONLY" or training_freeze.get("test_unlock") is not False:
-  raise ValueError("training freeze status")
- validation_path=ROOT/"outputs/mvp_v5/validation_audit/audit.json";validation=json.loads(validation_path.read_text())
- if validation.get("status")!="PASS_VALIDATION_ONLY_TEST_SEALED" or not validation.get("test_exports_absent"):
-  raise ValueError("validation audit status")
- checkpoint_hashes=validation["checkpoint_sha256"]
- for track,stem in [("action","action_graph_rssm"),("passive","passive_branch")]:
-  for regime in REGIMES:
-   if file_sha256(ROOT/"models"/f"mvp_v5_{stem}_{regime}.pt")!=checkpoint_hashes[track][regime]:
-    raise ValueError(f"checkpoint changed {track}/{regime}")
- thresholds={"action":{r:validation["action"][r]["lm"]["validation_threshold"] for r in REGIMES},
-             "passive":{r:validation["passive"][r]["ordinary_validation"]["exact_lm"]["validation_best_threshold"] for r in REGIMES}}
- if validation["action_primary"]!="scratch" or validation["passive_primary"]!="scratch":raise ValueError("primary candidate changed")
- smoke=ROOT/"outputs/mvp_v5/evaluation_protocol/validation_smoke.json"
- smoke_report=json.loads(smoke.read_text())
- if smoke_report.get("status")!="VALIDATION_EVALUATOR_SMOKE_COMPLETE" or smoke_report.get("test_access") is not False:
-  raise ValueError("validation evaluator smoke status")
- source_hashes={path:file_sha256(ROOT/path) for path in SOURCES}
- freeze={"status":"FROZEN_FOR_ONE_SEALED_TEST","protocol_id":"mvp_v5_sealed_evaluation_v1",
-  "source_sha256":source_hashes,"git_commit":None,
-  "runtime_versions":{"python":sys.version.split()[0],"numpy":np.__version__,"pandas":pd.__version__,
-                      "sklearn":sklearn.__version__,"torch":torch.__version__,"torch_cuda":torch.version.cuda},
-  "training_freeze_sha256":file_sha256(training_freeze_path),
-  "training_protocol_sha256":file_sha256(ROOT/"configs/mvp_v5_training_protocol.json"),
-  "shared_scaler_sha256":validation["shared_scaler_sha256"],
-  "validation_audit_sha256":file_sha256(validation_path),"validation_evaluator_smoke_sha256":file_sha256(smoke),
-  "checkpoint_sha256":checkpoint_hashes,"primary_action":"scratch","primary_passive":"scratch",
-  "thresholds":thresholds,"test_expected_samples":{"action":8,"passive":336,"passive_action":8},
-  "test_metrics":["same-scaler state MAE overall/global/node/edge/active/quiet","future-edge AP",
-   "LM AP/Brier/F1 at fixed0.5 and frozen validation threshold","ATT&CK micro/per-technique AP","LM-pair AP/top1",
-   "factual-vs-opposite action state preference","passive expected/oracle/diversity with oracle coverage-only",
-   "persistence references","scenario counts/diagnostics","test-only intent probe at metadata-frozen forecast cutoff"],
-  "test_unlock":True,"allowed_runs":1,"post_test_retuning":False,
-  "claim_limits":["one synthetic flat five-host topology","deterministic SSH permit/block",
-   "small test cohorts","no enterprise/unseen-topology/causal-policy/calibrated-uncertainty claim"]}
- if args.check_only:
-  print(json.dumps({k:freeze[k] for k in ["status","primary_action","primary_passive","checkpoint_sha256","thresholds","test_expected_samples"]},indent=2));return 0
- if args.out.exists():raise FileExistsError(args.out)
- status=subprocess.run(["git","status","--porcelain"],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()
- if status:raise RuntimeError("commit evaluator/freeze sources before final freeze; git tree not clean")
- freeze["git_commit"]=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()
- args.out.write_text(json.dumps(freeze,indent=2)+"\n")
- print(json.dumps({k:freeze[k] for k in ["status","git_commit","primary_action","primary_passive","test_unlock","allowed_runs"]},indent=2))
- print(f"V5 evaluation freeze -> {args.out}")
- return 0
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--check-only', action='store_true')
+    args = ap.parse_args(); no_previous_attempt()
+    path = ROOT / 'configs/mvp_v5_evaluation_freeze.json'
+    training = json.loads((ROOT / 'configs/mvp_v5_training_freeze.json').read_text())
+    check_hashes(training['source_sha256'])
+    check_hashes({'outputs/mvp_v5/sequences/' + k: v for k, v in training['export_artifact_sha256'].items()})
+    check_hashes({SCALER: training['scaler_sha256']})
+    audit_path = 'outputs/mvp_v5/validation_audit/audit.json'
+    audit = json.loads((ROOT / audit_path).read_text())
+    if audit['training_freeze_sha256'] != file_sha256(ROOT / 'configs/mvp_v5_training_freeze.json'):
+        raise ValueError('validation lineage changed')
+    if audit['status'] != 'PASS_VALIDATION_ONLY_TEST_SEALED' or not audit['test_exports_absent']:
+        raise ValueError('validation audit failed')
+    hashes, thresholds, selections, artifacts = checkpoint_contract()
+    if audit['shared_scaler_sha256'] != training['scaler_sha256']: raise ValueError('scaler lineage mismatch')
+    artifacts.update({audit_path: file_sha256(ROOT / audit_path), SCALER: training['scaler_sha256']})
+    artifacts.update({'outputs/mvp_v5/sequences/' + k: v for k, v in training['export_artifact_sha256'].items()})
+    smoke_path = 'outputs/mvp_v5/evaluation_protocol/reviewed_validation_smoke/report.json'
+    smoke = json.loads((ROOT / smoke_path).read_text())
+    if smoke['test_access'] or smoke['status'] != 'VALIDATION_EVALUATOR_SMOKE_COMPLETE': raise ValueError('smoke status')
+    if smoke['evaluator_sha256'] != file_sha256(ROOT / 'scripts/57_evaluate_v5_models.py'):
+        raise ValueError('evaluator changed since reviewed smoke')
+    if smoke['thresholds'] != thresholds or smoke['runtime_versions'] != runtime_versions(): raise ValueError('smoke contract drift')
+    artifacts[smoke_path] = file_sha256(ROOT / smoke_path)
+    predictions = str(Path(smoke_path).with_suffix('.predictions.npz'))
+    check_hashes({predictions: smoke['predictions_sha256']})
+    artifacts[predictions] = smoke['predictions_sha256']
+    # Include all local Python modules and all plan CSVs consulted by validator46.
+    sources = list(ROOT.glob('src/cyberwm/*.py')) + list(ROOT.glob('configs/*.csv'))
+    sources += [ROOT / p for p in (
+        'configs/mvp_v5_capture_freeze.json', 'configs/mvp_v5_training_freeze.json',
+        'configs/mvp_v5_training_protocol.json', 'scripts/15_train_rssm.py',
+        'scripts/46_validate_v5_plan.py', 'scripts/47_build_v5_sequences.py',
+        'scripts/56_audit_v5_validation_models.py', 'scripts/57_evaluate_v5_models.py',
+        'scripts/58_freeze_v5_evaluation.py', 'scripts/59_run_v5_sealed_evaluation.py',
+        'scripts/60_test_v5_evaluation_seal.py', 'docs/V5_FINAL_REVIEW.md', 'docs/V5_EVALUATION_PROTOCOL.md')]
+    freeze = {
+        'status': 'FROZEN_FOR_ONE_SEALED_TEST', 'protocol_id': 'mvp_v5_sealed_evaluation_reviewed_v1',
+        'git_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+        'source_sha256': {str(p.relative_to(ROOT)): file_sha256(p) for p in sources},
+        'artifact_sha256': artifacts, 'runtime_versions': runtime_versions(),
+        'checkpoint_sha256': hashes, 'thresholds': thresholds, 'selections': selections,
+        'primary_action': audit['action_primary'], 'primary_passive': audit['passive_primary'],
+        'shared_scaler_sha256': training['scaler_sha256'],
+        'test_expected_samples': {'action': 8, 'passive': 336, 'passive_action': 8},
+        'device': 'cuda', 'rollout': 'deterministic prior means; no Monte Carlo calibration claim',
+        'test_metrics': ['state MAE overall/group/active/quiet/horizon; persistence', 'edge AP/prevalence',
+            'ATT&CK AP/support', 'LM AP/Brier/F1 at fixed0.5 and original checkpoint validation threshold',
+            'LM pair AP/top1', 'factual versus opposite action', 'passive expected/oracle/diversity',
+            'scenario/profile/episode metrics', 'primary passive exact pre-first-event warning lead and false alerts',
+            'intent probe at metadata-chosen pre-SSH cutoff; four matched families'],
+        'test_unlock': True, 'allowed_runs': 1, 'post_test_retuning': False,
+        'limitations': ['independent small paired families, not packet-identical',
+            'one synthetic topology and deterministic chosen-action outcomes',
+            'oracle coverage, not deployable accuracy; no calibrated uncertainty',
+            'different passive/action training sets prevent a pure conditioning ablation']}
+    if args.check_only:
+        print(json.dumps({'status': 'PREFREEZE_CHECK_PASS_NO_UNLOCK', 'thresholds': thresholds,
+                          'selections': selections, 'source_count': len(sources)}, indent=2)); return 0
+    if subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip():
+        raise PermissionError('commit reviewed sources before freeze')
+    durable_json(path, freeze)
+    print(f'Created {path}; inspect and commit before test access')
+    return 0
 
 
-if __name__=="__main__":raise SystemExit(main())
+if __name__ == '__main__': raise SystemExit(main())

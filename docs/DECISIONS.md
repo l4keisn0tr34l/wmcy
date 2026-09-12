@@ -493,3 +493,15 @@ Export all three test modes into one temporary root, verify action/aligned commo
 For the intent probe, evaluate the unique sample at each episode's metadata-frozen forecast cutoff and compare malicious direct-credential with matched legitimate SSH probabilities within each predefined family. Use only fixed0.5 and frozen validation thresholds. This measures observed discrimination, not hidden-intent recovery or packet-identical causality.
 
 Do not create the evaluation unlock until the requested Astra-style final protocol review. See `docs/V5_EVALUATION_PROTOCOL.md`.
+
+---
+
+## D048 — Accept corrected V5 evaluation after full-lineage and permanent-attempt guards
+
+**Status:** Astra review accepted2026-09-12 before any V5 test content access.
+
+The initial implementation recorded hashes without enforcing all of them, allowed retries after failures/alternate output paths, and recomputed passive secondary thresholds in its CPU audit. Correct these before unlock: verify every frozen source/artifact/scaler/runtime; bind the freeze to a committed clean tree; permanently consume an exclusive fsynced run directory before export; permit only the claiming wrapper's child to consume one inference ticket; retain failure evidence and forbid automatic retry.
+
+Use the original selected checkpoint thresholds exactly, not CPU-reoptimized values. Primary thresholds remain0.5. Retain existing model/seed/epoch/scaler/selection decisions unchanged. Save predictions and report profile/episode/per-horizon diagnostics plus primary passive warning lead to successful SSH action start. Such lead is not independently timed compromise completion.
+
+Synthetic negative tests and CUDA validation reproduction pass. Intent cutoff selection is verified from generator code and eight synthetic fixtures, never real test episodes during review. Same-scaler action/passive comparisons remain descriptive because training cohorts differ; oracle branches are coverage only. See `docs/V5_FINAL_REVIEW.md`. Commit reviewed code and freeze before the one authorized test execution.

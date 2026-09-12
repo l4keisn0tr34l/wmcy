@@ -273,7 +273,12 @@ outputs/mvp_v5/model_protocol/{shared_train_context_scaler.npz,scaler_source_row
 outputs/mvp_v5/action_model/{validation_report.json,checkpoint_hashes.json,training_console.log}
 outputs/mvp_v5/passive_branch/{validation_report.json,checkpoint_hashes.json,training_console.log}
 outputs/mvp_v5/validation_audit/audit.json
-outputs/mvp_v5/evaluation_protocol/validation_smoke.json
+outputs/mvp_v5/evaluation_protocol/validation_smoke.json  # historical pre-review smoke
+outputs/mvp_v5/evaluation_protocol/reviewed_validation_smoke/{report.json,report.predictions.npz}
+src/cyberwm/v5_evaluation_seal.py
+scripts/60_test_v5_evaluation_seal.py
+docs/V5_FINAL_REVIEW.md
+outputs/mvp_v5/sealed_test_attempt/  # permanent consumed-attempt marker, created only at test access
 docs/V5_EVALUATION_PROTOCOL.md
 scripts/57_evaluate_v5_models.py
 scripts/58_freeze_v5_evaluation.py

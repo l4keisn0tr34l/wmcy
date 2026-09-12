@@ -1,4 +1,8 @@
-# Current State — 2026-09-07
+# Current State — latest checkpoint 2026-09-12
+
+## Latest V5 gate (supersedes historical statuses below)
+
+Astra final evaluation review is accepted after correcting full hash enforcement, durable single-attempt/replay guards, original checkpoint threshold lineage, strict bundle validation, CUDA inference, saved forecasts, and profile/episode/horizon diagnostics. Eight synthetic guard tests and validation-only reproduction pass; no V5 test content was read in this review. Next: commit reviewed sources, create/inspect/commit evaluation freeze, then execute the sealed wrapper once. See `docs/V5_FINAL_REVIEW.md`.
 
 This file records the current verified implementation. See `docs/MVP_STATUS.md` for the complete plain-language checkpoint, file map, dataset inventory, hardware assessment, and MVP timeline.
 
