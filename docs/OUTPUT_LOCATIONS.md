@@ -260,7 +260,8 @@ outputs/mvp_v5/sequences/{passive,action,passive_action}/{train,validation}/
 outputs/mvp_v5/export_audit/{audit.json,summary.csv}
 configs/mvp_v5_training_protocol.json
 docs/V5_MODEL_PROTOCOL.md
-outputs/mvp_v5/model_protocol/  # created only at training-protocol freeze
+configs/mvp_v5_training_freeze.json
+outputs/mvp_v5/model_protocol/{shared_train_context_scaler.npz,scaler_source_rows.csv,training_freeze.json}
 scripts/46_validate_v5_plan.py ... scripts/55_test_v5_training_protocol.py
 ```
 
