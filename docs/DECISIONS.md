@@ -467,3 +467,15 @@ Protocol v1.1 runs exact future-causality and all120 deterministic equivariance 
 This correction changes no data, scaler policy, initialization, architecture, weight, seed, budget, selection rule, threshold, metric, or test gate. It prevents a false bitwise-CUDA claim without relaxing structural causality.
 
 V1.1 exposed a second stale inherited bound: Friday prefit CPU equivariance `2.62e-6` passed the declared `<1e-5` contract but failed helper code hardcoded at `<2e-6`. Archive that partial run, discard its temporary scratch states, and implement V1.2 with V5-owned checks reading the declared gate. Restart every action candidate from zero after a new freeze. See `docs/V5_PROTOCOL_INCIDENT.md`.
+
+---
+
+## D046 — Select scratch primaries on V5 validation and retain weak passive evidence
+
+**Status:** Applied under frozen v1.2; test remains sealed.
+
+Select scratch seed51003 as primary action candidate by the frozen dynamics score (`1.0192`, versus V4`1.0926`, Friday`1.2138`). Retain one checkpoint per initialization for the prespecified transfer diagnostic. Under the common scaler, scratch action validation state MAE is`.4727` versus persistence`.5658`; edge AP is`.3499` versus`.2989`. LM/pair metrics are perfect under deterministic permit/block, but factual state wins only7/8 contexts, so do not present semantics as complete graph forecasting.
+
+Select scratch seed51003 epoch79 as primary passive branch candidate by the frozen composite (`.9318`, versus V4`.9446`, Friday`.9572`). V4 has slightly lower point state MAE (`.4554` versus scratch`.4609`) but does not win the frozen objective. Preserve the failure: scratch passive LM AP`.1615`, F1@.5`0`, pair AP`.0092`, and oracle gain only`.0012`; aligned-action contexts also have F1@.5`0`. Alternative branches add diversity but little useful coverage or warning.
+
+All state comparisons use scaler SHA`3928af5...`. These are validation selection observations, not test/generalization. Freeze evaluator/checkpoint hashes and fixed thresholds separately before one test run. See `docs/V5_VALIDATION_RESULTS.md`.

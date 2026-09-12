@@ -176,6 +176,8 @@ docs/V5_PLAN.md
 docs/V5_PRECAPTURE_REVIEW.md
 docs/V5_CORPUS_AUDIT.md
 docs/V5_MODEL_PROTOCOL.md
+docs/V5_PROTOCOL_INCIDENT.md
+docs/V5_VALIDATION_RESULTS.md
 docs/CSE_CIC_IDS2018_REMOTE.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
@@ -266,8 +268,13 @@ outputs/mvp_v5/model_protocol_v1_invalid_prefit/  # preserved; never used for fi
 outputs/mvp_v5/model_protocol_v1_1_invalid_partial/  # preserved; scratch temp states excluded
 outputs/mvp_v5/protocol_incidents/{action_prefit_cuda_smoke_failure.log,action_partial_scratch_stale_equivariance_helper.log}
 configs/mvp_v5_training_freeze.json  # recreated only after v1.2 clean-tree freeze
-outputs/mvp_v5/model_protocol/  # recreated only after v1.2 clean-tree freeze
-scripts/46_validate_v5_plan.py ... scripts/55_test_v5_training_protocol.py
+outputs/mvp_v5/model_protocol/{shared_train_context_scaler.npz,scaler_source_rows.csv,training_freeze.json}
+outputs/mvp_v5/action_model/{validation_report.json,checkpoint_hashes.json,training_console.log}
+outputs/mvp_v5/passive_branch/{validation_report.json,checkpoint_hashes.json,training_console.log}
+outputs/mvp_v5/validation_audit/audit.json
+models/mvp_v5_action_graph_rssm_{scratch,friday,v4}.pt
+models/mvp_v5_passive_branch_{scratch,friday,v4}.pt
+scripts/46_validate_v5_plan.py ... scripts/56_audit_v5_validation_models.py
 ```
 
 Both smokes and all 80 corpus episodes validate. The manually interrupted smoke and first rejected `lab_158` attempt are separately quarantined and excluded. No V5 model/evaluation protocol or test prediction exists yet. See `docs/V5_PRECAPTURE_REVIEW.md` and `docs/V5_CORPUS_AUDIT.md`.
