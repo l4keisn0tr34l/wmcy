@@ -1,5 +1,5 @@
 {
-  "protocol_id": "mvp_v5_train_validation_v1",
+  "protocol_id": "mvp_v5_train_validation_v1_1",
   "scope": "V5 train and validation only; test export, test inference, and test-driven changes forbidden",
   "context_states": 3,
   "horizon_states": 6,
@@ -106,8 +106,9 @@
   },
   "eligibility_gates": {
     "finite_training_and_gradients": true,
-    "future_perturbation_causality_max_delta": 0.0,
+    "cpu_future_perturbation_causality_max_delta": 0.0,
     "cpu_deterministic_equivariance_max_delta": 0.00001,
+    "cuda_future_perturbation_diagnostic_max_delta": 0.000001,
     "action_track_requires_mean_permit_lm_above_block": true,
     "passive_track_requires_nonzero_branch_diversity": true
   },

@@ -453,3 +453,15 @@ Compare scratch, fixed Friday, and frozen V4-scratch initialization under equal 
 Use three prespecified seeds. Designate primary initialization(s) from validation before test while retaining one checkpoint per initialization for a prespecified transfer diagnostic. Primary LM threshold is0.5; validation-optimized F1 thresholds are secondary only. Oracle branch MAE is coverage only. Every retained model must pass finite-gradient, future-causality, all120-host CPU equivariance, and track-specific noncollapse gates.
 
 Training completion does not unlock test. A separate evaluation freeze must hash selected checkpoints, scaler, evaluator, thresholds, and metrics before one explicit test export/evaluation. See `docs/V5_MODEL_PROTOCOL.md` and `configs/mvp_v5_training_protocol.json`.
+
+---
+
+## D045 — Supersede V5 protocol v1 pre-fit; require exact causality on CPU
+
+**Status:** Applied before optimizer construction or any model/validation/test result.
+
+The first V5 action invocation stopped in inherited V4 smoke code because a CUDA future-perturbation delta was `4.47e-8` rather than bitwise zero. Existing pre-training evidence already showed CPU delta0 and CUDA delta`2.98e-8`. Preserve the failed log and v1 freeze/scaler as invalid pre-fit artifacts; do not overwrite or pretend the run trained.
+
+Protocol v1.1 runs exact future-causality and all120 deterministic equivariance gates on CPU copies of the exact initialized/trained candidates. Require CPU causality0 and equivariance below`1e-5`. Record CUDA deltas below`1e-6` only as numerical diagnostics. Continue actual optimization on CUDA.
+
+This correction changes no data, scaler policy, initialization, architecture, weight, seed, budget, selection rule, threshold, metric, or test gate. It prevents a false bitwise-CUDA claim without relaxing structural causality. Commit the correction and create a new freeze before restarting. See `docs/V5_PROTOCOL_INCIDENT.md`.

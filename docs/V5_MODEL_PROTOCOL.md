@@ -2,9 +2,9 @@
 
 ## Status
 
-**Train/validation protocol is frozen but not yet executed. V5 test remains sealed and no test export exists.** The authoritative choices are in `configs/mvp_v5_training_protocol.json`; `configs/mvp_v5_training_freeze.json` hashes the reviewed sources, immutable exports, initialization checkpoints, and newly fitted scaler.
+**Protocol v1 was invalidated pre-fit by an inherited CUDA bitwise-zero assertion; corrected v1.1 is implemented but awaiting a new clean-tree freeze. V5 test remains sealed and no test export exists.** The authoritative choices are in `configs/mvp_v5_training_protocol.json`. See `docs/V5_PROTOCOL_INCIDENT.md`.
 
-Freeze facts: protocol SHA-256 `cc5801a59bce74366455e2b269bc61924e8b68582156187f42415c24fcc7de3d`; scaler SHA-256 `3928af5e911006b713374c826e59162e68c7762d9d95ace15fa2b437ddf44be6`; source commit `659f20a`. This remains the appropriate second critical methodology-review point. If Astra is unavailable, preserve the same pre-test review gate and do not weaken it after seeing validation results.
+The invalid v1 freeze/scaler are preserved under `configs/mvp_v5_training_freeze_v1_invalid_prefit.json` and `outputs/mvp_v5/model_protocol_v1_invalid_prefit/`. No hyperparameter, data, split, scaler policy, or selection rule changed. Exact structural causality is now tested on CPU; CUDA deltas below `1e-6` are numerical diagnostics. This remains the appropriate second critical methodology-review point. If Astra is unavailable, preserve the same pre-test review gate and do not weaken it after seeing validation results.
 
 ## Research question
 

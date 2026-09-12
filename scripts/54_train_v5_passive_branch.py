@@ -168,9 +168,14 @@ def main() -> int:
             for seed in spec["seeds"]:
                 module.seed_everything(seed); model, initialization = initialize(config, regime, seed, protocol, device)
                 train_loader = module.make_loader(train, scaler, spec["batch_size"], True)
-                smoke = branch_module.smoke_tests(module, model, train_loader, train["context_states"], scaler,
-                    state_permutations, pair_permutations, context_steps, groups, weights, pos,
-                    spec["mixture_temperature"], "lm-outcome", device)
+                # Require exact structural causality on CPU; CUDA float32 noise is
+                # separately bounded as a diagnostic rather than called leakage.
+                smoke_model = BranchingGraphRSSM(**config)
+                smoke_model.load_state_dict(cpu_state_dict(model.state_dict()))
+                smoke_pos = {name: value.cpu() for name, value in pos.items()}
+                smoke = branch_module.smoke_tests(module, smoke_model, train_loader, train["context_states"], scaler,
+                    state_permutations, pair_permutations, context_steps, groups, weights, smoke_pos,
+                    spec["mixture_temperature"], "lm-outcome", torch.device("cpu"))
                 module.seed_everything(seed); optimizer = torch.optim.Adam(model.parameters(), lr=spec["learning_rate"])
                 best_value = float("inf"); best_epoch = 0; best_state = cpu_state_dict(model.state_dict()); history = []
                 for epoch in range(1, spec["epochs"] + 1):
