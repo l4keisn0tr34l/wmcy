@@ -2,9 +2,9 @@
 
 ## Status
 
-**Protocol v1.1 is frozen and ready to execute. V5 test remains sealed and no test export exists.** The authoritative choices are in `configs/mvp_v5_training_protocol.json`; the active freeze is `configs/mvp_v5_training_freeze.json`. See `docs/V5_PROTOCOL_INCIDENT.md` for the preserved pre-fit v1 numerical-contract correction.
+**Protocol v1.1 was also invalidated during temporary scratch training because an inherited helper imposed `<2e-6` instead of the declared `<1e-5`; v1.2 implements protocol-owned checks and awaits clean-tree freeze. V5 test remains sealed.** See `docs/V5_PROTOCOL_INCIDENT.md`.
 
-Active v1.1 facts: protocol SHA-256 `96734fbdef158b8de89081d06010fa19ba8cc27bd32c0fc68c840ae9cfa52f22`; scaler SHA-256 `3928af5e911006b713374c826e59162e68c7762d9d95ace15fa2b437ddf44be6`; source commit `0f8c1e2`. The invalid v1 freeze/scaler remain preserved. No hyperparameter, data, split, scaler policy, or selection rule changed. Exact structural causality is tested on CPU; CUDA deltas below `1e-6` are numerical diagnostics. This remains the appropriate second critical methodology-review point. If Astra is unavailable, preserve the same pre-test review gate and do not weaken it after seeing validation results.
+The invalid v1 and v1.1 freezes/scalers/logs remain preserved. V1.2 changes no scientific threshold: its own smoke code enforces the already frozen CPU causality0, all120 equivariance `<1e-5`, and finite-gradient contract. No hyperparameter, data, split, scaler policy, or selection rule changed. Exact structural causality is tested on CPU; CUDA deltas below `1e-6` are numerical diagnostics. This remains the appropriate second critical methodology-review point. If Astra is unavailable, preserve the same pre-test review gate and do not weaken it after seeing validation results.
 
 ## Research question
 

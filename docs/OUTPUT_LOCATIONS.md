@@ -261,10 +261,12 @@ outputs/mvp_v5/export_audit/{audit.json,summary.csv}
 configs/mvp_v5_training_protocol.json
 docs/V5_MODEL_PROTOCOL.md
 configs/mvp_v5_training_freeze_v1_invalid_prefit.json
+configs/mvp_v5_training_freeze_v1_1_invalid_partial.json
 outputs/mvp_v5/model_protocol_v1_invalid_prefit/  # preserved; never used for fit
-outputs/mvp_v5/protocol_incidents/action_prefit_cuda_smoke_failure.log
-configs/mvp_v5_training_freeze.json  # recreated only after v1.1 clean-tree freeze
-outputs/mvp_v5/model_protocol/  # recreated only after v1.1 clean-tree freeze
+outputs/mvp_v5/model_protocol_v1_1_invalid_partial/  # preserved; scratch temp states excluded
+outputs/mvp_v5/protocol_incidents/{action_prefit_cuda_smoke_failure.log,action_partial_scratch_stale_equivariance_helper.log}
+configs/mvp_v5_training_freeze.json  # recreated only after v1.2 clean-tree freeze
+outputs/mvp_v5/model_protocol/  # recreated only after v1.2 clean-tree freeze
 scripts/46_validate_v5_plan.py ... scripts/55_test_v5_training_protocol.py
 ```
 

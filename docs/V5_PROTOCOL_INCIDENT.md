@@ -56,6 +56,21 @@ Protocol v1.1 changes only numerical audit execution:
 
 No data, split, scaler policy, initialization, architecture, loss weight, seed, epoch, batch, validation rule, threshold, metric, or test gate changed.
 
+## Second stale-helper stop under v1.1
+
+After the v1.1 freeze, all three scratch seeds completed in a temporary directory. Before Friday optimization began, the inherited V4 helper rejected the frozen Friday initialization at CPU equivariance `2.6226043701171875e-06` because that helper hardcoded `<2e-6`. The v1.1 protocol had already frozen the scientific gate at `<1e-5`. Thus the candidate was inside the declared protocol and the wrapper was stale.
+
+No scratch report/checkpoint was installed; temporary states were deleted and will not be resumed. Although scratch validation was calculated internally by the fixed script, no metric was emitted or retained for changing choices. No Friday/V4 optimization or test access occurred.
+
+```text
+outputs/mvp_v5/protocol_incidents/action_partial_scratch_stale_equivariance_helper.log
+SHA-256 0270c6f0e01198fa962ad0ee1dca0eaa113e8a1d2b3e65723488adee5340cffb
+configs/mvp_v5_training_freeze_v1_1_invalid_partial.json
+outputs/mvp_v5/model_protocol_v1_1_invalid_partial/
+```
+
+Protocol v1.2 replaces inherited smoke gating with V5-owned checks that implement the already declared contract: CPU causality exactly0, all120 CPU equivariance below`1e-5`, and finite one-batch gradients. Inherited model losses remain unchanged. Prefreeze tests exercise scratch, Friday, and V4 source dictionaries through this exact path.
+
 ## Methodological consequence
 
-Because the mismatch was discovered before fit and no model result existed, superseding the freeze does not introduce result-driven tuning. The corrected sources must be committed and hashed into a new clean-tree training freeze before training restarts. The later independent evaluation freeze remains mandatory.
+Both corrections concern fail-closed numerical plumbing. Neither changes data, scaler, initialization sources, architecture, optimizer, loss, seed, budget, selection, threshold, metric, or test policy. All action candidates restart from zero under a new freeze; temporary scratch states are not reused. The later independent evaluation freeze remains mandatory.

@@ -1,5 +1,5 @@
 {
-  "protocol_id": "mvp_v5_train_validation_v1_1",
+  "protocol_id": "mvp_v5_train_validation_v1_2",
   "scope": "V5 train and validation only; test export, test inference, and test-driven changes forbidden",
   "context_states": 3,
   "horizon_states": 6,

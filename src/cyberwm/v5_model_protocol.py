@@ -13,7 +13,7 @@ from src.cyberwm.graph_rssm import GraphFeatureScaler, fit_graph_feature_scaler
 
 ROOT = Path(__file__).resolve().parents[2]
 MODES = ("passive", "action", "passive_action")
-EXPECTED_PROTOCOL_ID = "mvp_v5_train_validation_v1_1"
+EXPECTED_PROTOCOL_ID = "mvp_v5_train_validation_v1_2"
 
 
 def file_sha256(path: Path) -> str:

@@ -1,18 +1,16 @@
-# Supersede V5 pre-fit freeze after CUDA bitwise-zero smoke mismatch
+# Supersede V5 v1.1 implementation after stale inherited equivariance gate
 
 ## Incident facts
 
-- First action trainer invocation stopped before optimizer construction/training at inherited V4 smoke assertion: future perturbation delta4.470348e-8 on CUDA versus exact-zero assertion.
-- This is consistent with already documented CUDA float32 reduction noise (V5 contract observed2.980232e-8), not evidence of future leakage. CPU structural audit is exact zero.
-- No V5 model/checkpoint/action output exists; no validation result selected; no test export/inference exists.
-- Failed log preserved under outputs/mvp_v5/protocol_incidents with SHA5e3198d0.... Original freeze/scaler archived as model_protocol_v1_invalid_prefit and configs/mvp_v5_training_freeze_v1_invalid_prefit.json.
+- Corrected action run completed scratch optimization for seeds51001-3 in a temporary directory, then stopped before Friday optimization.
+- Friday initial CPU smoke measured equivariance2.622604e-6. Frozen v1.1 scientific gate is <1e-5, but inherited V4 helper still hardcoded <2e-6.
+- Scratch validation was computed internally for seed selection but no report/checkpoint/output was installed; temp cleanup succeeded. No result is available for tuning. No test export/inference.
+- Partial log SHA0270c6f0... preserved. V1.1 freeze/scaler archived as invalid_partial.
 
-## Current correction
+## Correction
 
-- Version protocol as v1.1 before any fit.
-- Run structural future-causality and all120 equivariance gates on CPU, requiring exact zero causality and <1e-5 equivariance.
-- Treat CUDA causality deltas <=1e-6 only as numerical diagnostics; never call them bitwise causal equality.
-- Instantiate a CPU copy from the exact initialized candidate for inherited smoke tests; CUDA remains required for optimization.
-- Apply same correction to action and passive trainers.
-- Add incident record/docs/test, commit changed sources, create a new clean-tree freeze/scaler, then retry training.
-- Do not alter capture files, exports, outcomes, model hyperparameters, seeds, budgets, validation rule, thresholds, or test seal.
+- Version protocol implementation as v1.2 without changing the frozen scientific threshold (<1e-5).
+- Replace inherited prefit smoke wrappers with V5-owned CPU checks that read the protocol gate: exact future causality0, all120 equivariance<1e-5, finite one-batch gradients.
+- Keep inherited loss/objective code, data, scaler, checkpoints, architecture, seeds,400/250 epoch budgets, selection rules, thresholds, and metrics unchanged.
+- Test the actual scratch/Friday/V4 initialized models through the new smoke path before clean-tree freeze.
+- Restart all action candidates from zero after new freeze; do not reuse temporary scratch states.

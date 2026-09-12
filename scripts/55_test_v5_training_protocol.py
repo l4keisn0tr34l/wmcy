@@ -32,6 +32,8 @@ def main() -> int:
     base_module = load_script("v5_test_base", ROOT / "scripts/15_train_rssm.py")
     action_module = load_script("v5_test_action", ROOT / "scripts/43_train_action_graph_rssm_v4.py")
     branch_module = load_script("v5_test_branch", ROOT / "scripts/34_train_branching_graph_rssm.py")
+    action_trainer = load_script("v5_test_action_trainer", ROOT / "scripts/53_train_v5_action.py")
+    passive_trainer = load_script("v5_test_passive_trainer", ROOT / "scripts/54_train_v5_passive_branch.py")
     base = protocol["graph"]; groups = [slice(0, 15), slice(15, 105), slice(105, 345)]
     state_permutations, pair_permutations = base_module.state_and_edge_permutation_indices(metadata)
     assert len(state_permutations) == len(pair_permutations) == 120
@@ -45,9 +47,8 @@ def main() -> int:
                                      protocol["action_track"]["loss_weights"], action_pos, sample=True)
     assert torch.isfinite(terms["total"]); terms["total"].backward()
     assert all(torch.isfinite(p.grad).all() for p in action_model.parameters() if p.grad is not None)
-    action_smoke = action_module.smoke_tests(base_module, action_model, action, scaler,
-        state_permutations, pair_permutations, 3, groups, protocol["action_track"]["loss_weights"],
-        action_pos, torch.device("cpu"))
+    action_smoke = action_trainer.initial_cpu_smoke(base_module, action_module, action_model, action, scaler,
+        state_permutations, pair_permutations, 3, groups, protocol["action_track"]["loss_weights"], action_pos)
     assert action_smoke["future_perturbation_max_delta"] == 0.0
     branch_model = BranchingGraphRSSM(**base, horizon=6, branch_count=2, branch_embedding_size=32)
     branch_pos = {"edge": base_module.positive_weight(passive["future_edge_presence"]),
@@ -59,10 +60,10 @@ def main() -> int:
         protocol["passive_branch_track"]["loss_weights"], branch_pos, 0.25, "lm-outcome", sample=True)
     assert torch.isfinite(branch_terms["total"]); branch_terms["total"].backward()
     assert all(torch.isfinite(p.grad).all() for p in branch_model.parameters() if p.grad is not None)
-    branch_smoke = branch_module.smoke_tests(base_module, branch_model, branch_loader,
-        passive["context_states"], scaler, state_permutations, pair_permutations, 3, groups,
-        protocol["passive_branch_track"]["loss_weights"], branch_pos, 0.25, "lm-outcome", torch.device("cpu"))
-    assert branch_smoke["causal_context_and_branch_max_delta"] == 0.0
+    branch_smoke = passive_trainer.initial_cpu_smoke(base_module, branch_module, branch_model, passive, scaler,
+        state_permutations, pair_permutations, 3, groups,
+        protocol["passive_branch_track"]["loss_weights"], branch_pos, 0.25)
+    assert branch_smoke["future_perturbation_max_delta"] == 0.0
     # Actual source dictionaries: old scalers excluded, shared tensor contracts explicit.
     for regime, expected_action_missing, expected_branch_missing in [("friday", 11, 9), ("v4", 0, 9)]:
         checkpoint = torch.load(ROOT / protocol["initializations"][regime]["source"], map_location="cpu", weights_only=False)
@@ -72,10 +73,17 @@ def main() -> int:
         loaded_b, missing_b = compatible_parameters(b, checkpoint["model_state_dict"])
         assert len(loaded_a) in {82, 93} and len(missing_a) == expected_action_missing
         assert len(loaded_b) == 82 and len(missing_b) == expected_branch_missing
+        source_action_smoke = action_trainer.initial_cpu_smoke(base_module, action_module, a, action, scaler,
+            state_permutations, pair_permutations, 3, groups, protocol["action_track"]["loss_weights"], action_pos)
+        source_branch_smoke = passive_trainer.initial_cpu_smoke(base_module, branch_module, b, passive, scaler,
+            state_permutations, pair_permutations, 3, groups,
+            protocol["passive_branch_track"]["loss_weights"], branch_pos, 0.25)
+        assert source_action_smoke["all_120_cpu_equivariance_max_delta"] < 1e-5
+        assert max(source_branch_smoke["all_120_cpu_equivariance"].values()) < 1e-5
         assert len(checkpoint["scaler_mean"]) == 141
     print({"status": "PASS", "test_exports_absent": True, "scaler_unique_context_rows": 440,
            "cpu_action_causality_delta": action_smoke["future_perturbation_max_delta"],
-           "cpu_branch_causality_delta": branch_smoke["causal_context_and_branch_max_delta"],
+           "cpu_branch_causality_delta": branch_smoke["future_perturbation_max_delta"],
            "action_gradient_tensors": sum(p.grad is not None for p in action_model.parameters()),
            "branch_gradient_tensors": sum(p.grad is not None for p in branch_model.parameters()),
            "all_host_permutations": len(state_permutations), "old_scalers_reused": False})

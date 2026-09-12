@@ -82,6 +82,23 @@ def trained_cpu_audit(module: Any, model: ActionGraphRSSM, data: dict[str, np.nd
     return {"future_perturbation_max_delta": causal, "all_120_cpu_equivariance_max_delta": delta}
 
 
+def initial_cpu_smoke(module: Any, action_module: Any, model: ActionGraphRSSM,
+                      data: dict[str, np.ndarray], scaler: Any,
+                      state_permutations: np.ndarray, pair_permutations: np.ndarray,
+                      context_steps: int, groups: list[slice], weights: dict[str, float],
+                      pos: dict[str, torch.Tensor]) -> dict[str, Any]:
+    audit = trained_cpu_audit(module, model, data, scaler, state_permutations, pair_permutations)
+    loader = action_module.make_loader(data, scaler, module, 6, False); batch = next(iter(loader))
+    model.train(); model.zero_grad(set_to_none=True)
+    terms = action_module.loss_terms(module, model, batch, context_steps, groups, weights, pos, sample=True)
+    if not torch.isfinite(terms["total"]): raise AssertionError("nonfinite initial action smoke loss")
+    terms["total"].backward()
+    gradients = [parameter.grad for parameter in model.parameters() if parameter.grad is not None]
+    if not gradients or not all(torch.isfinite(value).all() for value in gradients):
+        raise AssertionError("nonfinite initial action smoke gradients")
+    return {**audit, "finite_gradient_parameter_tensors": len(gradients)}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -134,8 +151,8 @@ def main() -> int:
                 smoke_model = ActionGraphRSSM(**config)
                 smoke_model.load_state_dict(cpu_state_dict(model.state_dict()))
                 smoke_pos = {name: value.cpu() for name, value in pos.items()}
-                smoke = action_module.smoke_tests(module, smoke_model, train, scaler, state_permutations,
-                    pair_permutations, context_steps, groups, weights, smoke_pos, torch.device("cpu"))
+                smoke = initial_cpu_smoke(module, action_module, smoke_model, train, scaler, state_permutations,
+                    pair_permutations, context_steps, groups, weights, smoke_pos)
                 train_loader = action_module.make_loader(train, scaler, module, spec["batch_size"], True)
                 audit_loader = action_module.make_loader(train, scaler, module, len(train["context_states"]), False)
                 initial = action_module.deterministic_objective(module, model, audit_loader, context_steps,

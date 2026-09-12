@@ -122,6 +122,24 @@ def trained_cpu_audit(module: Any, model: BranchingGraphRSSM, data: dict[str, np
     return {"future_perturbation_max_delta": causal, "all_120_cpu_equivariance": equivariance}
 
 
+def initial_cpu_smoke(module: Any, branch_module: Any, model: BranchingGraphRSSM,
+                      data: dict[str, np.ndarray], scaler: Any,
+                      state_permutations: np.ndarray, pair_permutations: np.ndarray,
+                      context_steps: int, groups: list[slice], weights: dict[str, float],
+                      pos: dict[str, torch.Tensor], temperature: float) -> dict[str, Any]:
+    audit = trained_cpu_audit(module, model, data, scaler, state_permutations, pair_permutations, branch_module)
+    loader = module.make_loader(data, scaler, 16, False); batch = next(iter(loader))
+    model.train(); model.zero_grad(set_to_none=True)
+    terms = branch_module.loss_terms(module, model, batch, context_steps, groups, weights, pos,
+                                     temperature, "lm-outcome", sample=True)
+    if not torch.isfinite(terms["total"]): raise AssertionError("nonfinite initial branch smoke loss")
+    terms["total"].backward()
+    gradients = [parameter.grad for parameter in model.parameters() if parameter.grad is not None]
+    if not gradients or not all(torch.isfinite(value).all() for value in gradients):
+        raise AssertionError("nonfinite initial branch smoke gradients")
+    return {**audit, "finite_gradient_parameter_tensors": len(gradients)}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -173,9 +191,9 @@ def main() -> int:
                 smoke_model = BranchingGraphRSSM(**config)
                 smoke_model.load_state_dict(cpu_state_dict(model.state_dict()))
                 smoke_pos = {name: value.cpu() for name, value in pos.items()}
-                smoke = branch_module.smoke_tests(module, smoke_model, train_loader, train["context_states"], scaler,
+                smoke = initial_cpu_smoke(module, branch_module, smoke_model, train, scaler,
                     state_permutations, pair_permutations, context_steps, groups, weights, smoke_pos,
-                    spec["mixture_temperature"], "lm-outcome", torch.device("cpu"))
+                    spec["mixture_temperature"])
                 module.seed_everything(seed); optimizer = torch.optim.Adam(model.parameters(), lr=spec["learning_rate"])
                 best_value = float("inf"); best_epoch = 0; best_state = cpu_state_dict(model.state_dict()); history = []
                 for epoch in range(1, spec["epochs"] + 1):

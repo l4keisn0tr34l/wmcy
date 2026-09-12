@@ -464,4 +464,6 @@ The first V5 action invocation stopped in inherited V4 smoke code because a CUDA
 
 Protocol v1.1 runs exact future-causality and all120 deterministic equivariance gates on CPU copies of the exact initialized/trained candidates. Require CPU causality0 and equivariance below`1e-5`. Record CUDA deltas below`1e-6` only as numerical diagnostics. Continue actual optimization on CUDA.
 
-This correction changes no data, scaler policy, initialization, architecture, weight, seed, budget, selection rule, threshold, metric, or test gate. It prevents a false bitwise-CUDA claim without relaxing structural causality. Commit the correction and create a new freeze before restarting. See `docs/V5_PROTOCOL_INCIDENT.md`.
+This correction changes no data, scaler policy, initialization, architecture, weight, seed, budget, selection rule, threshold, metric, or test gate. It prevents a false bitwise-CUDA claim without relaxing structural causality.
+
+V1.1 exposed a second stale inherited bound: Friday prefit CPU equivariance `2.62e-6` passed the declared `<1e-5` contract but failed helper code hardcoded at `<2e-6`. Archive that partial run, discard its temporary scratch states, and implement V1.2 with V5-owned checks reading the declared gate. Restart every action candidate from zero after a new freeze. See `docs/V5_PROTOCOL_INCIDENT.md`.
