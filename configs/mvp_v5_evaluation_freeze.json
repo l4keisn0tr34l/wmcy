@@ -1,0 +1,169 @@
+{
+  "status": "FROZEN_FOR_ONE_SEALED_TEST",
+  "protocol_id": "mvp_v5_sealed_evaluation_reviewed_v1",
+  "git_commit": "b1c590191d6d7b49de6d2389f6d9d378b4a58014",
+  "source_sha256": {
+    "src/cyberwm/common.py": "6f3f5996e3583c6ff3ab832c0beb81380a93efaf7bd1914753ebe08b3c5b43be",
+    "src/cyberwm/v5_sequences.py": "f5396d262d596ae6cb281854605cacabf1a535d45d8e08a85f6fda7c406fc5cb",
+    "src/cyberwm/v5_model_protocol.py": "6ab8780dd4de10be9802888991ff38570d1dc8131b2cc138e359bfe97c3449cd",
+    "src/cyberwm/v5_integrity.py": "a498b6e6766882fa46b50eca1334c0b4d9634cb25a7e87da731a848e4c5d184c",
+    "src/cyberwm/graph_rssm.py": "4b76e71cc987cafab121e8ee98e2fa4d1162101b6c4b06d74f3f5931bf6cb5e8",
+    "src/cyberwm/v5_contract.py": "e90337408572579e17805d5f0c3f8da2bd574f1717d62c524e37f34fd4265613",
+    "src/cyberwm/v5_evaluation_seal.py": "1fdde565bcdc9e52efcaab3e7adbc0a58cc8c127978fa56b62752015a62fd7fc",
+    "src/cyberwm/branch_metrics.py": "964d49384bf4493fac9d204b16b47ae1ed4de1318eca5103c53c89c578e1a8a0",
+    "src/cyberwm/branching_graph_rssm.py": "241fd33eddc0d0c3860ffeea5318fa55742195bb507b5e22bb33ffb3c9aa4fe5",
+    "src/cyberwm/device.py": "43d1e3d37fee0d4a03c60ea870e9b241e022eaab81708b3b42c61a648a1c3012",
+    "src/cyberwm/action_graph_rssm.py": "c5e618ab647ec9c41a9c16a8b823a70a89f649365f1d94eda334b98b9fcaa0c4",
+    "configs/mvp_v3_episode_plan.csv": "12f8313263523906c6002da11b05cb596b9f37e220ae2c20fa6c5a0be9568822",
+    "configs/mvp_v4_episode_plan.csv": "6edfed04c25393ece9375a876fdf0a55a147bff400697128ab4e31b359ae811e",
+    "configs/mvp_v4_split_assignments.csv": "2732c30f1f382346b28df8f6011b23f2ce5ec6ddcf0f4d35774e2c8f7fed219d",
+    "configs/mvp_split_assignments.csv": "f709bba5f9aad7c2ca2799386ae1d53f006dfe8e70e33d6fef06fc90c60b0a35",
+    "configs/mvp_v2_episode_plan.csv": "f4dec7f6d6b63255973504060c9191c8792e599376d17b3deb742d977a829ab4",
+    "configs/mvp_v5_split_assignments.csv": "ea9c885cb6d2219369707effbccce167d80072c068f39b15f145eadc42ac8dd5",
+    "configs/mvp_episode_plan.csv": "96c9d20ce6c6c456b6e7b97a0d2bc72cf5830957e39e1d50a796a0f6baa27e46",
+    "configs/cic2017_known_mitre.csv": "a95b658334e3b4fa535beafa0527dd307e2ee399ea9f3072e866a4b1a069a73d",
+    "configs/mvp_v3_new_episode_plan.csv": "45d4d8302edbe6e92139da8b71b11609ceb36214f150ed6d63511513f586cb2d",
+    "configs/mvp_v5_smoke_plan.csv": "db3076a1157cf6f21bdf44e78733c6675299ffef110ea9ebb4261854bbd9061a",
+    "configs/mvp_v2_split_assignments.csv": "551b8b77e8a6f4ccb3333ae47b3739e1bace796727e729c716e6eb17dcd35edc",
+    "configs/mvp_v5_episode_plan.csv": "b6676819c7c9cdf13e7a8b40b1861f209fb0a85310708028864d3de3b26a0946",
+    "configs/mvp_v3_split_assignments.csv": "e6796cfc57552a05243c3bba7176bf896c53a4c0fe70dd8c105bba98f2616656",
+    "configs/mvp_v5_capture_freeze.json": "53069f98ed2f8e686f973da6aa6f62f22f4d9b735def1da9868e7247783a20df",
+    "configs/mvp_v5_training_freeze.json": "25c69178a8ad0fcbb82d09d66d0b4dde2cd29c25b71e221f6ee46c88d8c15a24",
+    "configs/mvp_v5_training_protocol.json": "c25e68fc841e86e9949b80b616fbceeb16be3c8781e66044c3bb4c5114b75457",
+    "scripts/15_train_rssm.py": "d9897cff62fc39662babd709be8efe2bfc56055b49b8dfa1ea532d1ba8adc623",
+    "scripts/46_validate_v5_plan.py": "ebcdde5cc8fe50ee7026a11d4002b45f46688a8bf98210eadf4733643f068597",
+    "scripts/47_build_v5_sequences.py": "daffba3abe64104135e3ace5df1a0d2de9f6855dc21f117d0d50faa582b97cd7",
+    "scripts/56_audit_v5_validation_models.py": "907fbfc3f900560e54938070202fd9405a670230f6d49ecaa1391adf534ea175",
+    "scripts/57_evaluate_v5_models.py": "3ac9164b404405d9d9df495ae5ac29fd674a9245981b704ddedb20832d5de88e",
+    "scripts/58_freeze_v5_evaluation.py": "0828ddf881d02d813fccd6c579c55170929351df0ca06fe858dd581fbb79be79",
+    "scripts/59_run_v5_sealed_evaluation.py": "4e9c1a5356e308b52db2bf4f5f6a2bb3d32eed7ddc5e12228089ceeb3f0f8cdd",
+    "scripts/60_test_v5_evaluation_seal.py": "bc0bf7349198bc96b0aa73c547ae8dc9999542c2887f220ed68e9037ce2b249f",
+    "docs/V5_FINAL_REVIEW.md": "7d301741570c6008bb533c5661dedd69c47463d917093a86e834c17e484cdb30",
+    "docs/V5_EVALUATION_PROTOCOL.md": "21d780e1d9939cee08206f98d366021c852b813f79ca444ac64069d97f96493c"
+  },
+  "artifact_sha256": {
+    "outputs/mvp_v5/action_model/validation_report.json": "e3e14aa5fcc17d99a23321336c9d918c7a6283955a8651f0fcff776ac54fc20e",
+    "models/mvp_v5_action_graph_rssm_scratch.pt": "e080d969dd5c4676d0840a8749e46deda3674c324af2d849f4e8bc95ccd3f392",
+    "models/mvp_v5_action_graph_rssm_friday.pt": "b81d5cfe1d08d562026e3715501d9be6f0128936520bfe5dd824e029e6bd5f03",
+    "models/mvp_v5_action_graph_rssm_v4.pt": "d4b45ca146231f233594ce763f3e362e7dcebfb3bd3a111594b446e962f05501",
+    "outputs/mvp_v5/passive_branch/validation_report.json": "b7bb8085d407b88b723e1485f3565f79c4c76c0174646d5154daf7d16f8ddc21",
+    "models/mvp_v5_passive_branch_scratch.pt": "d91a800bfdd2057e79f5c57ec0e9074e1dd598ae05d29dc88b6831ae99c84f1b",
+    "models/mvp_v5_passive_branch_friday.pt": "5721b03ddad73fe938186616ed7cc950d0c9169656c1db0aaa509d0c1ff3ee03",
+    "models/mvp_v5_passive_branch_v4.pt": "658398ebbcafd51a5a703d6ac9b7cac6ec4e76bc951c6c17f04d1a9218d1862b",
+    "outputs/mvp_v5/validation_audit/audit.json": "b7f9c5e66bbd8f0377b327ce95f548ad9eeaf1c87c2a56ec07a6bd8c94792d90",
+    "outputs/mvp_v5/model_protocol/shared_train_context_scaler.npz": "3928af5e911006b713374c826e59162e68c7762d9d95ace15fa2b437ddf44be6",
+    "outputs/mvp_v5/sequences/passive/train/train.npz": "a07ef901577caf623dd8eb6d7956fa2de76fc4e95925506ea2b0656c377ae452",
+    "outputs/mvp_v5/sequences/passive/train/feature_metadata.json": "c8706dc6ab7b0e9ff66a8b757e7bc60ff414397e464c0e74015c73502072bf48",
+    "outputs/mvp_v5/sequences/passive/train/sample_manifest.csv": "d61097e3df55f0185160cc84859d7cde93e42cad54287334b82dc85a67b1cc38",
+    "outputs/mvp_v5/sequences/passive/validation/validation.npz": "6dc62c6a3087112d7a81b537c0bcf8373ea7823911e0b416e4873e4979f82363",
+    "outputs/mvp_v5/sequences/passive/validation/feature_metadata.json": "1b3a6bdec425acb2fa9379ea61c894142627403be88aace8e88a26f823abd594",
+    "outputs/mvp_v5/sequences/passive/validation/sample_manifest.csv": "6fcd9a148ab7e6267b3ae1dba56226ce7f8d571adb8dea4af96cf439c9037602",
+    "outputs/mvp_v5/sequences/action/train/train.npz": "964030fc6219267e96571c648dc47086bed20474635ab49ec592f662a971b001",
+    "outputs/mvp_v5/sequences/action/train/feature_metadata.json": "799bd169c2ab2b269a89766fd71cd6f3f724c50dabac9ef0d08c01e881972863",
+    "outputs/mvp_v5/sequences/action/train/sample_manifest.csv": "8174446812df8d3d846d35c406834790058bb74d26ab146f5978113177fa1087",
+    "outputs/mvp_v5/sequences/action/validation/validation.npz": "9be4f2e5a0296bf69fdb0c64145f0bbffab37ff5d30f582057e39d4ce876fda5",
+    "outputs/mvp_v5/sequences/action/validation/feature_metadata.json": "56031bc018f68db855aac5d8a9375431e6add714f6c5768b1e22314e30548386",
+    "outputs/mvp_v5/sequences/action/validation/sample_manifest.csv": "4548d9b42800c311aa827cc6f9face70ef7883a6478f5a6e1cbfeb581fe3092b",
+    "outputs/mvp_v5/sequences/passive_action/train/train.npz": "7b51c517faf88731e490ab500eb4248f2be2db7e466b8240353804283b11e338",
+    "outputs/mvp_v5/sequences/passive_action/train/feature_metadata.json": "3e97651718f48c076e044a6950b5f3ef5503ac17390bf8b0c486850b87f40ae3",
+    "outputs/mvp_v5/sequences/passive_action/train/sample_manifest.csv": "8174446812df8d3d846d35c406834790058bb74d26ab146f5978113177fa1087",
+    "outputs/mvp_v5/sequences/passive_action/validation/validation.npz": "4b75ea451fa4e9277d946920fada04dee5e42e03123c679b57b132a8ae143c45",
+    "outputs/mvp_v5/sequences/passive_action/validation/feature_metadata.json": "ed444d8b20d620cd6cb1543b6b173946db00e90925de5e4081120e6b09457ae1",
+    "outputs/mvp_v5/sequences/passive_action/validation/sample_manifest.csv": "4548d9b42800c311aa827cc6f9face70ef7883a6478f5a6e1cbfeb581fe3092b",
+    "outputs/mvp_v5/evaluation_protocol/reviewed_validation_smoke/report.json": "daf29e8cdcfe505a4fc0a2cb30125db08fa4806e2ad603eaac05406ecfa43185",
+    "outputs/mvp_v5/evaluation_protocol/reviewed_validation_smoke/report.predictions.npz": "091c3a67be882d7a5b28f202381eb2ad58500498993dff1205c1242f249d548f"
+  },
+  "runtime_versions": {
+    "python": "3.12.3",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.0",
+    "torch": "2.9.1+cu128",
+    "torch_cuda": "12.8"
+  },
+  "checkpoint_sha256": {
+    "action": {
+      "scratch": "e080d969dd5c4676d0840a8749e46deda3674c324af2d849f4e8bc95ccd3f392",
+      "friday": "b81d5cfe1d08d562026e3715501d9be6f0128936520bfe5dd824e029e6bd5f03",
+      "v4": "d4b45ca146231f233594ce763f3e362e7dcebfb3bd3a111594b446e962f05501"
+    },
+    "passive": {
+      "scratch": "d91a800bfdd2057e79f5c57ec0e9074e1dd598ae05d29dc88b6831ae99c84f1b",
+      "friday": "5721b03ddad73fe938186616ed7cc950d0c9169656c1db0aaa509d0c1ff3ee03",
+      "v4": "658398ebbcafd51a5a703d6ac9b7cac6ec4e76bc951c6c17f04d1a9218d1862b"
+    }
+  },
+  "thresholds": {
+    "action": {
+      "scratch": 0.999037504196167,
+      "friday": 0.9830637574195862,
+      "v4": 0.9994845390319824
+    },
+    "passive": {
+      "scratch": 0.10029404610395432,
+      "friday": 0.06516405940055847,
+      "v4": 0.058327820152044296
+    }
+  },
+  "selections": {
+    "action": {
+      "scratch": {
+        "seed": 51003,
+        "epoch": 400
+      },
+      "friday": {
+        "seed": 51003,
+        "epoch": 400
+      },
+      "v4": {
+        "seed": 51003,
+        "epoch": 400
+      }
+    },
+    "passive": {
+      "scratch": {
+        "seed": 51003,
+        "epoch": 79
+      },
+      "friday": {
+        "seed": 51003,
+        "epoch": 39
+      },
+      "v4": {
+        "seed": 51002,
+        "epoch": 114
+      }
+    }
+  },
+  "primary_action": "scratch",
+  "primary_passive": "scratch",
+  "shared_scaler_sha256": "3928af5e911006b713374c826e59162e68c7762d9d95ace15fa2b437ddf44be6",
+  "test_expected_samples": {
+    "action": 8,
+    "passive": 336,
+    "passive_action": 8
+  },
+  "device": "cuda",
+  "rollout": "deterministic prior means; no Monte Carlo calibration claim",
+  "test_metrics": [
+    "state MAE overall/group/active/quiet/horizon; persistence",
+    "edge AP/prevalence",
+    "ATT&CK AP/support",
+    "LM AP/Brier/F1 at fixed0.5 and original checkpoint validation threshold",
+    "LM pair AP/top1",
+    "factual versus opposite action",
+    "passive expected/oracle/diversity",
+    "scenario/profile/episode metrics",
+    "primary passive exact pre-first-event warning lead and false alerts",
+    "intent probe at metadata-chosen pre-SSH cutoff; four matched families"
+  ],
+  "test_unlock": true,
+  "allowed_runs": 1,
+  "post_test_retuning": false,
+  "limitations": [
+    "independent small paired families, not packet-identical",
+    "one synthetic topology and deterministic chosen-action outcomes",
+    "oracle coverage, not deployable accuracy; no calibrated uncertainty",
+    "different passive/action training sets prevent a pure conditioning ablation"
+  ]
+}
