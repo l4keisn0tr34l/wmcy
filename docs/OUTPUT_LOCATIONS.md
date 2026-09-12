@@ -178,6 +178,7 @@ docs/V5_CORPUS_AUDIT.md
 docs/V5_MODEL_PROTOCOL.md
 docs/V5_PROTOCOL_INCIDENT.md
 docs/V5_VALIDATION_RESULTS.md
+docs/V5_EVALUATION_PROTOCOL.md
 docs/CSE_CIC_IDS2018_REMOTE.md
 docs/FRIDAY_PCAP_ADAPTER.md
 docs/FRIDAY_GRAPH_SEQUENCES.md
@@ -272,6 +273,12 @@ outputs/mvp_v5/model_protocol/{shared_train_context_scaler.npz,scaler_source_row
 outputs/mvp_v5/action_model/{validation_report.json,checkpoint_hashes.json,training_console.log}
 outputs/mvp_v5/passive_branch/{validation_report.json,checkpoint_hashes.json,training_console.log}
 outputs/mvp_v5/validation_audit/audit.json
+outputs/mvp_v5/evaluation_protocol/validation_smoke.json
+docs/V5_EVALUATION_PROTOCOL.md
+scripts/57_evaluate_v5_models.py
+scripts/58_freeze_v5_evaluation.py
+scripts/59_run_v5_sealed_evaluation.py
+outputs/mvp_v5/sealed_test/  # must remain absent until evaluation freeze/review
 models/mvp_v5_action_graph_rssm_{scratch,friday,v4}.pt
 models/mvp_v5_passive_branch_{scratch,friday,v4}.pt
 scripts/46_validate_v5_plan.py ... scripts/56_audit_v5_validation_models.py

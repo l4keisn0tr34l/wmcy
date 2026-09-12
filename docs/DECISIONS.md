@@ -479,3 +479,17 @@ Select scratch seed51003 as primary action candidate by the frozen dynamics scor
 Select scratch seed51003 epoch79 as primary passive branch candidate by the frozen composite (`.9318`, versus V4`.9446`, Friday`.9572`). V4 has slightly lower point state MAE (`.4554` versus scratch`.4609`) but does not win the frozen objective. Preserve the failure: scratch passive LM AP`.1615`, F1@.5`0`, pair AP`.0092`, and oracle gain only`.0012`; aligned-action contexts also have F1@.5`0`. Alternative branches add diversity but little useful coverage or warning.
 
 All state comparisons use scaler SHA`3928af5...`. These are validation selection observations, not test/generalization. Freeze evaluator/checkpoint hashes and fixed thresholds separately before one test run. See `docs/V5_VALIDATION_RESULTS.md`.
+
+---
+
+## D047 — Atomically export/evaluate V5 test once after a separate review gate
+
+**Status:** Implemented and validation-smoked; evaluation freeze intentionally not created pending critical review.
+
+Freeze all six checkpoint hashes, scratch primary selections, shared scaler, validation-derived secondary thresholds, fixed0.5 primary threshold, exporter/evaluator/wrapper sources, sample counts, and metric list before test access. Include ATT&CK metrics and persistence references so deterministic action labels cannot dominate the report.
+
+Export all three test modes into one temporary root, verify action/aligned common arrays bitwise, run the evaluator, hash artifacts, and atomically install one sealed result. If any post-access step fails, preserve the whole failed root and stop; do not silently delete evidence or tune/retry.
+
+For the intent probe, evaluate the unique sample at each episode's metadata-frozen forecast cutoff and compare malicious direct-credential with matched legitimate SSH probabilities within each predefined family. Use only fixed0.5 and frozen validation thresholds. This measures observed discrimination, not hidden-intent recovery or packet-identical causality.
+
+Do not create the evaluation unlock until the requested Astra-style final protocol review. See `docs/V5_EVALUATION_PROTOCOL.md`.

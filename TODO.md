@@ -134,7 +134,7 @@
 - [x] Capture/process and independently validate all V5 `lab_109`–`lab_188`; equal-duration/state audit passes 80/80.
 - [x] Build and audit five-host train/validation passive/action/aligned-passive exports with test locks; 12 synthetic tests and CUDA/CPU causality/permutation checks pass.
 - [x] Run and independently audit the frozen V5 scratch/Friday/V4 train/validation protocol; scratch selected primary for both tracks.
-- [ ] Freeze evaluator/checkpoints/metrics in a separate V5 evaluation gate, review, then open test exactly once.
+- [ ] Astra-review the implemented validation-smoked evaluator/atomic wrapper; then create and commit the evaluation freeze before opening test exactly once.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."
 
