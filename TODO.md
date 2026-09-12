@@ -132,7 +132,7 @@
 - [x] Complete Astra pre-capture methodology/code review and correct timing, background, cleanup, and freeze gating.
 - [x] Run, inspect, and validate two full V5 smokes; freeze capture/source/image/raw-smoke hashes. First attempt was manually interrupted and quarantined.
 - [x] Capture/process and independently validate all V5 `lab_109`–`lab_188`; equal-duration/state audit passes 80/80.
-- [x] Build five-host passive/action/aligned-passive contracts with test locks; 11 synthetic tests and CUDA/CPU causality/permutation checks pass.
+- [x] Build and audit five-host train/validation passive/action/aligned-passive exports with test locks; 12 synthetic tests and CUDA/CPU causality/permutation checks pass.
 - [ ] Freeze V5 scratch/Friday/V4-initialized comparisons on train/validation before opening test.
 - [ ] Produce a judge-friendly example such as:
   "Observed internal discovery and credential pressure; model predicts a novel SSH edge from wsA to srvB within 30 s with 0.72 probability, interpreted as T1021.004 / Lateral Movement."

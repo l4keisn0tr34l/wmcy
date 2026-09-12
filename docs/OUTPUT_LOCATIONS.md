@@ -255,7 +255,9 @@ lab/episodes/v5_smoke_002
 outputs/mvp_v5/sequences/{passive,action,passive_action}/smoke/
 outputs/mvp_v5/review/capture_freeze.txt
 outputs/mvp_v5/corpus_audit/{audit.json,episode_summary.csv,paired_family_summary.csv,background_failures.csv}
-scripts/46_validate_v5_plan.py ... scripts/50_audit_v5_corpus.py
+outputs/mvp_v5/sequences/{passive,action,passive_action}/{train,validation}/
+outputs/mvp_v5/export_audit/{audit.json,summary.csv}
+scripts/46_validate_v5_plan.py ... scripts/51_audit_v5_exports.py
 ```
 
 Both smokes and all 80 corpus episodes validate. The manually interrupted smoke and first rejected `lab_158` attempt are separately quarantined and excluded. No V5 model/evaluation protocol or test prediction exists yet. See `docs/V5_PRECAPTURE_REVIEW.md` and `docs/V5_CORPUS_AUDIT.md`.
