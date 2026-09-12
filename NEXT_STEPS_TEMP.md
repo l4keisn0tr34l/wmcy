@@ -1,15 +1,23 @@
-# V5 validation complete — independent checkpoint audit and sealed-evaluation freeze
+# V5 final Astra review gate — test still sealed
 
-## Observed validation facts (test still absent)
+## Completed
 
-Action selected dynamics scores scratch1.019175, V41.092597, Friday1.213829; scratch is primary. Selected seed51003 for all. Shared-scaler state MAE scratch.472703, V4.498718, Friday.537277; edge AP only.349903/.339970/.357509. LM ranking/F1 at validation-derived threshold is1 but deterministic action makes this easy; thresholds are extreme and fixed.5 must be independently reported. Permit-minus-block mean risk .984588/.999539/.993121. All causality0 and CPU equivariance<1e-5.
+-80/80 corpus and train/validation exports audited.
+- V1.2 training protocol frozen after preserving two numerical-wrapper incidents; no test access in either.
+- Action validation primary: scratch seed51003, selection1.0192, same-scaler state MAE.4727, edge AP.3499, LM/pair F1/AP1 under deterministic action, factual state wins7/8.
+- Passive primary: scratch seed51003 epoch79, expected/oracle MAE.4609/.4597, LM AP.1615, F1@.5=0, pair AP.0092, oracle gain.0012. This is weak passive warning/coverage evidence.
+- Six checkpoints independently reload/hash/recompute and pass CPU causality0/all120 equivariance<1e-5.
+- Scripts57–59 implement validation-smoked evaluator, pretest freeze, runtime lock, atomic three-mode test export/evaluation, intent probe, and failed-run preservation.
+- No V5 test export, prediction, freeze, or sealed result exists. Repository clean/pushed at0158a0a before this note.
 
-Passive branch selected composite scratch.931808(seed51003 epoch79), V4.944622(seed51002 epoch114), Friday.957200(seed51003 epoch39); scratch primary. Expected/oracle state MAE scratch.460888/.459664, V4.455362/.453578, Friday.465553/.464357. Oracle gains only.00122/.00178/.00120 despite diversity. LM AP scratch.1615, Friday.0651, V4.0623; fixed.5 F1 all0. Aligned action-context fixed.5 F1 all0. Passive alternatives do not establish robust early warning.
+## Mandatory next gate
 
-## Current batch
+Use Astra for final review of `docs/V5_EVALUATION_PROTOCOL.md`, scripts57–59, validation audit, thresholds, intent cutoff, and claim limits. Do not run script58 without review because it creates `test_unlock=true`.
 
-- Preserve v1/v1.1 incidents; v1.2 training outputs are immutable.
-- Add an independent validation-checkpoint audit that reloads every checkpoint, verifies hashes/scaler/protocol/test seal, recomputes primary fixed.5 and state/edge/LM/pair/counterfactual metrics, and checks saved selection/eligibility.
-- Document validation evidence without presenting it as test/generalization.
-- Implement the sealed evaluator and a separate evaluation-freeze gate. Freeze selected checkpoint hashes, primary candidates, thresholds, metrics, evaluator source, and no-test status before export.
-- Appropriate Astra checkpoint is immediately before evaluation freeze/test unlock. If unavailable, preserve freeze and do not open test until explicit final review.
+After accepted review only:
+
+1. `.venv/bin/python scripts/58_freeze_v5_evaluation.py`
+2. inspect and commit `configs/mvp_v5_evaluation_freeze.json`
+3. `.venv/bin/python scripts/59_run_v5_sealed_evaluation.py` exactly once
+4. inspect immutable `outputs/mvp_v5/sealed_test/`; no post-test retuning/rerun
+5. update report/presentation with successes and failures.
